@@ -1,0 +1,29 @@
+{
+  "name": "@repo/utils",
+  "private": true,
+  "version": "0.0.0",
+  "main": "index.ts",
+  "types": "index.ts",
+  "license": "MIT",
+  "scripts": {},
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/lodash": "^4.17.16",
+    "@types/lodash-es": "4.17.12",
+    "@types/node": "20.0.0",
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "@wallet/constants": "3.1.21",
+    "copy-to-clipboard": "3.3.3",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "typescript": "5.2.2"
+  },
+  "dependencies": {
+    "@coin98-com/wallet-adapter-base": "0.1.63",
+    "@coin98-com/wallet-adapter-react": "0.1.63",
+    "@wallet/core": "^3.2.3",
+    "lodash": "^4.17.21",
+    "web3": "^4.3.0"
+  }
+}
