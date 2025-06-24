@@ -1,4 +1,12 @@
+/** @type {import('next').NextConfig} */
+
 import type { NextConfig } from "next";
+
+ 
+// const withNextIntl = require('next-intl/plugin')('./i18n.ts');
+
+import createNextIntlPlugin from 'next-intl/plugin';
+
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -9,4 +17,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+
+module.exports = withNextIntl(nextConfig);
