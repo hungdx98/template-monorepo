@@ -1,0 +1,336 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('/fonts/icomoon.eot?8wv8vk');
+  src:  url('/fonts/icomoon.eot?8wv8vk#iefix') format('embedded-opentype'),
+    url('/fonts/icomoon.ttf?8wv8vk') format('truetype'),
+    url('/fonts/icomoon.woff?8wv8vk') format('woff'),
+    url('/fonts/icomoon.svg?8wv8vk#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-open_external_link:before {
+  content: "\e966";
+}
+.icon-app_explorer:before {
+  content: "\e965";
+}
+.icon-app_shutdown:before {
+  content: "\e964";
+}
+.icon-app_menu:before {
+  content: "\e963";
+}
+.icon-app_status_warning:before {
+  content: "\e962";
+}
+.icon-app_custom-settings:before {
+  content: "\e961";
+}
+.icon-logo_saros_full:before {
+  content: "\e960";
+}
+.icon-app_logo_saros:before {
+  content: "\e95f";
+}
+.icon-app_swap:before {
+  content: "\e95e";
+}
+.icon-app_custom_settings:before {
+  content: "\e95d";
+}
+.icon-app_add_contact:before {
+  content: "\e900";
+}
+.icon-app_add:before {
+  content: "\e901";
+}
+.icon-app_alert:before {
+  content: "\e902";
+}
+.icon-app_c98:before {
+  content: "\e903";
+}
+.icon-app_arrow_down:before {
+  content: "\e904";
+}
+.icon-app_arrow_left:before {
+  content: "\e905";
+}
+.icon-app_arrow_right:before {
+  content: "\e906";
+}
+.icon-app_arrow_up:before {
+  content: "\e907";
+}
+.icon-app_buy:before {
+  content: "\e908";
+}
+.icon-app_chart:before {
+  content: "\e909";
+}
+.icon-app_check:before {
+  content: "\e90a";
+}
+.icon-app_chevron_down:before {
+  content: "\e90b";
+}
+.icon-app_chevron_left:before {
+  content: "\e90c";
+}
+.icon-app_chevron_right:before {
+  content: "\e90d";
+}
+.icon-app_chevron_up:before {
+  content: "\e90e";
+}
+.icon-app_close:before {
+  content: "\e90f";
+}
+.icon-app_contacts:before {
+  content: "\e910";
+}
+.icon-app_copy:before {
+  content: "\e911";
+}
+.icon-app_currency:before {
+  content: "\e912";
+}
+.icon-app_dark_mode:before {
+  content: "\e913";
+}
+.icon-app_delete:before {
+  content: "\e914";
+}
+.icon-app_edit:before {
+  content: "\e915";
+}
+.icon-app_empty:before {
+  content: "\e916";
+}
+.icon-app_error:before {
+  content: "\e917";
+}
+.icon-app_expand_view:before {
+  content: "\e918";
+}
+.icon-app_eye_off:before {
+  content: "\e919";
+}
+.icon-app_eye_on:before {
+  content: "\e91a";
+}
+.icon-app_faucet:before {
+  content: "\e91b";
+}
+.icon-app_filter:before {
+  content: "\e91c";
+}
+.icon-app_flash_off:before {
+  content: "\e91d";
+}
+.icon-app_flash_on:before {
+  content: "\e91e";
+}
+.icon-app_full_view:before {
+  content: "\e91f";
+}
+.icon-app_hardware_device:before {
+  content: "\e920";
+}
+.icon-app_heart_off:before {
+  content: "\e921";
+}
+.icon-app_heart_on:before {
+  content: "\e922";
+}
+.icon-app_history:before {
+  content: "\e923";
+}
+.icon-app_home:before {
+  content: "\e924";
+}
+.icon-app_image:before {
+  content: "\e925";
+}
+.icon-app_language:before {
+  content: "\e926";
+}
+.icon-app_ledger:before {
+  content: "\e927";
+}
+.icon-app_light_mode:before {
+  content: "\e928";
+}
+.icon-app_loading:before {
+  content: "\e929";
+}
+.icon-app_lock_off:before {
+  content: "\e92a";
+}
+.icon-app_lock_on:before {
+  content: "\e92b";
+}
+.icon-app_lock:before {
+  content: "\e92c";
+}
+.icon-app_logo_c98:before {
+  content: "\e92d";
+}
+.icon-app_manage_wallets:before {
+  content: "\e92e";
+}
+.icon-app_menu_browser:before {
+  content: "\e92f";
+}
+.icon-app_menu_buy:before {
+  content: "\e930";
+}
+.icon-app_menu_discover:before {
+  content: "\e931";
+}
+.icon-app_menu_settings:before {
+  content: "\e932";
+}
+.icon-app_menu_stake:before {
+  content: "\e933";
+}
+.icon-app_menu_swap:before {
+  content: "\e934";
+}
+.icon-app_menu_wallet:before {
+  content: "\e935";
+}
+.icon-app_minus:before {
+  content: "\e936";
+}
+.icon-app_more:before {
+  content: "\e937";
+}
+.icon-app_network:before {
+  content: "\e938";
+}
+.icon-app_notification:before {
+  content: "\e939";
+}
+.icon-app_passcode:before {
+  content: "\e93a";
+}
+.icon-app_profile:before {
+  content: "\e93b";
+}
+.icon-app_receive:before {
+  content: "\e93c";
+}
+.icon-app_refresh:before {
+  content: "\e93d";
+}
+.icon-app_scan_qr:before {
+  content: "\e93e";
+}
+.icon-app_search_link:before {
+  content: "\e93f";
+}
+.icon-app_search:before {
+  content: "\e940";
+}
+.icon-app_security:before {
+  content: "\e941";
+}
+.icon-app_share:before {
+  content: "\e942";
+}
+.icon-app_show_qr:before {
+  content: "\e943";
+}
+.icon-app_smart_contract:before {
+  content: "\e944";
+}
+.icon-app_social-apple:before {
+  content: "\e945";
+}
+.icon-app_social-email:before {
+  content: "\e946";
+}
+.icon-app_social_facebook:before {
+  content: "\e947";
+}
+.icon-app_social_google:before {
+  content: "\e948";
+}
+.icon-app_social_twitter:before {
+  content: "\e949";
+}
+.icon-app_star_off:before {
+  content: "\e94a";
+}
+.icon-app_star_on:before {
+  content: "\e94b";
+}
+.icon-app_status_alert:before {
+  content: "\e94c";
+}
+.icon-app_status_checked:before {
+  content: "\e94d";
+}
+.icon-app_status_declined:before {
+  content: "\e94e";
+}
+.icon-app_status_help:before {
+  content: "\e94f";
+}
+.icon-app_status_info:before {
+  content: "\e950";
+}
+.icon-app_status_loading:before {
+  content: "\e951";
+}
+.icon-app_status_minus:before {
+  content: "\e952";
+}
+.icon-app_status_pending:before {
+  content: "\e953";
+}
+.icon-app_status_plus:before {
+  content: "\e954";
+}
+.icon-app_status_restricted:before {
+  content: "\e955";
+}
+.icon-app_tabs:before {
+  content: "\e956";
+}
+.icon-app_unsecurity:before {
+  content: "\e957";
+}
+.icon-app_validator:before {
+  content: "\e958";
+}
+.icon-app_view_grid:before {
+  content: "\e959";
+}
+.icon-app_view_list:before {
+  content: "\e95a";
+}
+.icon-app_view_only:before {
+  content: "\e95b";
+}
+.icon-app_warning:before {
+  content: "\e95c";
+}

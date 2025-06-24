@@ -1,0 +1,9 @@
+@theme {
+  --shadow-box-1: var(--box-shadow-box-1);
+  --shadow-box-2: var(--box-shadow-box-2);
+}
+
+html {
+  --box-shadow-box-1: 0px 5px 7px 0px var(--black-black-a10);
+  --box-shadow-box-2: 0 0 4px 0 rgba(148, 116, 255, 0.2);
+}

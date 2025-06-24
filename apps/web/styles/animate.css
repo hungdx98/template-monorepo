@@ -1,0 +1,59 @@
+@theme {
+  --animate-rotate-reverse: rotate-reverse 0.5s ease-in-out infinite;
+  --animate-up-down-up-left: up-down-up-left 6s ease-in-out infinite;
+  --animate-down-up-down-right: down-up-down-right 6s ease-in-out infinite;
+  --animate-flicker: flicker 3s infinite alternate;
+
+  @keyframes flicker {
+    0%,
+    25%,
+    50%,
+    75%,
+    100% {
+      opacity: 1;
+    }
+    12.5%,
+    37.5%,
+    62.5%,
+    87.5% {
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes rotate-reverse {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(180deg);
+    }
+  }
+  @keyframes up-down-up-left {
+    0% {
+      top: 0%;
+      left: 0;
+    }
+    50% {
+      top: 50%;
+      left: 0;
+    }
+    100% {
+      top: 0%;
+      left: 0;
+    }
+  }
+  @keyframes down-up-down-right {
+    0% {
+      bottom: 0%;
+      right: 0;
+    }
+    50% {
+      bottom: 50%;
+      right: 0;
+    }
+    100% {
+      bottom: 0%;
+      right: 0;
+    }
+  }
+}

@@ -1,0 +1,978 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?5ld7b6');
+  src:  url('fonts/icomoon.eot?5ld7b6#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?5ld7b6') format('truetype'),
+    url('fonts/icomoon.woff?5ld7b6') format('woff'),
+    url('fonts/icomoon.svg?5ld7b6#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-app_"], [class*=" icon-app_"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-app_arrow-up-bold:before {
+  content: "\ea3b";
+}
+.icon-app_arrow-down-bold:before {
+  content: "\ea3c";
+}
+.icon-app_sweep:before {
+  content: "\ea3a";
+}
+.icon-app_tag:before {
+  content: "\ea39";
+}
+.icon-app_vic:before {
+  content: "\ea38";
+}
+.icon-app_injective:before {
+  content: "\ea37";
+}
+.icon-app_minting:before {
+  content: "\ea36";
+}
+.icon-app_copy-v2:before {
+  content: "\ea35";
+}
+.icon-app_mail-bold:before {
+  content: "\ea34";
+}
+.icon-app_bold-eye-slash:before {
+  content: "\ea32";
+}
+.icon-app_bold-eye:before {
+  content: "\ea33";
+}
+.icon-app_bold-danger:before {
+  content: "\ea30";
+}
+.icon-app_bold-banned:before {
+  content: "\ea31";
+}
+.icon-app_register:before {
+  content: "\ea2e";
+}
+.icon-app_bold-add-circle:before {
+  content: "\ea2f";
+}
+.icon-app_heart-filled:before {
+  content: "\ea2d";
+}
+.icon-app_sei:before {
+  content: "\ea2c";
+}
+.icon-app_bundle:before {
+  content: "\ea2b";
+}
+.icon-app_store:before {
+  content: "\ea2a";
+}
+.icon-app_transfer-item:before {
+  content: "\ea29";
+}
+.icon-app_copy-1:before {
+  content: "\ea27";
+}
+.icon-app_info-filled:before {
+  content: "\ea26";
+}
+.icon-app_check-filled:before {
+  content: "\ea25";
+}
+.icon-app_calendar:before {
+  content: "\ea24";
+}
+.icon-app_review-tick:before {
+  content: "\ea21";
+}
+.icon-app_collection_create:before {
+  content: "\ea1f";
+}
+.icon-app_flying_star:before {
+  content: "\ea20";
+}
+.icon-app_hamburger:before {
+  content: "\ea1e";
+}
+.icon-app_share-v2:before {
+  content: "\e9fb";
+}
+.icon-app_filter-v2:before {
+  content: "\ea1c";
+}
+.icon-app_shopping-bag:before {
+  content: "\ea1d";
+}
+.icon-app_show-fill:before {
+  content: "\ea18";
+}
+.icon-app_explorer-v3:before {
+  content: "\ea19";
+}
+.icon-app_create-bundle:before {
+  content: "\ea1a";
+}
+.icon-app_add-bundle:before {
+  content: "\ea1b";
+}
+.icon-app_image-upload:before {
+  content: "\ea17";
+}
+.icon-app_refresh-v2:before {
+  content: "\ea16";
+}
+.icon-app_explorer-v2:before {
+  content: "\ea11";
+}
+.icon-app_shopping-cart:before {
+  content: "\ea12";
+}
+.icon-app_share-square:before {
+  content: "\ea13";
+}
+.icon-app_refresh-square:before {
+  content: "\ea14";
+}
+.icon-app_offer:before {
+  content: "\ea15";
+}
+.icon-app_binance:before {
+  content: "\e976";
+}
+.icon-app_clock:before {
+  content: "\ea0e";
+}
+.icon-app_grid-base:before {
+  content: "\ea0f";
+}
+.icon-app_grid-large:before {
+  content: "\ea10";
+}
+.icon-app_check-mark:before {
+  content: "\ea0d";
+}
+.icon-app_item-favorited:before {
+  content: "\ea0b";
+}
+.icon-app_item-collected:before {
+  content: "\ea0c";
+}
+.icon-app_item-nft:before {
+  content: "\e9f7";
+}
+.icon-app_verify:before {
+  content: "\e92f";
+}
+.icon-app_mail-normal:before {
+  content: "\ea0a";
+}
+.icon-app_wallet:before {
+  content: "\ea09";
+}
+.icon-app_sun:before {
+  content: "\ea07";
+}
+.icon-app_moon:before {
+  content: "\ea08";
+}
+.icon-app_visit:before {
+  content: "\ea06";
+}
+.icon-app_linkedIn:before {
+  content: "\ea05";
+}
+.icon-app_instagram:before {
+  content: "\e91e";
+}
+.icon-app_twitter-empty:before {
+  content: "\ea02";
+}
+.icon-app_discord:before {
+  content: "\ea03";
+}
+.icon-app_global:before {
+  content: "\ea04";
+}
+.icon-app_check-circle:before {
+  content: "\ea01";
+}
+.icon-app_buy_nft:before {
+  content: "\e9ff";
+}
+.icon-app_sell_nft:before {
+  content: "\ea00";
+}
+.icon-app_eye:before {
+  content: "\e9fc";
+}
+.icon-app_heart:before {
+  content: "\e9fd";
+}
+.icon-app_share:before {
+  content: "\e9fe";
+}
+.icon-app_share_active:before {
+  content: "\e9ef";
+}
+.icon-app_heart_active:before {
+  content: "\e9fa";
+}
+.icon-app_disconnect-all-converted:before {
+  content: "\e94a";
+}
+.icon-app_disconnect:before {
+  content: "\e9f9";
+}
+.icon-app_login_c98:before {
+  content: "\e900";
+}
+.icon-app_expand:before {
+  content: "\e901";
+}
+.icon-app_collapse:before {
+  content: "\e902";
+}
+.icon-app_refresh:before {
+  content: "\e903";
+}
+.icon-app_optimism:before {
+  content: "\e904";
+}
+.icon-app_arbitrum:before {
+  content: "\e905";
+}
+.icon-app_arbitrum_xdai:before {
+  content: "\e906";
+}
+.icon-app_ubeswap:before {
+  content: "\e907";
+}
+.icon-app_joe:before {
+  content: "\e908";
+}
+.icon-app_boba:before {
+  content: "\e909";
+}
+.icon-app_walletConnect:before {
+  content: "\e90a";
+}
+.icon-app_solana_claim:before {
+  content: "\e90b";
+}
+.icon-app_box:before {
+  content: "\e90c";
+}
+.icon-app_wallet_refresh:before {
+  content: "\e90d";
+}
+.icon-app_okex:before {
+  content: "\e90e";
+}
+.icon-app_gate:before {
+  content: "\e90f";
+}
+.icon-app_klaytn:before {
+  content: "\e910";
+}
+.icon-app_migration:before {
+  content: "\e911";
+}
+.icon-app_token_issuer:before {
+  content: "\e912";
+}
+.icon-app_nft_issuer:before {
+  content: "\e913";
+}
+.icon-app_play:before {
+  content: "\e914";
+}
+.icon-app_swap:before {
+  content: "\e915";
+}
+.icon-app_heart1:before {
+  content: "\e916";
+}
+.icon-app_lighting:before {
+  content: "\e917";
+}
+.icon-app_nft_unactive:before {
+  content: "\e918";
+}
+.icon-app_wallet_approval:before {
+  content: "\e919";
+}
+.icon-app_custom_network:before {
+  content: "\e91a";
+}
+.icon-app_live_chat:before {
+  content: "\e91b";
+}
+.icon-app_c98_about:before {
+  content: "\e91c";
+}
+.icon-app_c98_careers:before {
+  content: "\e91d";
+}
+.icon-app_c98_exchange:before {
+  content: "\e91f";
+}
+.icon-app_c98_finance:before {
+  content: "\e920";
+}
+.icon-app_c98_labs:before {
+  content: "\e921";
+}
+.icon-app_c98_network:before {
+  content: "\e922";
+}
+.icon-app_c98_press:before {
+  content: "\e923";
+}
+.icon-app_c98_token:before {
+  content: "\e924";
+}
+.icon-app_c98_venture:before {
+  content: "\e925";
+}
+.icon-app_revoke:before {
+  content: "\e926";
+}
+.icon-app_multi_send:before {
+  content: "\e927";
+}
+.icon-app_xpoint:before {
+  content: "\e928";
+}
+.icon-app_sort:before {
+  content: "\e929";
+}
+.icon-app_lamp_off:before {
+  content: "\e92a";
+}
+.icon-app_lamp_on:before {
+  content: "\e92b";
+}
+.icon-app_portfolio:before {
+  content: "\e92c";
+}
+.icon-app_cleanup:before {
+  content: "\e92d";
+}
+.icon-app_casper:before {
+  content: "\e92e";
+}
+.icon-app_elrond:before {
+  content: "\e930";
+}
+.icon-app_omg:before {
+  content: "\e931";
+}
+.icon-app_ronin:before {
+  content: "\e932";
+}
+.icon-app_xdai:before {
+  content: "\e933";
+}
+.icon-app_xrp:before {
+  content: "\e934";
+}
+.icon-app_multi_sig:before {
+  content: "\e935";
+}
+.icon-app_upload:before {
+  content: "\e936";
+}
+.icon-app_burn:before {
+  content: "\e937";
+}
+.icon-app_c98_wallet:before {
+  content: "\e938";
+}
+.icon-app_cross_chain_bridge:before {
+  content: "\e939";
+}
+.icon-app_dapp:before {
+  content: "\e93a";
+}
+.icon-app_exchange:before {
+  content: "\e93b";
+}
+.icon-app_expand-1:before {
+  content: "\e93c";
+}
+.icon-app_luna_dex:before {
+  content: "\e93d";
+}
+.icon-app_mint:before {
+  content: "\e93e";
+}
+.icon-app_more_horizontal_fill:before {
+  content: "\e93f";
+}
+.icon-app_c98Exchange:before {
+  content: "\e940";
+}
+.icon-app_like_active:before {
+  content: "\e941";
+}
+.icon-app_like:before {
+  content: "\e942";
+}
+.icon-app_convert:before {
+  content: "\e943";
+}
+.icon-app_delete:before {
+  content: "\e944";
+}
+.icon-app_Luna:before {
+  content: "\e945";
+}
+.icon-app_email:before {
+  content: "\e946";
+}
+.icon-app_bitfinex:before {
+  content: "\e947";
+}
+.icon-app_poloniex:before {
+  content: "\e948";
+}
+.icon-app_bittrex:before {
+  content: "\e949";
+}
+.icon-app_kucoin:before {
+  content: "\e94b";
+}
+.icon-app_huobi:before {
+  content: "\e94c";
+}
+.icon-app_binance-old:before {
+  content: "\e94d";
+}
+.icon-app_ftx:before {
+  content: "\e94e";
+}
+.icon-app_fmx:before {
+  content: "\e94f";
+}
+.icon-app_mail_open:before {
+  content: "\e950";
+}
+.icon-app_multi_chain:before {
+  content: "\e951";
+}
+.icon-app_down_fill:before {
+  content: "\e952";
+}
+.icon-app_up_fill:before {
+  content: "\e953";
+}
+.icon-app_remove:before {
+  content: "\e954";
+}
+.icon-app_add:before {
+  content: "\e955";
+}
+.icon-app_remove_square:before {
+  content: "\e956";
+}
+.icon-app_add_square:before {
+  content: "\e957";
+}
+.icon-app_close:before {
+  content: "\e958";
+}
+.icon-app_close_square:before {
+  content: "\e959";
+}
+.icon-app_star_active:before {
+  content: "\e95a";
+}
+.icon-app_sort1:before {
+  content: "\e95b";
+}
+.icon-app_weekActive:before {
+  content: "\e95c";
+}
+.icon-app_monthActive:before {
+  content: "\e95d";
+}
+.icon-app_fullMonthActive:before {
+  content: "\e95e";
+}
+.icon-app_active24h:before {
+  content: "\e95f";
+}
+.icon-app_activeUser:before {
+  content: "\e960";
+}
+.icon-app_idea:before {
+  content: "\e961";
+}
+.icon-app_facebook1:before {
+  content: "\e962";
+}
+.icon-app_marketing_support:before {
+  content: "\e963";
+}
+.icon-app_technical_support:before {
+  content: "\e964";
+}
+.icon-app_telegram1:before {
+  content: "\e965";
+}
+.icon-app_twitter:before {
+  content: "\e966";
+}
+.icon-app_telegram:before {
+  content: "\e967";
+}
+.icon-app_facebook:before {
+  content: "\e968";
+}
+.icon-app_website:before {
+  content: "\e969";
+}
+.icon-app_dashboard:before {
+  content: "\e96a";
+}
+.icon-app_dominance:before {
+  content: "\e96b";
+}
+.icon-app_earn:before {
+  content: "\e96c";
+}
+.icon-app_receive_success_right:before {
+  content: "\e96d";
+}
+.icon-app_receive_success:before {
+  content: "\e96e";
+}
+.icon-app_persistence:before {
+  content: "\e96f";
+}
+.icon-app_checked:before {
+  content: "\e970";
+}
+.icon-app_query:before {
+  content: "\e971";
+}
+.icon-app_crosschain:before {
+  content: "\e972";
+}
+.icon-app_terra:before {
+  content: "\e973";
+}
+.icon-app_avalancher:before {
+  content: "\e974";
+}
+.icon-app_band:before {
+  content: "\e975";
+}
+.icon-app_bitcoin:before {
+  content: "\e977";
+}
+.icon-app_celo:before {
+  content: "\e978";
+}
+.icon-app_compound:before {
+  content: "\e979";
+}
+.icon-app_cosmos:before {
+  content: "\e97a";
+}
+.icon-app_curve:before {
+  content: "\e97b";
+}
+.icon-app_dfinity:before {
+  content: "\e97c";
+}
+.icon-app_eth_sol_bridge:before {
+  content: "\e97d";
+}
+.icon-app_ethereum:before {
+  content: "\e97e";
+}
+.icon-app_fantom:before {
+  content: "\e97f";
+}
+.icon-app_heco:before {
+  content: "\e980";
+}
+.icon-app_hotcross_bridge:before {
+  content: "\e981";
+}
+.icon-app_justswap:before {
+  content: "\e982";
+}
+.icon-app_kava:before {
+  content: "\e983";
+}
+.icon-app_kusama:before {
+  content: "\e984";
+}
+.icon-app_link:before {
+  content: "\e985";
+}
+.icon-app_luaswap:before {
+  content: "\e986";
+}
+.icon-app_luna:before {
+  content: "\e987";
+}
+.icon-app_mdex:before {
+  content: "\e988";
+}
+.icon-app_near_bridge:before {
+  content: "\e989";
+}
+.icon-app_near:before {
+  content: "\e98a";
+}
+.icon-app_pancakes_swap:before {
+  content: "\e98b";
+}
+.icon-app_pangolin:before {
+  content: "\e98c";
+}
+.icon-app_polkadot:before {
+  content: "\e98d";
+}
+.icon-app_polygon:before {
+  content: "\e98e";
+}
+.icon-app_matic:before {
+  content: "\ea28";
+}
+.icon-app_quickswap:before {
+  content: "\e98f";
+}
+.icon-app_ref_finance:before {
+  content: "\e990";
+}
+.icon-app_secret_network:before {
+  content: "\e991";
+}
+.icon-app_serum:before {
+  content: "\e992";
+}
+.icon-app_solana:before {
+  content: "\e993";
+}
+.icon-app_sushiswap:before {
+  content: "\e994";
+}
+.icon-app_terraswap-1:before {
+  content: "\e995";
+}
+.icon-app_thorchain:before {
+  content: "\e996";
+}
+.icon-app_tomochain:before {
+  content: "\e997";
+}
+.icon-app_tron:before {
+  content: "\e998";
+}
+.icon-app_uniswap:before {
+  content: "\e999";
+}
+.icon-app_paste:before {
+  content: "\e99a";
+}
+.icon-app_scan:before {
+  content: "\e99b";
+}
+.icon-app_wallet_manager:before {
+  content: "\e99c";
+}
+.icon-app_message:before {
+  content: "\e99d";
+}
+.icon-app_add_wallet:before {
+  content: "\e99e";
+}
+.icon-app_address_list:before {
+  content: "\e99f";
+}
+.icon-app_manage_wallet:before {
+  content: "\e9a0";
+}
+.icon-app_eth_price:before {
+  content: "\e9a1";
+}
+.icon-app_hide:before {
+  content: "\e9a2";
+}
+.icon-app_simple-wallet:before {
+  content: "\e9a3";
+}
+.icon-app_whale:before {
+  content: "\e9a4";
+}
+.icon-app_pie_chart:before {
+  content: "\e9a5";
+}
+.icon-app_tokens:before {
+  content: "\e9a6";
+}
+.icon-app_transfer:before {
+  content: "\e9a7";
+}
+.icon-app_show:before {
+  content: "\e9a8";
+}
+.icon-app_search_left:before {
+  content: "\e9a9";
+}
+.icon-app_search_right:before {
+  content: "\e9aa";
+}
+.icon-app_security_setting:before {
+  content: "\e9ab";
+}
+.icon-app_self:before {
+  content: "\e9ac";
+}
+.icon-app_remove_liquidity:before {
+  content: "\e9ad";
+}
+.icon-app_piechart:before {
+  content: "\e9ae";
+}
+.icon-app_receive:before {
+  content: "\e9af";
+}
+.icon-app_network:before {
+  content: "\e9b0";
+}
+.icon-app_info:before {
+  content: "\e9b1";
+}
+.icon-app_key:before {
+  content: "\e9b2";
+}
+.icon-app_language:before {
+  content: "\e9b3";
+}
+.icon-app_manage_contact:before {
+  content: "\e9b4";
+}
+.icon-app_market_matric:before {
+  content: "\e9b5";
+}
+.icon-app_library:before {
+  content: "\e9b6";
+}
+.icon-app_friend_invite:before {
+  content: "\e9b7";
+}
+.icon-app_gas:before {
+  content: "\e9b8";
+}
+.icon-app_event:before {
+  content: "\e9b9";
+}
+.icon-app_fail:before {
+  content: "\e9ba";
+}
+.icon-app_drop_down:before {
+  content: "\e9bb";
+}
+.icon-app_edit:before {
+  content: "\e9bc";
+}
+.icon-app_error:before {
+  content: "\e9bd";
+}
+.icon-app_connect_wallet:before {
+  content: "\e9be";
+}
+.icon-app_create_new:before {
+  content: "\e9bf";
+}
+.icon-app_approve:before {
+  content: "\e9c0";
+}
+.icon-app_bonus:before {
+  content: "\e9c1";
+}
+.icon-app_call_contract:before {
+  content: "\e9c2";
+}
+.icon-app_all_wallet:before {
+  content: "\e9c3";
+}
+.icon-app_add_liquidity:before {
+  content: "\e9c4";
+}
+.icon-app_add_liquidity1:before {
+  content: "\e9c5";
+}
+.icon-app_add_contact:before {
+  content: "\e9c6";
+}
+.icon-app_activity:before {
+  content: "\e9c7";
+}
+.icon-app_adjust:before {
+  content: "\e9c8";
+}
+.icon-app_arrow_down:before {
+  content: "\e9c9";
+}
+.icon-app_arrow_left_circle:before {
+  content: "\e9ca";
+}
+.icon-app_arrow_left:before {
+  content: "\e9cb";
+}
+.icon-app_arrow_right:before {
+  content: "\e9cc";
+}
+.icon-app_arrow_right_circle:before {
+  content: "\e9cd";
+}
+.icon-app_arrow_up_circle:before {
+  content: "\e9ce";
+}
+.icon-app_arrow_up:before {
+  content: "\e9cf";
+}
+.icon-app_btc_price:before {
+  content: "\e9d0";
+}
+.icon-app_check:before {
+  content: "\e9d1";
+}
+.icon-app_compare:before {
+  content: "\e9d2";
+}
+.icon-app_copy:before {
+  content: "\e9d3";
+}
+.icon-app_cryptocurrencies:before {
+  content: "\e9d4";
+}
+.icon-app_custom_cryptocurrencies:before {
+  content: "\e9d5";
+}
+.icon-app_document:before {
+  content: "\e9d6";
+}
+.icon-app_explorer:before {
+  content: "\e9d7";
+}
+.icon-app_filter:before {
+  content: "\e9d8";
+}
+.icon-app_general_setting:before {
+  content: "\e9d9";
+}
+.icon-app_gwei:before {
+  content: "\e9da";
+}
+.icon-app_history_day:before {
+  content: "\e9db";
+}
+.icon-app_history:before {
+  content: "\e9dc";
+}
+.icon-app_logout:before {
+  content: "\e9dd";
+}
+.icon-app_margin_volume:before {
+  content: "\e9de";
+}
+.icon-app_market_cap:before {
+  content: "\e9df";
+}
+.icon-app_market_info:before {
+  content: "\e9e0";
+}
+.icon-app_more_horizontal:before {
+  content: "\e9e1";
+}
+.icon-app_more_vertical:before {
+  content: "\e9e2";
+}
+.icon-app_notification:before {
+  content: "\e9e3";
+}
+.icon-app_qr:before {
+  content: "\e9e4";
+}
+.icon-app_referral_program:before {
+  content: "\e9e5";
+}
+.icon-app_restore:before {
+  content: "\e9e6";
+}
+.icon-app_send:before {
+  content: "\e9e7";
+}
+.icon-app_setting:before {
+  content: "\e9e8";
+}
+.icon-app_sort_down:before {
+  content: "\e9e9";
+}
+.icon-app_sort_up:before {
+  content: "\e9ea";
+}
+.icon-app_star:before {
+  content: "\e9eb";
+}
+.icon-app_terminal:before {
+  content: "\e9ec";
+}
+.icon-app_user_detail:before {
+  content: "\e9ed";
+}
+.icon-app_user:before {
+  content: "\e9ee";
+}
+.icon-app_cardano:before {
+  content: "\e9f0";
+}
+.icon-app_aave:before {
+  content: "\e9f1";
+}
+.icon-app_helium:before {
+  content: "\e9f2";
+}
+.icon-app_hotcrossbridge:before {
+  content: "\e9f3";
+}
+.icon-app_kardia:before {
+  content: "\e9f4";
+}
+.icon-app_nearBridge:before {
+  content: "\e9f5";
+}
+.icon-app_refFinance:before {
+  content: "\e9f6";
+}
+.icon-app_terraSwap:before {
+  content: "\e9f8";
+}
+.icon-app_token:before {
+  content: "\ea23";
+}
+.icon-app_calendar-checked:before {
+  content: "\ea22";
+}

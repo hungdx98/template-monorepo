@@ -14,12 +14,15 @@
     "@coin98-com/wallet-adapter-react": "^0.1.73",
     "@coin98-com/wallet-adapter-react-ui": "^0.1.73",
     "@repo/ui": "workspace:*",
+    "classnames": "2.3.2",
+    "lodash": "^4.17.21",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.3.0",
+    "@types/lodash": "4.14.190",
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

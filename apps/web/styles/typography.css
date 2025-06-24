@@ -1,0 +1,125 @@
+@theme {
+  /* FAMILY */
+  --font-family-sans: var(--fontfamily-font-family-sans);
+
+  /* SIZE */
+  --text-font-size-100: var(--fontsize-font-size-100);
+  --text-font-size-125: var(--fontsize-font-size-125);
+  --text-font-size-150: var(--fontsize-font-size-150);
+  --text-font-size-162: var(--fontsize-font-size-162);
+  --text-font-size-175: var(--fontsize-font-size-175);
+  --text-font-size-187: var(--fontsize-font-size-187);
+  --text-font-size-200: var(--fontsize-font-size-200);
+  --text-font-size-225: var(--fontsize-font-size-225);
+  --text-font-size-250: var(--fontsize-font-size-250);
+  --text-font-size-300: var(--fontsize-font-size-300);
+  --text-font-size-350: var(--fontsize-font-size-350);
+  --text-font-size-400: var(--fontsize-font-size-400);
+  --text-font-size-500: var(--fontsize-font-size-500);
+  --text-font-size-600: var(--fontsize-font-size-600);
+  --text-font-size-700: var(--fontsize-font-size-700);
+  --text-font-size-800: var(--fontsize-font-size-800);
+  --text-font-size-1000: var(--fontsize-font-size-1000);
+  --text-font-size-1200: var(--fontsize-font-size-1200);
+  --text-font-size-1400: var(--fontsize-font-size-1400);
+  --text-font-size-1600: var(--fontsize-font-size-1600);
+
+  /* TITLE TEXT */
+  --text-title-xsmall: var(--title-text-title-xsmall);
+  --text-title-small: var(--title-text-title-small);
+  --text-title-medium: var(--title-text-title-medium);
+  --text-title-large: var(--title-text-title-large);
+  --text-title-xlarge: var(--title-text-title-xlarge);
+  --text-title-xxlarge: var(--title-text-title-xxlarge);
+
+  /* WEIGHT */
+  --font-weight-font-weight-regular: var(--fontweight-font-weight-regular);
+  --font-weight-font-weight-medium: var(--fontweight-font-weight-medium);
+  --font-weight-font-weight-semibold: var(--fontweight-font-weight-semibold);
+  --font-weight-font-weight-bold: var(--fontweight-font-weight-bold);
+  /* LINE HEIGHT */
+  --leading-line-height-normal: 1.25;
+  --leading-line-height-tight: 1.2;
+  --leading-line-height-loosest: 1.5;
+  /* LETTER SPACING */
+  --tracking-letter-spacing-normal: var(--letterspacing-letter-spacing-normal);
+  --tracking-letter-spacing-dense: var(--letterspacing-letter-spacing-dense);
+  --tracking-letter-spacing-denser: var(--letterspacing-letter-spacing-denser);
+}
+
+
+html {
+  /* --fontfamily-font-family-sans: "Inter"; */
+  --fontweight-font-weight-regular: 400;
+  --letterspacing-letter-spacing-normal: 0;
+  --letterspacing-letter-spacing-dense: -0.2;
+  --letterspacing-letter-spacing-denser: -0.5;
+  --fontweight-font-weight-medium: 500;
+  --fontweight-font-weight-semibold: 600;
+  --fontweight-font-weight-bold: 700;
+  --fontsize-font-size-100: 8px;
+  --fontsize-font-size-125: 10px;
+  --fontsize-font-size-150: 12px;
+  --fontsize-font-size-162: 13px;
+  --fontsize-font-size-175: 14px;
+  --fontsize-font-size-187: 15px;
+  --fontsize-font-size-200: 16px;
+  --fontsize-font-size-225: 18px;
+  --fontsize-font-size-250: 20px;
+  --fontsize-font-size-300: 24px;
+  --fontsize-font-size-350: 28px;
+  --fontsize-font-size-400: 32px;
+  --fontsize-font-size-500: 40px;
+  --fontsize-font-size-600: 48px;
+  --fontsize-font-size-700: 56px;
+  --fontsize-font-size-800: 64px;
+  --fontsize-font-size-1000: 80px;
+  --fontsize-font-size-1200: 96px;
+  --fontsize-font-size-1400: 112px;
+  --fontsize-font-size-1600: 128px;
+  --paragraphspacing-paragraph-spacing-normal: 12;
+
+  --title-text-title-xsmall: 18px;
+  --title-text-title-small: 20px;
+  --title-text-title-medium: 24px;
+  --title-text-title-large: 28px;
+  --title-text-title-xlarge: 32px;
+  --title-text-title-xxlarge: 36px;
+  --ui-text-tiny: 8px;
+  --ui-text-3xsmall: 10px;
+  --ui-text-2xsmall: 12px;
+  --ui-text-xsmall: 13px;
+  --ui-text-small: 14px;
+  --ui-text-medium: 15px;
+  --ui-text-large: 16px;
+  --ui-text-xlarge: 18px;
+  --ui-text-2xlarge: 20px;
+  --ui-text-3xlarge: 24px;
+  --paragraph-text-paragraph-small: 0;
+  --paragraph-text-paragraph-medium: 0;
+  --paragraph-text-paragraph-large: 0;
+}
+
+@media only screen and (max-width: 1024px) {
+  html {
+    --title-text-title-xsmall: 18px;
+    --title-text-title-small: 20px;
+    --title-text-title-medium: 24px;
+    --title-text-title-large: 28px;
+    --title-text-title-xlarge: 32px;
+    --title-text-title-xxlarge: 36px;
+    --ui-text-tiny: 8px;
+    --ui-text-3xsmall: 10px;
+    --ui-text-2xsmall: 12px;
+    --ui-text-xsmall: 13px;
+    --ui-text-small: 14px;
+    --ui-text-medium: 15px;
+    --ui-text-large: 16px;
+    --ui-text-xlarge: 18px;
+    --ui-text-2xlarge: 20px;
+    --ui-text-3xlarge: 24px;
+    --paragraph-text-paragraph-small: 14;
+    --paragraph-text-paragraph-medium: 15;
+    --paragraph-text-paragraph-large: 16;
+  }
+}

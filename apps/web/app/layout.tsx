@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FC, Suspense } from "react";
 import "./globals.css";
+import MainHeader from "../layouts/MainHeader";
 
 export const metadata: Metadata = {
   title: "Create Turborepo",
@@ -17,6 +18,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <html lang="en">
       <body>
+        <MainHeader/>
         <Suspense>
           {children}
         </Suspense>

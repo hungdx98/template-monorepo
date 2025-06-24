@@ -1,0 +1,21 @@
+@theme {
+  --radius-border-radius-circle: 9898px;
+  --radius-border-radius-square: 0px;
+  --radius-border-radius-tiny: 4px;
+  --radius-border-radius-xsmall: 6px;
+  --radius-border-radius-small: 8px;
+  --radius-border-radius-medium: 12px;
+  --radius-border-radius-large: 16px;
+  --radius-border-radius-huge: 20px;
+  --radius-border-width-none: var(--width-border-width-none);
+  --radius-border-width-thin: var(--width-border-width-thin);
+  --radius-border-width-medium: var(--width-border-width-medium);
+  --radius-border-width-thick: var(--width-border-width-thick);
+}
+
+html {
+  --width-border-width-none: 0px;
+  --width-border-width-thin: 0.5px;
+  --width-border-width-medium: 1px;
+  --width-border-width-thick: 2px;
+}
