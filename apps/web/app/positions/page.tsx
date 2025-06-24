@@ -1,8 +1,14 @@
 'use client'
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
+import { usePoolStore } from '../../stores/usePoolStore';
 
 export default function NewPosition() {
+
+  const { poolAddress } = usePoolStore();
+
+  console.log("Pool Address:", poolAddress);
+
   const [tokenA, setTokenA] = useState("ETH");
   const [tokenB, setTokenB] = useState("");
   const [feeTier, setFeeTier] = useState("0.3%");
@@ -18,7 +24,7 @@ export default function NewPosition() {
 
       <div className="grid md:grid-cols-3 gap-6">
         {/* Step Indicator */}
-        <div className="space-y-4 border border-border-1-subtle">
+        <div className="space-y-4 border border-border-1-subtle rounded-border-radius-large p-5">
           <div className="flex items-start space-x-4">
             <div className="w-6 h-6 rounded-full bg-white text-black text-center">1</div>
             <div>
@@ -38,7 +44,7 @@ export default function NewPosition() {
 
         {/* Form Area */}
         <div className="md:col-span-2 space-y-6">
-          <div className="bg-[#1A1A1A] rounded-xl p-6">
+          <div className="rounded-border-radius-large border border-border-1-subtle p-5">
             <div className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold mb-2">Select pair</h2>
