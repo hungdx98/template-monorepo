@@ -12,7 +12,7 @@ const MainHeader = () => {
 
 
   return (
-    <div className="flex items-center justify-between p-4 border border-border-1-subtle">
+    <div className="flex items-center justify-between p-4 border border-border-1-subtle sticky top-0 z-50 bg-background h-20">
       <div className='flex items-center gap-x-4'>
         <Image
           width={40}

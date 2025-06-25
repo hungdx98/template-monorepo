@@ -1,4 +1,4 @@
-import cx from 'classnames'
+import cx from '@/utils/styled'
 import React, { ButtonHTMLAttributes } from 'react'
 import Loading from '../Loading'
 
@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'font-medium rounded-lg transition-colors inline-flex items-center justify-center outline-2 outline-offset-2 outline-transparent cursor-pointer relative leading-tight transition-all duration-200 text-base text-white  px-space-250 py-space-150 justify-center items-center gap-space-100 flex w-full'
+    'font-medium rounded-border-radius-large transition-colors inline-flex items-center justify-center outline-2 outline-offset-2 outline-transparent cursor-pointer relative leading-tight transition-all duration-200 text-base text-white  px-space-250 py-space-150 justify-center items-center gap-space-100 flex w-full'
 
   const variantStyles = {
     primary: 'bg-button-pri-fill',
@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
   const sizeStyles = {
     sm: 'text-sm px-space-150 py-space-075',
     md: 'text-base px-space-200 py-space-100 h-space-500',
-    lg: 'text-lg px-space-300 py-space-150 h-space-700'
+    lg: 'text-lg px-space-300 py-space-150 h-space-700 rounded-border-radius-huge'
   }
 
   const disabledStyles =

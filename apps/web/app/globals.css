@@ -4,8 +4,11 @@
 
 @import "tailwindcss";
 @import "@repo/tailwind-config";
-@import "../styles/theme.css";
 /* @import "@repo/ui/styles.css"; */
+
+@import '../assets/icons/style.css';
+@import "../styles/theme.css";
+
 
 
 
