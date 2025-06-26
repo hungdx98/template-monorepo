@@ -25,7 +25,7 @@ export const CreatePositionSreen: FC = () => {
 
   const onOpenModal = () => {
     window.openModal({
-      title: t('select_token_pair'),
+      title: t('select_token_pair_fee'),
       content: <div>oheah</div>,
       onClose: () => {
         console.log("Modal closed");

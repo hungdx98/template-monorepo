@@ -40,7 +40,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   const disabledStyles =
     disabled || isLoading
-      ? 'cursor-not-allowed pointer-events-none text-text-disabled bg-button-disabled-fill '
+      ? 'cursor-not-allowed pointer-events-none text-text-brand background-background-app '
       : ''
 
   return (
