@@ -108,14 +108,14 @@
   /* SCRIM */
   --color-scrim-fill: var(--scrim-scrim-fill);
   /* SHEET */
-  --color-sheet-bottom-handle-fill: var(--sheet:bottom-bottom-sheet-handle-fill);
-  --color-sheet-bottom-fill: var(--sheet:bottom-bottom-sheet-fill);
-  --color-sheet-bottom-layer-stack-fill: var(--sheet:bottom-layer-stack-fill);
+  --color-sheet-bottom-handle-fill: var(--sheet-bottom-bottom-sheet-handle-fill);
+  --color-sheet-bottom-fill: var(--sheet-bottom-bottom-sheet-fill);
+  --color-sheet-bottom-layer-stack-fill: var(--sheet-bottom-layer-stack-fill);
   /* NAVIGATION */
-  --color-navigation-bottom-center-thumb-border: var(--navigation:bottom-bottom-nav-center-thumb-border);
-  --color-navigation-bottom-center-thumb-fill: var(--navigation:bottom-bottom-nav-center-thumb-fill);
-  --color-navigation-bottom-icon-inactive: var(--navigation:bottom-bottom-nav-icon-inactive);
-  --color-navigation-bottom-icon-active: var(--navigation:bottom-bottom-nav-icon-active);
+  --color-navigation-bottom-center-thumb-border: var(--navigation-bottom-bottom-nav-center-thumb-border);
+  --color-navigation-bottom-center-thumb-fill: var(--navigation-bottom-bottom-nav-center-thumb-fill);
+  --color-navigation-bottom-icon-inactive: var(--navigation-bottom-bottom-nav-icon-inactive);
+  --color-navigation-bottom-icon-active: var(--navigation-bottom-bottom-nav-icon-active);
   /* PROGRESS */
   --color-progress-circle-track-fill: var(--progress-progress-circle-track-fill);
   --color-progress-on-color-indicator: var(--progress-progress-on-color-indicator);
@@ -172,7 +172,7 @@
   --color-text-label-1: var(--text-text-label-1);
   --color-text-label-2: var(--text-text-label-2);
   --color-text-sematic-warning: var(--semantic-sematic-warning);
-  
+
   /* ICON */
   --color-icon: var(--icon-icon);
   --color-icon-subtle: var(--icon-icon-subtle);
@@ -220,7 +220,7 @@
   --white-white-a15: #FFFFFF26;
   --white-white-a20: #FFFFFF33;
   --white-white-a25: #FFFFFF3F;
-  --white-white-a30: #FFFFFF4C; 
+  --white-white-a30: #FFFFFF4C;
   --white-white-a35: #FFFFFF59;
   --white-white-a40: #FFFFFF66;
   --white-white-a45: #FFFFFF72;
@@ -451,13 +451,13 @@
   --tabs-tab-active-text: var(--text-text);
   --modal-modal-fill: var(--background-background-3);
   --scrim-scrim-fill: var(--black-black-a80);
-  --sheet:bottom-bottom-sheet-handle-fill: var(--white-white-a10);
-  --sheet:bottom-bottom-sheet-fill: var(--background-background-2);
-  --sheet:bottom-layer-stack-fill: var(--neutralgray-ng10);
-  --navigation:bottom-bottom-nav-center-thumb-border: var(--white-white-a100);
-  --navigation:bottom-bottom-nav-center-thumb-fill: var(--neutralgray-ng5);
-  --navigation:bottom-bottom-nav-icon-inactive: var(--neutralgray-ng30);
-  --navigation:bottom-bottom-nav-icon-active: var(--icon-icon);
+  --sheet: bottom-bottom-sheet-handle-fill: var(--white-white-a10);
+  --sheet: bottom-bottom-sheet-fill: var(--background-background-2);
+  --sheet: bottom-layer-stack-fill: var(--neutralgray-ng10);
+  --navigation: bottom-bottom-nav-center-thumb-border: var(--white-white-a100);
+  --navigation: bottom-bottom-nav-center-thumb-fill: var(--neutralgray-ng5);
+  --navigation: bottom-bottom-nav-icon-inactive: var(--neutralgray-ng30);
+  --navigation: bottom-bottom-nav-icon-active: var(--icon-icon);
   --progress-progress-circle-track-fill: var(--black-black-a10);
   --progress-progress-on-color-indicator: var(--white-white-a60);
   --progress-progress-bar-on-color-track-fill: var(--white-white-a10);
@@ -555,13 +555,13 @@
   --tabs-tab-active-text: var(--text-text);
   --modal-modal-fill: var(--background-background-3);
   --scrim-scrim-fill: var(--black-black-a80);
-  --sheet:bottom-bottom-sheet-handle-fill: var(--black-black-a10);
-  --sheet:bottom-bottom-sheet-fill: var(--background-background-1);
-  --sheet:bottom-layer-stack-fill: var(--neutralgray-ng90);
-  --navigation:bottom-bottom-nav-center-thumb-border: var(--neutralgray-ng95);
-  --navigation:bottom-bottom-nav-center-thumb-fill: var(--neutralgray-ng100);
-  --navigation:bottom-bottom-nav-icon-inactive: var(--neutralgray-ng70);
-  --navigation:bottom-bottom-nav-icon-active: var(--icon-icon);
+  --sheet: bottom-bottom-sheet-handle-fill: var(--black-black-a10);
+  --sheet: bottom-bottom-sheet-fill: var(--background-background-1);
+  --sheet: bottom-layer-stack-fill: var(--neutralgray-ng90);
+  --navigation: bottom-bottom-nav-center-thumb-border: var(--neutralgray-ng95);
+  --navigation: bottom-bottom-nav-center-thumb-fill: var(--neutralgray-ng100);
+  --navigation: bottom-bottom-nav-icon-inactive: var(--neutralgray-ng70);
+  --navigation: bottom-bottom-nav-icon-active: var(--icon-icon);
   --progress-progress-circle-track-fill: var(--white-white-a10);
   --progress-progress-on-color-indicator: var(--white-white-a60);
   --progress-progress-bar-on-color-track-fill: var(--white-white-a10);

@@ -2,8 +2,8 @@
   "name": "with-tailwind",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "turbo run build --parallel",
+    "dev": "turbo run dev --parallel --continue",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

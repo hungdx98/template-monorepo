@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
-  "type": "commonjs",
   "peerDependencies": {
     "react": "^19"
   },
@@ -25,12 +24,14 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@repo/containers": "workspace:*",
+    "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "classnames": "2.3.2",
     "lodash": "^4.17.21",
     "lucide-react": "^0.523.0",
     "module-alias": "^2.2.3",
     "next": "^15.3.0",
-    "next-intl": "^4.3.0"
+    "next-intl": "^4.3.0",
+    "postcss": "^8.5.3"
   }
 }
