@@ -90,5 +90,3 @@ export const shiftAndReindex = (obj: Record<string, any>) => {
     );
     return updatedObj; // Return the shifted key-value pair
 };
-
-export * from './tokens';

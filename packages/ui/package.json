@@ -1,8 +1,9 @@
 {
   "name": "@repo/ui",
   "version": "0.0.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "type": "commonjs",
   "peerDependencies": {
     "react": "^19"
   },
@@ -10,10 +11,26 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/utils": "workspace:*",
     "@tailwindcss/cli": "^4.1.5",
+    "@types/lodash": "^4.17.19",
     "@types/react": "^19.1.0",
     "eslint": "^9.29.0",
     "tailwindcss": "^4.1.5",
     "typescript": "5.8.2"
+  },
+  "dependencies": {
+    "@headlessui/react": "1.7.15",
+    "@radix-ui/react-accordion": "^1.2.11",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@repo/containers": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "classnames": "2.3.2",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.523.0",
+    "module-alias": "^2.2.3",
+    "next": "^15.3.0",
+    "next-intl": "^4.3.0"
   }
 }

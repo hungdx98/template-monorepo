@@ -1,3 +1,15 @@
 {
-  "extends": "@superlink/tsconfig/react-library.json"
+  "compilerOptions": {
+    "jsx": "react",
+  },
+  "baseUrl": "./src", // Ensure this points to the root of your source files
+  "paths": {
+    "@components/*": [
+      "./src/components/*"
+    ], // Adjust this path based on your monorepo structure
+  },
+  "module": "ESNext", // Use ESNext for ECMAScript Modules
+  "moduleResolution": "Node", // Ensure proper resolution of modules
+  "target": "ESNext", // Optional: Use ESNext for modern JavaScript features
+  "extends": "@repo/typescript-config/react-library.json"
 }

@@ -3,5 +3,5 @@ const Main = () => {
     Main Page
   </div>);
 }
- 
+
 export default Main;

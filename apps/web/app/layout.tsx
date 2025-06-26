@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { FC, Suspense } from "react";
 import "./globals.css";
-import MainHeader from "../layouts/MainHeader";
-import Providers from "../layouts/Providers/Provider";
-import { Modal } from "../components/Modal";
+import { Providers, MainHeader } from "@repo/ui";
+import { Modal } from "@repo/ui";
 
 export const metadata: Metadata = {
   title: "Baryon",
@@ -21,11 +20,11 @@ const Layout: FC<LayoutProps> = ({ children }) => {
     <html lang="en">
       <body>
         <Providers>
-          <MainHeader/>
+          <MainHeader />
           <Suspense>
             {children}
           </Suspense>
-          <Modal/>
+          <Modal />
         </Providers>
       </body>
     </html>

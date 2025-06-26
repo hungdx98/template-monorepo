@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import crypto from "crypto-js";
 import get from "lodash/get";
 import QueryString from "query-string";
-import { useUserStore } from "../store/slices/user";
+import { useUserStore } from "../store";
 
 const DEFAULT_TIMEOUT = 120000;
 const SOURCE = "C98SUPAGEIR";
@@ -80,7 +80,7 @@ const RequestInterceptor =
             Version: VERSION,
             ...config.headers,
         };
-        
+
         // const signature = signaturizeRequest({})
         config.transformRequest = (data: any) => {
             let passwordHash: string = "";

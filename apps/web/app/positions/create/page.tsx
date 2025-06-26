@@ -1,4 +1,4 @@
-import CreatePositionSreen from "@/views/CreatePositionScreen";
+import { CreatePositionSreen } from "@repo/ui";
 
 export default async function CreatePositionPage() {
   return (
