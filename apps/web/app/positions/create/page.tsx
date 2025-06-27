@@ -1,7 +1,10 @@
+import { PositionProvider } from "@/context/position/position.context";
 import CreatePositionSreen from "@/views/CreatePositionScreen";
 
 export default async function CreatePositionPage() {
   return (
-    <CreatePositionSreen />
+    <PositionProvider>
+      <CreatePositionSreen />
+    </PositionProvider>
   );
 } 
