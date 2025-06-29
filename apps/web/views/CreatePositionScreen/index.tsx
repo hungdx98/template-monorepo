@@ -7,12 +7,12 @@ import { Icon } from '@/components/Icon';
 import { usePoolStore } from '@/stores/usePoolStore';
 import TokenSelector from '@/components/TokenSelector';
 import FeeSelections from './components/FeeSelections';
+import { EPositionStep, usePositionService } from '@/context/position';
 
 export default function CreatePositionSreen() {
 
   const { poolAddress } = usePoolStore();
-
-  console.log("Pool Address:", poolAddress);
+  const { state: { step }, jobs: { onChangeStep } } = usePositionService();
 
   const [tokenA, setTokenA] = useState("ETH");
   const [tokenB, setTokenB] = useState("");
@@ -22,6 +22,7 @@ export default function CreatePositionSreen() {
 
   const canContinue = tokenA && tokenB && feeTier;
 
+  const isPriceRangeStep = step === EPositionStep.price_range;
 
   const t = useTranslations();
 
@@ -46,24 +47,24 @@ export default function CreatePositionSreen() {
       <div className="grid md:grid-cols-3 gap-6">
         {/* Step Indicator */}
         <div className="border border-border-1-subtle rounded-border-radius-huge p-5 h-fit">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4" onClick={() => onChangeStep(EPositionStep.token_pair)}>
             <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
               1
             </div>
             <div>
-              <p className="text-text-subtle">{t('step', {number: 1})}</p>
+              <p className="text-text-subtle">{t('step', { number: 1 })}</p>
               <p>{t('select_token_pair_fee')}</p>
             </div>
           </div>
 
           <div className='h-[36] border-l-2 border-border-2 mx-4 my-2'></div>
 
-          <div className="flex items-center space-x-4 opacity-50">
+          <div className="flex items-center space-x-4 opacity-50 cursor-pointer" onClick={() => onChangeStep(EPositionStep.price_range)}>
             <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
               2
             </div>
             <div>
-              <p className="text-text-subtle">{t('step', {number: 2})}</p>
+              <p className="text-text-subtle">{t('step', { number: 2 })}</p>
               <p>{t('select_token_range_amount')}</p>
             </div>
           </div>
@@ -71,14 +72,16 @@ export default function CreatePositionSreen() {
 
         {/* Form Area */}
         <div className="md:col-span-2 space-y-6">
+          
           <div className="rounded-border-radius-huge border border-border-1-subtle p-5">
-            <div className="space-y-6">
+            
+            {/* <div className="space-y-6">
               <div>
                 <div className="text-font-size-225">{t('select_pair')}</div>
                 <p className='text-sm text-text-subtle'>{t('select_pair_description')}</p>
                 <div className="flex space-x-4 mt-4">
-                  <TokenSelector onClick={onOpenModal}/>
-                  <TokenSelector onClick={onOpenModal}/>
+                  <TokenSelector onClick={onOpenModal} />
+                  <TokenSelector onClick={onOpenModal} />
                 </div>
               </div>
 
@@ -91,26 +94,26 @@ export default function CreatePositionSreen() {
 
                 <div className='rounded-border-radius-large border border-border-1-subtle p-4 flex items-center justify-between'>
                   <div>
-                    <span className="text-font-size-200">{t('fee_tier_value', {value: feeTier})}</span> 
+                    <span className="text-font-size-200">{t('fee_tier_value', { value: feeTier })}</span>
                     <p className='text-sm text-text-subtle'>{t('fee_earn_description')}</p>
                   </div>
 
-                  <div 
+                  <div
                     onClick={() => setIsDisplayMoreFee(!isDisplayMoreFee)}
                     className='flex items-center gap-x-space-100 cursor-pointer bg-button-sec-fill p-2 rounded-border-radius-medium hover:opacity-75 transition'>
                     <p className='text-sm'>{t('more')}</p>
-                    <Icon name='app_chevron_down'/>
+                    <Icon name='app_chevron_down' />
                   </div>
                 </div>
 
-                <FeeSelections 
+                <FeeSelections
                   isDisplayed={isDisplayMoreFee}
                   currentFee={feeTier}
                   onChangeFee={onChangeFee}
                 />
               </div>
 
-            
+
               <div>
                 <Button
                   size='lg'
@@ -119,7 +122,7 @@ export default function CreatePositionSreen() {
                   Continue
                 </Button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
