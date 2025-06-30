@@ -2,7 +2,6 @@ import { useTranslations } from "next-intl";
 import get from "lodash/get";
 import { Icon } from "@/components/Icon";
 import { Disclosure, Transition } from "@headlessui/react";
-import { useState } from "react";
 import cx from "@/utils/styled";
 
 interface FeeSelectionsProps {
