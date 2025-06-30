@@ -1,0 +1,140 @@
+/* Custom scrollbar for dark theme */
+.trading-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.trading-scrollbar::-webkit-scrollbar-track {
+  background: #374151;
+  border-radius: 3px;
+}
+
+.trading-scrollbar::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 3px;
+}
+
+.trading-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Chart animations */
+@keyframes chartBarGrow {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--bar-height);
+    opacity: 1;
+  }
+}
+
+.chart-bar {
+  animation: chartBarGrow 0.8s ease-out;
+  animation-delay: calc(var(--index, 0) * 0.1s);
+}
+
+/* Enhanced gradient backgrounds */
+.gradient-pink {
+  background: linear-gradient(135deg, #ec4899 0%, #f97316 100%);
+}
+
+.gradient-dark {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+/* Chart bar hover effects */
+.chart-bar:hover {
+  transform: scaleY(1.05) scaleX(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Metric card hover effects */
+.metric-card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Price change indicators */
+.price-positive {
+  color: #10b981;
+}
+
+.price-negative {
+  color: #ef4444;
+}
+
+/* Table row hover effects */
+.table-row:hover {
+  background-color: rgba(55, 65, 81, 0.3);
+}
+
+/* Button hover effects */
+.btn-primary {
+  background: linear-gradient(135deg, #ec4899 0%, #f97316 100%);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+}
+
+.btn-secondary {
+  background: #374151;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+/* Tooltip animations */
+.tooltip {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease-in-out;
+}
+
+.tooltip.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Pulse animation for live indicator */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Grid line animations */
+.grid-line {
+  opacity: 0.3;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.chart-container:hover .grid-line {
+  opacity: 0.5;
+}
+
+/* Responsive chart adjustments */
+@media (max-width: 768px) {
+  .chart-bar {
+    width: 6px;
+  }
+  
+  .chart-container {
+    height: 240px;
+  }
+}
