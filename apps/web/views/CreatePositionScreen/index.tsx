@@ -8,6 +8,7 @@ import { usePoolStore } from '@/stores/usePoolStore';
 import TokenSelector from '@/components/TokenSelector';
 import FeeSelections from './components/FeeSelections';
 import { EPositionStep, usePositionService } from '@/context/position';
+import SelectTokenModal from './components/SelectTokenModal';
 
 export default function CreatePositionSreen() {
 
@@ -28,8 +29,9 @@ export default function CreatePositionSreen() {
 
   const onOpenModal = () => {
     window.openModal({
-      title: t('select_token_pair'),
-      content: <div>oheah</div>,
+      title: t('select_token'),
+      size: 'sm',
+      content: <SelectTokenModal/>,
       onClose: () => {
         console.log("Modal closed");
       }
@@ -72,7 +74,6 @@ export default function CreatePositionSreen() {
 
         {/* Form Area */}
         <div className="md:col-span-2 space-y-6">
-          
           <div className="rounded-border-radius-huge border border-border-1-subtle p-5">
             
             <div className="space-y-6">
