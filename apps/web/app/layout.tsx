@@ -4,6 +4,7 @@ import "./globals.css";
 import MainHeader from "../layouts/MainHeader";
 import Providers from "../layouts/Providers/Provider";
 import { Modal } from "../components/Modal";
+import { AdapterProvider } from "@/context";
 
 export const metadata: Metadata = {
   title: "Baryon",
@@ -17,13 +18,15 @@ export default async function RootLayout({
   return (
     <html lang="en" data-theme="dark" className="dark">
       <body>
-        <Providers>
-          <MainHeader />
-          <Suspense>
-            {children}
-          </Suspense>
-          <Modal />
-        </Providers>
+        <AdapterProvider>
+          <Providers>
+            <MainHeader />
+            <Suspense>
+              {children}
+            </Suspense>
+            <Modal />
+          </Providers>
+        </AdapterProvider>
       </body>
     </html>
   );

@@ -7,12 +7,8 @@ import {
     WALLETS_SUPPORTED
 } from '@repo/utils/constants';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { FC, ReactNode, useState } from 'react';
 import dynamic from 'next/dynamic';
-
-interface AdapterProviderProps {
-    children: ReactNode;
-}
+import { PropsWithChildren, useState } from 'react';
 
 const DynamicWalletModalC98 = dynamic(
     async () =>
@@ -22,7 +18,7 @@ const DynamicWalletModalC98 = dynamic(
     { ssr: false },
 );
 
-export const AdapterProvider: FC<AdapterProviderProps> = ({ children }) => {
+export const AdapterProvider = ({ children }: Readonly<PropsWithChildren>) => {
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions: {
             queries: {
@@ -40,7 +36,7 @@ export const AdapterProvider: FC<AdapterProviderProps> = ({ children }) => {
                 autoConnect
                 keepConnectionOnDisconnected
             >
-                <WalletModalProvider theme='light'>
+                <WalletModalProvider theme='dark'>
                     <DynamicWalletModalC98
                         isC98Theme
                         enableChains={DEFAULT_CHAINS}
