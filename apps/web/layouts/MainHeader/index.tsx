@@ -1,15 +1,9 @@
 
 'use client';
 import Image from 'next/image';
-import React, { useEffect } from 'react';
 import Button from '../../components/Button';
+
 const MainHeader = () => {
-
-  useEffect(() => {
-    const element = document.getElementsByTagName('html')
-    element.item(0)?.classList.add('dark');
-  }, []);
-
 
   return (
     <div className="flex items-center justify-between p-4 border border-border-1-subtle sticky top-0 z-50 bg-background h-20">
