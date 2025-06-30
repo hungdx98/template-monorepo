@@ -18,7 +18,7 @@ export interface ModalParams {
 }
 
 const modalSizes = {
-  sm: 'max-w-[25rem]',
+  sm: 'max-w-[28rem]',
   md: 'max-w-[35rem]',
   lg: 'max-w-[52rem]',
   xl: 'max-w-[78rem]',
@@ -109,7 +109,7 @@ export const Modal = () => {
             >
               <Dialog.Panel
                 className={twMerge(
-                  'mx-auto transform overflow-hidden rounded-2xl bg-background-surface px-6 py-8 ipadpro:py-6 ipad:px-4 text-left align-middle shadow-xl transition-all',
+                  'mx-auto transform overflow-hidden rounded-2xl bg-background-app px-6 py-8 ipadpro:py-6 ipad:px-4 text-left align-middle shadow-xl transition-all',
                   modalSize && modalSizes[modalSize],
                 )}
               >

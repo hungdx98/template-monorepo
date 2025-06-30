@@ -1,6 +1,6 @@
 "use client"
 
-import cx from 'classnames'
+import cx from '@/utils/styled'
 import get from 'lodash/get'
 import React from 'react'
 
@@ -17,7 +17,7 @@ const ALLOWED_KEYS = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab']
 export const Input: React.FC<React.ComponentProps<'input'> & InputType> = ({
   type = 'text',
   placeholder,
-  variant = 'unstyled',
+  variant = 'filled',
   colorScheme = 'blue',
   containerClassName,
   className,
