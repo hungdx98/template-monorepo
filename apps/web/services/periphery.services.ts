@@ -1,17 +1,23 @@
 import Web3, { Transaction } from 'web3'
 import { NFT_POSITION_MANAGER_ABI } from './abi';
 import { IAddPosition, ICreatePool, PositionInfo } from './types';
+import { FACTORY_ABI } from './abi/factory';
 
 export class PeripheryService {
     static client: Web3 = new Web3('https://rpc.viction.xyz');
     static nftPositionManagerAddress: string = "0x0762f5542f5436d56b7a1FcD70879eCF1Ea167b8";
+    static factoryAddress = '0x85368A086a23989ba326Aab2CCEf50DC649f9b39'; // UniswapV3Factory address
 
     static getContractNFTPositionManager = () => {
         return new this.client.eth.Contract(NFT_POSITION_MANAGER_ABI, this.nftPositionManagerAddress);
     }
 
+    static getContractFactory = () => {
+        return new this.client.eth.Contract(FACTORY_ABI, this.factoryAddress);
+    }
+
     static getPoolAddress = async (token0: string, token1: string, fee: number): Promise<string> => {
-        const contract = this.getContractNFTPositionManager();
+        const contract = this.getContractFactory();
         if (!contract.methods.getPool) {
             throw new Error("getPool method is not available on the contract");
         }
@@ -33,7 +39,7 @@ export class PeripheryService {
     }
 
     static getTickSpacingForFee = async (fee: number): Promise<number> => {
-        const contract = this.getContractNFTPositionManager();
+        const contract = this.getContractFactory();
         if (!contract.methods.feeAmountTickSpacing) {
             throw new Error("feeAmountTickSpacing method is not available on the contract");
         }

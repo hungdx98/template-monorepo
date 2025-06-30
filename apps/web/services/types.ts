@@ -22,7 +22,7 @@ export interface IAddPosition {
     fee: number; // Fee tier (e.g., 500, 3000, 10000)
     tickLower: number; // Lower tick boundary
     tickUpper: number; // Upper tick boundary
-    deadline: string; // Deadline for the transaction (e.g., timestamp in seconds)
+    deadline: number; // Deadline for the transaction (e.g., timestamp in seconds)
 }
 
 export interface ICreatePool {
