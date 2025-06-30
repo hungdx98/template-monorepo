@@ -1,6 +1,7 @@
 import Button from '@/components/Button';
 import { useTranslations } from 'next-intl';
 import { FC } from 'react';
+import Link from 'next/link';
 
 export const YourPositions: FC = () => {
     const t = useTranslations();
@@ -15,13 +16,15 @@ export const YourPositions: FC = () => {
                 {t("view_positions_title")}
             </p>
             <div className="flex gap-2">
-                <Button
-                    size='md'
-                    className="bg-button-sec-fill"
-                >
-                    {t("new_position")}
-                </Button>
-                
+                <Link href="positions/create" className='w-full h-full'>
+                    <Button
+                        size='md'
+                        className="bg-button-sec-fill whitespace-nowrap"
+                    >
+                        {t("new_position")}
+                    </Button>
+                </Link>
+
                 <Button
                     size='md'
                     className="bg-white text-black whitespace-nowrap"
