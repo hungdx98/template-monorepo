@@ -14,6 +14,12 @@
   "fee_tier_0_01": "Best for very stable pairs.",
   "fee_tier_0_05": "Best for stable pairs.",
   "fee_tier_0_3": "Best for most pairs.",
-  "fee_tier_1": "Best for exotic pairs."
+  "fee_tier_1": "Best for exotic pairs.",
 
+  "connect_wallet": "Connect wallet",
+  "connect_y_wallet": "Connect your wallet",
+  "view_positions_title": "To view your positions and rewards you must connect your wallet.",
+  "top_pools_tvl": "Top pools by TVL",
+  "apr": "APR",
+  "explore_more": "Explore more pools"
 }

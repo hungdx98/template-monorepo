@@ -75,7 +75,7 @@ export default function CreatePositionSreen() {
           
           <div className="rounded-border-radius-huge border border-border-1-subtle p-5">
             
-            {/* <div className="space-y-6">
+            <div className="space-y-6">
               <div>
                 <div className="text-font-size-225">{t('select_pair')}</div>
                 <p className='text-sm text-text-subtle'>{t('select_pair_description')}</p>
@@ -122,7 +122,7 @@ export default function CreatePositionSreen() {
                   Continue
                 </Button>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
