@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import { createStoreWithPersisted } from "../../../utils";
+import { createStoreWithPersisted } from "../utils";
 import { ITokenPayload, UserAction, UserState } from "./user.slice.types";
 
 export const useUserStore = createStoreWithPersisted<UserState & UserAction>(

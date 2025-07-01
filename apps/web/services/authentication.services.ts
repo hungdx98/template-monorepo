@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
-import { BaseOneID } from "../controllers";
-import { IAuthentication, IUpdateAPIToken, IUpdateDeviceId, IUpdateUserToken, useUserStore } from "../store";
+import { BaseOneID } from "./controllers";
+import { IAuthentication, IUpdateAPIToken, IUpdateDeviceId, IUpdateUserToken, useUserStore } from "@/stores";
 
 export class AuthenticationService {
     // variables to store user token, api token, and device id

@@ -1,0 +1,75 @@
+diff --git a/src/chains/chainDatas.ts b/src/chains/chainDatas.ts
+index 8de399cc8979f250210244dd42d234bf3bb3012d..b8b673c4bf542d1177c32b0b5f69c0f34f9e96c8 100644
+--- a/src/chains/chainDatas.ts
++++ b/src/chains/chainDatas.ts
+@@ -200,7 +200,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     chain: CHAIN_TYPE.binanceSmart,
+     tokenStandard: 'BNB BEP20',
+     rpcURL:
+-      'https://bsc-mainnet.nodereal.io/v1/5c4ed7c647c0479f9ae118b0b62c745c',
++      'https://bsc-mainnet.core.chainstack.com/d2afd065260a8d20cf55a5b3fec8909c',
+     scan: 'https://bscscan.com',
+   },
+   heco: {
+@@ -703,7 +703,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     symbol: 'AVAX',
+     chain: CHAIN_TYPE.avax,
+     tokenStandard: 'AVAX-C ARC20',
+-    rpcURL: 'https://api.avax.network/ext/bc/C/rpc',
++    rpcURL: 'https://avalanche-mainnet.core.chainstack.com/ext/bc/C/rpc/9b468d696721b81f0d1feaa43964b4aa',
+     scan: 'https://snowtrace.io',
+   },
+   avaxX: {
+@@ -761,7 +761,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     symbol: 'POL',
+     chain: CHAIN_TYPE.matic,
+     tokenStandard: 'POL PRC20',
+-    rpcURL: 'https://polygon-pokt.nodies.app',
++    rpcURL: 'https://polygon-mainnet.core.chainstack.com/820dd6cca00bc68326ce2eecf3043138',
+     scan: 'https://polygonscan.com',
+     gasOracleAddress: '0x420000000000000000000000000000000000000F'
+   },
+@@ -1217,6 +1217,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     nftStandard: 'VRC721',
+     isSupportedNFT: true,
+     isCrawlNFTServices: true,
++    isCrawlServices: true,
+     isDataField: true,
+     // nftMint: '0xAE12C5930881c53715B369ceC7606B70d8EB229f',
+ 
+@@ -1234,7 +1235,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     symbol: 'VIC',
+     chain: CHAIN_TYPE.tomo,
+     tokenStandard: 'VIC VRC25',
+-    rpcURL: 'https://rpc.tomochain.com',
++    rpcURL: 'https://rpc5.viction.xyz',
+     scan: 'https://www.vicscan.xyz',
+   },
+   victionTestnet: {
+@@ -1463,7 +1464,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     replacementSymbol: 'OP',
+     chain: CHAIN_TYPE.optimism,
+     tokenStandard: 'ETH ERC20 ERC721',
+-    rpcURL: 'https://optimism.blockpi.network/v1/rpc/public',
++    rpcURL: 'https://optimism-mainnet.core.chainstack.com/cdd048b0e809173f747bcab2727e0a6f',
+     scan: 'https://optimistic.etherscan.io',
+     gasOracleAddress: '0x420000000000000000000000000000000000000F'
+   },
+@@ -1575,7 +1576,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     replacementSymbol: 'ARB',
+     chain: CHAIN_TYPE.arbitrum,
+     tokenStandard: 'ETH ERC20 ERC721',
+-    rpcURL: 'https://arb1.arbitrum.io/rpc',
++    rpcURL: 'https://arbitrum-mainnet.core.chainstack.com/0341cac807a3d866f93bfec3b8786c46',
+     // rpcURL: 'https://rinkeby.arbitrum.io/rpc',
+     scan: 'https://arbiscan.io',
+     // nftMint: '0x963e1BcD1f82724bD8Fa16a3B6962D100fB287FC'
+@@ -2097,7 +2098,7 @@ export const CHAIN_DATA: Record<string, Chain> = {
+     logo: COIN_IMAGE.ETH,
+     symbol: 'ETH',
+     chain: CHAIN_TYPE.base,
+-    rpcURL: 'https://base-pokt.nodies.app',
++    rpcURL: 'https://lb.nodies.app/v1/10c3e3944cf4479193621f5366067734',
+     scan: 'https://basescan.org',
+     id: 'ethereum',
+     replacementSymbol: 'BASE',

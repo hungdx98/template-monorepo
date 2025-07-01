@@ -16,5 +16,23 @@
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
+  },
+  "resolutions": {
+    "@wallet/constants": "3.1.21",
+    "@wallet/evm": "3.1.21",
+    "@wallet/base": "3.1.21",
+    "@wallet/core": "3.1.21",
+    "@wallet/utils": "3.1.21"
+  },
+  "overrides": {
+    "keyv": "4.5.4"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@wallet/evm@3.1.21": "patches/@wallet__evm@3.1.21.patch",
+      "@wallet/core@3.1.21": "patches/@wallet__core@3.1.21.patch",
+      "@wallet/base@3.1.21": "patches/@wallet__base@3.1.21.patch",
+      "@wallet/constants@3.1.21": "patches/@wallet__constants@3.1.21.patch"
+    }
   }
 }

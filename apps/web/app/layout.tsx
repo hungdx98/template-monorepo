@@ -5,6 +5,9 @@ import MainHeader from "../layouts/MainHeader";
 import Providers from "../layouts/Providers/Provider";
 import { Modal } from "../components/Modal";
 import { AdapterProvider } from "@/context";
+import InitializeService from "./InitializeService";
+import { getCoinsService } from "@/services/handler";
+import { BalanceProvider } from "@/context/Balance";
 
 export const metadata: Metadata = {
   title: "Baryon",
@@ -14,18 +17,22 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<PropsWithChildren>) {
+  const { coinLocal, coinGecko } = await getCoinsService();
 
   return (
     <html lang="en" data-theme="dark" className="dark">
       <body>
         <AdapterProvider>
-          <Providers>
-            <MainHeader />
-            <Suspense>
-              {children}
-            </Suspense>
-            <Modal />
-          </Providers>
+          <BalanceProvider>
+            <Providers>
+              <MainHeader />
+              <Suspense>
+                <InitializeService coinGecko={coinGecko} coinLocal={coinLocal} />
+                {children}
+              </Suspense>
+              <Modal />
+            </Providers>
+          </BalanceProvider>
         </AdapterProvider>
       </body>
     </html>
