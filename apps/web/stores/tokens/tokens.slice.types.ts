@@ -1,4 +1,4 @@
-import { MarketInfo, Token } from '@superlink/utils/types';
+import { MarketInfo, Token } from '@repo/utils/types';
 
 export interface ITokensState {
   coinLocal: Record<string, Token[]>;
@@ -25,6 +25,6 @@ export interface ITokenManagerState {
 }
 
 export interface ITokenManagerAction {
-  updateSelectedTokenMarketInfo: (_tokens: Token | Token[]) => void;
-  updateSelectedTokenBalance: (_tokens: Token | Token[]) => void;
+  // updateSelectedTokenMarketInfo: (_tokens: Token | Token[]) => void;
+  // updateSelectedTokenBalance: (_tokens: Token | Token[]) => void;
 }

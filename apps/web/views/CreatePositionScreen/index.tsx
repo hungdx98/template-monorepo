@@ -4,17 +4,20 @@ import Button from '@/components/Button';
 import { Icon } from '@/components/Icon';
 import TokenSelector from '@/components/TokenSelector';
 import { EPositionStep, usePositionContext } from '@/context/position';
-import { useTokenStore } from '@/stores/useTokenStore';
+import { useTokensStore } from '@/stores';
+import cx from '@/utils/styled';
 import { get } from 'lodash';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useShallow } from 'zustand/shallow';
 import FeeSelections from './components/FeeSelections';
-import cx from '@/utils/styled';
 
 export default function CreatePositionSreen() {
   const { state: { step, pairTokens, isContinue, feeTier }, jobs: { onChangeStep, onSelectPairToken, onSelectFeeTier } } = usePositionContext();
 
-  const { tokens } = useTokenStore();
+  const tokens = useTokensStore(useShallow(state => [
+    state.coinCurrent,
+  ]));
 
   const [isDisplayMoreFee, setIsDisplayMoreFee] = useState(false);
 

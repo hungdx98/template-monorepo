@@ -21,6 +21,7 @@
     "@wallet/constants": "3.1.21",
     "@wallet/core": "^3.2.3",
     "@wallet/evm": "^3.2.3",
+    "@wallet/utils": "3.1.21",
     "axios": "1.7.9",
     "axios-cache-interceptor": "1.6.2",
     "classnames": "2.3.2",
