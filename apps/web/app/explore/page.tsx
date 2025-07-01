@@ -1,5 +1,5 @@
 import React from 'react';
-import { TradingDashboard } from '../../components/TradingDashboard';
+import { TradingDashboard } from '@/views/TradingDashboard';
 
 export default function TradingPage() {
   return <TradingDashboard />;

@@ -45,6 +45,5 @@ export const AdapterProvider = ({ children }: Readonly<PropsWithChildren>) => {
                 </WalletModalProvider>
             </WalletProvider>
         </QueryClientProvider>
-
     );
 };

@@ -2,9 +2,13 @@ import Button from '@/components/Button';
 import { useTranslations } from 'next-intl';
 import { FC } from 'react';
 import Link from 'next/link';
+import { useWallet } from '@coin98-com/wallet-adapter-react';
+import { useWalletModal } from '@coin98-com/wallet-adapter-react-ui';
 
 export const YourPositions: FC = () => {
     const t = useTranslations();
+    const { openWalletModal } = useWalletModal();
+    const { connected } = useWallet();
 
     return (
         <div className="border border-border-1-subtle rounded-xl p-6 flex flex-col items-center justify-center min-h-[200px]">
@@ -28,6 +32,7 @@ export const YourPositions: FC = () => {
                 <Button
                     size='md'
                     className="bg-white text-black whitespace-nowrap"
+                    onClick={openWalletModal}
                 >
                     {t("connect_wallet")}
                 </Button>
