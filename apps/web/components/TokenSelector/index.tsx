@@ -11,14 +11,14 @@ import SelectTokenModal from '@/views/CreatePositionScreen/components/SelectToke
 
 interface Props
   extends Pick<TokenSelectorModalProps, 'hideTab' | 'hideSearch' | 'tokens'> {
-  onSelectedToken?: (token: any) => void
+  onSelectedToken?: (token: Token) => void
   selectedToken?: Token | undefined
   className?: string
   size?: number
   showName?: boolean
   iconClassName?: string
   page?: string
-  tokens: any[]
+  tokens: Token[]
 }
 
 export const TokenSelector = (props: Props) => {

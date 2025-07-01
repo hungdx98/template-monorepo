@@ -2,7 +2,7 @@
 
 import type { NextConfig } from "next";
 
- 
+
 // const withNextIntl = require('next-intl/plugin')('./i18n.ts');
 
 import createNextIntlPlugin from 'next-intl/plugin';
@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  transpilePackages: [
+    "@wallet/constants",
+    "@wallet/utils",
+    "@wallet/evm",
+    "@wallet/core",
+    "@wallet/base",
+    "@wallet/abi-decoder",
+    "@wallet/gas-estimator"
+  ],
   images: {
     remotePatterns: [
       {

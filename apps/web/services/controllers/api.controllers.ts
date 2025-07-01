@@ -1,8 +1,7 @@
+import { useUserStore } from "@/stores";
 import axios, { AxiosResponse } from "axios";
 import crypto from "crypto-js";
-import get from "lodash/get";
 import QueryString from "query-string";
-import { useUserStore } from "../store/slices/user";
 
 const DEFAULT_TIMEOUT = 120000;
 const SOURCE = "C98SUPAGEIR";
@@ -67,8 +66,8 @@ const RequestInterceptor =
     (isAdapter: boolean) => (config: any) => {
         const { apiToken, adapterToken } = useUserStore.getState().authentication;
 
-        const spamToken = get(process, 'env.NEXT_PUBLIC_SPAM_TOKEN', "");
-
+        const spamToken = "0xaeb0325a6789f597b4f7c2c4dcb36b1ba4232384ffaf7b24670b71dafc564cec";
+        
         const token = isAdapter ? adapterToken : apiToken;
 
         config.headers = {

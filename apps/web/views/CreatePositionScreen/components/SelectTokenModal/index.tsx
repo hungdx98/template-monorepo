@@ -2,41 +2,28 @@ import { Input } from "@/components/Input";
 import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import TokenItem from "../TokenItem";
-
-const tokens = [
-  { name: "Ethereum", symbol: "ETH" },
-  { name: "USD Coin", symbol: "USDC" },
-  { name: "Tether USD", symbol: "USDT" },
-  { name: "Wrapped BTC", symbol: "WBTC" },
-  { name: "Wrapped ETH", symbol: "WETH" },
-];
-
-const popularTokens = [
-  { name: "Ethereum", symbol: "ETH" },
-  { name: "USDC", symbol: "USDC", address: "0xA0b8...eB48" },
-  { name: "Tether", symbol: "USDT", address: "0xdAC1...1ec7" },
-  { name: "Binance Bridged USDT (BNB Smart Chain)", symbol: "USDT", address: "0x55d3...7955" },
-  { name: "Base ETH", symbol: "ETH", address: "" },
-];
+import { Token } from "@repo/utils/types";
+import _get from "lodash/get";
+import { useTokensStore } from "@/stores";
+import { useShallow } from "zustand/shallow";
 
 interface SelectTokenModalProps {
-  listToken?: any[];
+  listToken?: Token[];
   onSelectToken: (token: any) => void;
 }
 
 const SelectTokenModal = (props: SelectTokenModalProps) => {
-  const { listToken, onSelectToken  } = props;
+  const { onSelectToken } = props;
+  const listToken = useTokensStore(useShallow(state => state.coinCurrent));
+
   const [search, setSearch] = useState("");
-  const [recent, setRecent] = useState(["Ethereum", "Tether USD"]);
 
   const t = useTranslations();
 
-  const clearRecent = () => setRecent([]);
-
   const filteredTokens = useMemo(() => {
     return listToken?.filter((token) => {
-      const tokenName = token.name.toLowerCase();
-      const tokenSymbol = token.symbol.toLowerCase();
+      const tokenName = _get(token, 'name', '').toLowerCase();
+      const tokenSymbol = _get(token, 'symbol', '').toLowerCase();
       return (
         tokenName.includes(search.toLowerCase()) ||
         tokenSymbol.includes(search.toLowerCase())
@@ -44,10 +31,9 @@ const SelectTokenModal = (props: SelectTokenModalProps) => {
     });
   }, [search, listToken]);
 
-  const handleSelectToken = (token: any) => () => {
+  const handleSelectToken = (token: Token) => () => {
     onSelectToken(token);
     window.closeModal();
-    
   }
 
   return (
@@ -65,10 +51,10 @@ const SelectTokenModal = (props: SelectTokenModalProps) => {
         />
       </div> */}
 
-      <Input 
+      <Input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        isSearch 
+        isSearch
         placeholder={t('search_token')}
       />
 

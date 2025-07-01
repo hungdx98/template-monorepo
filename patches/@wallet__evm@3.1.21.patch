@@ -1,0 +1,1722 @@
+diff --git a/src/core/address.ts b/src/core/address.ts
+index 3c6108d6f4bd2a544092e65cf848f60a2e15873a..d90902d2ccbb625e35b392b80bc54b59a197d206 100644
+--- a/src/core/address.ts
++++ b/src/core/address.ts
+@@ -13,7 +13,7 @@ const convertBits = (
+ ) => {
+   let acc = 0
+   let bits = 0
+-  const ret = []
++  const ret: number[] = []
+   const maxv = (1 << toWidth) - 1
+   for (let p = 0; p < data.length; ++p) {
+     const value = data[p]
+diff --git a/src/core/engine.ts b/src/core/engine.ts
+index 4225275f7c6a777e6d14c8857026bfd40daacf14..0cf3815f0fde4ce7e45c4544bbd24920756ae022 100644
+--- a/src/core/engine.ts
++++ b/src/core/engine.ts
+@@ -1,3 +1,4 @@
++//@ts-nocheck
+ import {
+   BaseIntegrationRequest,
+   Chain,
+@@ -38,7 +39,6 @@ import {
+   TransactionReceipt
+ } from '@wallet/core'
+ import {
+-  BASE_ASSETS_API,
+   CHAIN_DATA,
+   CHAIN_TYPE,
+   EXCHANGE_TYPE
+@@ -86,21 +86,21 @@ import {
+   TransferOptions
+ } from '../types'
+ import { genHarmonyAddress, toHexedAddress } from './address'
+-import { HardwareWallet } from './hardware'
+-import { EvmIntegrationHandle } from './integration'
++// import { HardwareWallet } from './hardware'
++// import { EvmIntegrationHandle } from './integration'
+ import { Transaction } from './transactions'
+ // @ts-expect-error
+ import checkForPhishing from 'eth-phishing-detect'
+-import { decodeSwap } from './history/decodeHashData'
+-import { decodeMessage } from '@wallet/abi-decoder'
+-import { generateInputCode } from './history/generateInputCode'
+-import { getAccountTransactionHistory } from './history/getHistoryAddress'
++// import { decodeSwap } from './history/decodeHashData'
++// import { decodeMessage } from '@wallet/abi-decoder'
++// import { generateInputCode } from './history/generateInputCode'
++// import { getAccountTransactionHistory } from './history/getHistoryAddress'
+ import { C98RamperContract } from '../constants/ABI/C98RamperContract'
+ // @ts-expect-error
+ import { hash as HashName } from '@ensdomains/eth-ens-namehash'
+ // import { RegistryService } from '@wallet/registry'
+-import { handleDataMultiNfts } from '../handlers/nftFunc/handleDataMultiNfts'
+-import { handleNftApproveAll } from '../handlers/nftFunc/handleNftApproveAll'
++// import { handleDataMultiNfts } from '../handlers/nftFunc/handleDataMultiNfts'
++// import { handleNftApproveAll } from '../handlers/nftFunc/handleNftApproveAll'
+ import { evmRequest, Method } from './clients'
+ import { GasController } from './gasController'
+ import { ethers } from 'ethers'
+@@ -112,6 +112,8 @@ const WEB3_CHAIN = CHAIN_DATA_VALUES.filter((itm) => itm.isWeb3).map(
+ )
+ const TEST_DEV_ENV = ['testnet', 'devnet']
+ 
++const BASE_ASSETS_API: string = 'https://assets-api.coin98.tech'
++
+ // const registry = new RegistryService()
+ 
+ const BECH2_ADDRESS_SP_CHAIN = [CHAIN_TYPE.harmony, CHAIN_TYPE.platon, CHAIN_TYPE.functionXEVM, CHAIN_TYPE.evmosEvm, CHAIN_TYPE.seiEvm, CHAIN_TYPE.iotex, CHAIN_TYPE.auraEvm]
+@@ -122,14 +124,14 @@ export class EvmEngine extends Engine {
+   chain?: Chain | undefined
+   chainSupports: string[] = []
+   // @ts-expect-error
+-  hardware: HardwareWallet
++  // hardware: HardwareWallet
+   idSignature?: number
+   // decodeRawTx: DecodeRawTransaction
+ 
+   // Cache Client
+-  clients = new Map<string, Web3>()
+-  socketClients = new Map<string, Web3>()
+-  integrationClient = new Map<string, EvmIntegrationHandle>()
++  clients: Map<string, Web3> = new Map<string, Web3>()
++  socketClients: Map<string, Web3> = new Map<string, Web3>()
++  // integrationClient = new Map<string, EvmIntegrationHandle>()
+   contractBalances = new Map<string, Contract>()
+   contractTokens = new Map<string, Contract>()
+   gas = new Map<string, IGasEstimate>()
+@@ -147,7 +149,7 @@ export class EvmEngine extends Engine {
+ 
+     EvmEngine.instance = this
+     this.initChainsSupport()
+-    this.hardware = new HardwareWallet()
++    // this.hardware = new HardwareWallet()
+     // this.decodeRawTx = new DecodeRawTransaction(_config)
+   }
+ 
+@@ -167,145 +169,145 @@ export class EvmEngine extends Engine {
+     this.initChainsSupport()
+   }
+ 
+-  async createOrRestore<T extends CreateOrRestoreParams<AddressStandard>>(
+-    params: T
+-  ): Promise<Wallet | Wallet[]> {
+-    const {
+-      chain,
+-      name,
+-      seed,
+-      mnemonic,
+-      privateKey,
+-      isPrivateKey,
+-      isHardware,
+-      hardwareOptions,
+-      oldStandardOptions,
+-      options,
+-      alternativeAddress
+-    } = params
+-
+-    if (isHardware) {
+-      return await this.hardware.restoreWallet({
+-        ...(hardwareOptions as {
+-          isBLE?: boolean
+-          hardwareType: 'ledger' | 'trezor'
+-        }),
+-        options
+-      })
+-    }
+-    if (isPrivateKey) {
+-      const client = await this.getClient(chain as string)
+-      const node = client.eth.accounts.privateKeyToAccount(
+-        privateKey as string
+-      )
+-
+-      return Wallet.fromObject({
+-        name,
+-        address: node.address,
+-        privateKey: node.privateKey,
+-        meta: {
+-          chain
+-        },
+-        alternativeAddress: alternativeAddress || await this.generateAlternativeAddress(
+-          node.address,
+-          chain as string
+-        )
+-      })
+-    }
+-
+-    let nodePath: INodePath = {
+-      address: '',
+-      privateKey: ''
+-    }
+-
+-    if (seed) {
+-      nodePath = Key.nodeFromPath({
+-        seed
+-      })
+-    } else if (mnemonic) {
+-      nodePath = Key.nodeFromPath({
+-        seed: (await Key.generateSeed({
+-          mnemonic,
+-          alg: 'bip39'
+-        })) as Buffer
+-      })
+-      if (chain) {
+-        const isOldStandard = oldStandardOptions?.[chain]
+-        let derivePath = isOldStandard
+-          ? get(CHAIN_DATA[chain], 'path', 60)
+-          : 60
+-        if (chain === CHAIN_TYPE.seiEvm) derivePath = 118
+-        nodePath =
+-          derivePath === 60
+-            ? nodePath
+-            : Key.nodeFromPath({
+-              seed: (await Key.generateSeed({
+-                mnemonic,
+-                alg: 'bip39'
+-              })) as Buffer,
+-              path: derivePath
+-            })
+-      }
+-    }
+-
+-    if (!chain) {
+-      const arrResult: Array<Promise<Wallet | undefined>> =
+-        this.chainSupports.map(async (chain) => {
+-          try {
+-            const isOldStandard = oldStandardOptions?.[chain]
+-            let derivePath = isOldStandard
+-              ? get(CHAIN_DATA[chain], 'path', 60)
+-              : 60
+-            if (chain === CHAIN_TYPE.seiEvm) derivePath = 118
+-            nodePath =
+-              derivePath === 60
+-                ? nodePath
+-                : Key.nodeFromPath({
+-                  seed: (await Key.generateSeed({
+-                    mnemonic: mnemonic as string,
+-                    alg: 'bip39'
+-                  })) as Buffer,
+-                  path: derivePath
+-                })
+-
+-            return Wallet.fromObject({
+-              name,
+-              address: nodePath.address as string,
+-              privateKey: nodePath.privateKey,
+-              mnemonic,
+-              alternativeAddress: alternativeAddress || await this.generateAlternativeAddress(
+-                nodePath.address as string,
+-                chain
+-              ),
+-              meta: {
+-                chain,
+-                isOldStandard
+-              }
+-            })
+-          } catch (error) {
+-            return undefined
+-          }
+-        })
+-      const listWallet = await Promise.all(arrResult)
+-      const result = listWallet.filter((w) => w) as Wallet[]
+-      return result
+-    }
+-
+-    return Wallet.fromObject({
+-      name,
+-      address: nodePath.address as string,
+-      alternativeAddress: alternativeAddress || await this.generateAlternativeAddress(
+-        nodePath.address as string,
+-        chain
+-      ),
+-      privateKey: nodePath.privateKey,
+-      mnemonic,
+-      meta: {
+-        chain,
+-        isOldStandard: oldStandardOptions?.[chain]
+-      }
+-    })
+-  }
++  // async createOrRestore<T extends CreateOrRestoreParams<AddressStandard>>(
++  //   params: T
++  // ): Promise<Wallet | Wallet[]> {
++  //   const {
++  //     chain,
++  //     name,
++  //     seed,
++  //     mnemonic,
++  //     privateKey,
++  //     isPrivateKey,
++  //     isHardware,
++  //     hardwareOptions,
++  //     oldStandardOptions,
++  //     options,
++  //     alternativeAddress
++  //   } = params
++
++  //   if (isHardware) {
++  //     return await this.hardware.restoreWallet({
++  //       ...(hardwareOptions as {
++  //         isBLE?: boolean
++  //         hardwareType: 'ledger' | 'trezor'
++  //       }),
++  //       options
++  //     })
++  //   }
++  //   if (isPrivateKey) {
++  //     const client = await this.getClient(chain as string)
++  //     const node = client.eth.accounts.privateKeyToAccount(
++  //       privateKey as string
++  //     )
++
++  //     return Wallet.fromObject({
++  //       name,
++  //       address: node.address,
++  //       privateKey: node.privateKey,
++  //       meta: {
++  //         chain
++  //       },
++  //       alternativeAddress: alternativeAddress || await this.generateAlternativeAddress(
++  //         node.address,
++  //         chain as string
++  //       )
++  //     })
++  //   }
++
++  //   let nodePath: INodePath = {
++  //     address: '',
++  //     privateKey: ''
++  //   }
++
++  //   if (seed) {
++  //     nodePath = Key.nodeFromPath({
++  //       seed
++  //     })
++  //   } else if (mnemonic) {
++  //     nodePath = Key.nodeFromPath({
++  //       seed: (await Key.generateSeed({
++  //         mnemonic,
++  //         alg: 'bip39'
++  //       })) as Buffer
++  //     })
++  //     if (chain) {
++  //       const isOldStandard = oldStandardOptions?.[chain]
++  //       let derivePath = isOldStandard
++  //         ? get(CHAIN_DATA[chain], 'path', 60)
++  //         : 60
++  //       if (chain === CHAIN_TYPE.seiEvm) derivePath = 118
++  //       nodePath =
++  //         derivePath === 60
++  //           ? nodePath
++  //           : Key.nodeFromPath({
++  //             seed: (await Key.generateSeed({
++  //               mnemonic,
++  //               alg: 'bip39'
++  //             })) as Buffer,
++  //             path: derivePath
++  //           })
++  //     }
++  //   }
++
++  //   if (!chain) {
++  //     const arrResult: Array<Promise<Wallet | undefined>> =
++  //       this.chainSupports.map(async (chain) => {
++  //         try {
++  //           const isOldStandard = oldStandardOptions?.[chain]
++  //           let derivePath = isOldStandard
++  //             ? get(CHAIN_DATA[chain], 'path', 60)
++  //             : 60
++  //           if (chain === CHAIN_TYPE.seiEvm) derivePath = 118
++  //           nodePath =
++  //             derivePath === 60
++  //               ? nodePath
++  //               : Key.nodeFromPath({
++  //                 seed: (await Key.generateSeed({
++  //                   mnemonic: mnemonic as string,
++  //                   alg: 'bip39'
++  //                 })) as Buffer,
++  //                 path: derivePath
++  //               })
++
++  //           return Wallet.fromObject({
++  //             name,
++  //             address: nodePath.address as string,
++  //             privateKey: nodePath.privateKey,
++  //             mnemonic,
++  //             alternativeAddress: alternativeAddress || await this.generateAlternativeAddress(
++  //               nodePath.address as string,
++  //               chain
++  //             ),
++  //             meta: {
++  //               chain,
++  //               isOldStandard
++  //             }
++  //           })
++  //         } catch (error) {
++  //           return undefined
++  //         }
++  //       })
++  //     const listWallet = await Promise.all(arrResult)
++  //     const result = listWallet.filter((w) => w) as Wallet[]
++  //     return result
++  //   }
++
++  //   return Wallet.fromObject({
++  //     name,
++  //     address: nodePath.address as string,
++  //     alternativeAddress: alternativeAddress || await this.generateAlternativeAddress(
++  //       nodePath.address as string,
++  //       chain
++  //     ),
++  //     privateKey: nodePath.privateKey,
++  //     mnemonic,
++  //     meta: {
++  //       chain,
++  //       isOldStandard: oldStandardOptions?.[chain]
++  //     }
++  //   })
++  // }
+ 
+   async getBalance (params: GetBalancesParams): Promise<string> {
+     const { chain, address, token, func } = params
+@@ -313,7 +315,7 @@ export class EvmEngine extends Engine {
+     try {
+       const client = await this.getClient(chain as string)
+       // @ts-expect-error
+-      const rpc = client.currentProvider.host
++      const rpc = client.currentProvider.clientUrl
+ 
+       if (token) {
+         // Token Balance
+@@ -395,147 +397,147 @@ export class EvmEngine extends Engine {
+     return Number(balance)
+   }
+ 
+-  async transfer<T extends TransferParams<TransferOptions>>(
+-    params: T
+-  ): Promise<string> {
+-    const { chain, wallet, transaction } = params
+-
+-    const client = await this.getClient(chain as string)
+-
+-    if (transaction.to.startsWith('sei')) {
+-      if (!(await hasTx(transaction.to))) {
+-        throw new Error(
+-          'In order to associate your EVM and SEI addresses, you should initiate a EVM recipient.'
+-        )
+-      }
+-      transaction.to = await convertSeiToEvm(transaction.to)
+-    } else {
+-      transaction.to = toHexedAddress(transaction.to)
+-    }
+-
+-    if (!client) {
+-      throw new Error('Provider is not supply for this chain')
+-    }
+-
+-    const rawTransaction: RawTransaction = {
+-      data: '0x',
+-      ...transaction
+-    }
+-
+-    const { token, to, amount, options } = transaction
+-
+-    //! Temp solutions for Scroll Network
+-    if (CHAIN_DATA[chain as string]?.rapidNetwork) {
+-      transaction.amount = parseFloat(transaction.amount).toFixed(
+-        chain === CHAIN_TYPE.optimism ? 4 : 5
+-      )
+-    }
+-    //! End cutted transaction for maximum send
+-
+-    if (token) {
+-      const contract = new client.eth.Contract(ERC20ABI as any, token.address)
+-
+-      // Reset Direct Value To Zero
+-      if (!rawTransaction.value) {
+-        rawTransaction.value = '0x0'
+-      }
+-      if (!rawTransaction.data || rawTransaction.data === '0x') {
+-        rawTransaction.data = contract.methods.transfer(to, convertBalanceToWei(amount, token.decimal)).encodeABI()
+-      }
+-
+-      rawTransaction.from = wallet.address
+-      rawTransaction.to = token.address as string
+-      rawTransaction.gasLimit = options?.gasLimit ?? rawTransaction.gasLimit ?? (await Transaction.estimateGas(client, rawTransaction, Number(rawTransaction?.gasLimit))).toString()
+-    } else {
+-      // Main Coin
+-      rawTransaction.value = rawTransaction.value ?? convertBalanceToWei(amount)
+-      rawTransaction.gasLimit = options?.gasLimit ?? rawTransaction.gasLimit ?? (await Transaction.estimateGas(client, rawTransaction, Number(rawTransaction?.gasLimit))).toString()
+-    }
+-
+-    // Replace target rawTransaction with new options
+-    if (options) {
+-      if (options.data && options.data !== '0x') {
+-        rawTransaction.data = options.data
+-      }
+-
+-      if (options.nonce) {
+-        rawTransaction.nonce = Number(options.nonce)
+-      }
+-
+-      if (options.gasLimit) {
+-        rawTransaction.gasLimit = options.gasLimit
+-      }
+-
+-      if (!Number.isNaN(Number(options.gasPrice))) {
+-        rawTransaction.gasPrice = convertBalanceToWei(
+-          Number(options.gasPrice ?? 0).toFixed(9),
+-          9
+-        )
+-      }
+-
+-      if (options.maxBaseFeePerGas) {
+-        rawTransaction.maxFeePerGas = String(
+-          Number(options.maxBaseFeePerGas).toFixed(0)
+-        )
+-      }
+-
+-      if (options.maxPriorityFee) {
+-        rawTransaction.maxPriorityFeePerGas = String(
+-          Number(options.maxPriorityFee).toFixed()
+-        )
+-      }
+-    }
+-
+-    const sendNotification = (hash: string) => {
+-      if (!this.config.service?.notifications) return
+-      const { notifications } = this.config.service
+-      let symbol = token?.symbol
+-      if (!symbol) {
+-        const currentChain = CHAIN_DATA[chain as string]
+-        symbol = currentChain.symbol
+-      }
+-      notifications.send_token({
+-        chain: chain ?? '',
+-        data: {
+-          hash,
+-          symbol,
+-          amount
+-        }
+-      })
+-    }
+-
+-    let hash = ''
+-
+-    if (wallet.meta?.hardware) {
+-      rawTransaction.nonce = await client.eth.getTransactionCount(
+-        wallet.address
+-      )
+-
+-      hash = await this.hardware.transferData({
+-        chain: chain as string,
+-        wallet,
+-        rawTransaction,
+-        client,
+-        options: {
+-          onTransactionHash: sendNotification
+-        }
+-      }) as string
+-    } else {
+-      // if (chain === CHAIN_TYPE.wanchain) {
+-      //   delete rawTransaction.maxFeePerGas
+-      //   delete rawTransaction.maxPriorityFeePerGas
+-      // }
+-
+-      // Run Normal Transaction
+-      hash = await Transaction.submitTransaction(client, wallet, rawTransaction, {
+-        onTransactionHash: sendNotification
+-      })
+-    }
+-
+-    this.pendingTxData.set(`${hash}-${chain ?? '0x'}`, Object.assign(rawTransaction, { timestamp: Math.floor(Date.now() / 1000), amount, tokenInfo: token }))
+-
+-    return hash
+-  }
++  // async transfer<T extends TransferParams<TransferOptions>>(
++  //   params: T
++  // ): Promise<string> {
++  //   const { chain, wallet, transaction } = params
++
++  //   const client = await this.getClient(chain as string)
++
++  //   if (transaction.to.startsWith('sei')) {
++  //     if (!(await hasTx(transaction.to))) {
++  //       throw new Error(
++  //         'In order to associate your EVM and SEI addresses, you should initiate a EVM recipient.'
++  //       )
++  //     }
++  //     transaction.to = await convertSeiToEvm(transaction.to)
++  //   } else {
++  //     transaction.to = toHexedAddress(transaction.to)
++  //   }
++
++  //   if (!client) {
++  //     throw new Error('Provider is not supply for this chain')
++  //   }
++
++  //   const rawTransaction: RawTransaction = {
++  //     data: '0x',
++  //     ...transaction
++  //   }
++
++  //   const { token, to, amount, options } = transaction
++
++  //   //! Temp solutions for Scroll Network
++  //   if (CHAIN_DATA[chain as string]?.rapidNetwork) {
++  //     transaction.amount = parseFloat(transaction.amount).toFixed(
++  //       chain === CHAIN_TYPE.optimism ? 4 : 5
++  //     )
++  //   }
++  //   //! End cutted transaction for maximum send
++
++  //   if (token) {
++  //     const contract = new client.eth.Contract(ERC20ABI as any, token.address)
++
++  //     // Reset Direct Value To Zero
++  //     if (!rawTransaction.value) {
++  //       rawTransaction.value = '0x0'
++  //     }
++  //     if (!rawTransaction.data || rawTransaction.data === '0x') {
++  //       rawTransaction.data = contract.methods.transfer(to, convertBalanceToWei(amount, token.decimal)).encodeABI()
++  //     }
++
++  //     rawTransaction.from = wallet.address
++  //     rawTransaction.to = token.address as string
++  //     rawTransaction.gasLimit = options?.gasLimit ?? rawTransaction.gasLimit ?? (await Transaction.estimateGas(client, rawTransaction, Number(rawTransaction?.gasLimit))).toString()
++  //   } else {
++  //     // Main Coin
++  //     rawTransaction.value = rawTransaction.value ?? convertBalanceToWei(amount)
++  //     rawTransaction.gasLimit = options?.gasLimit ?? rawTransaction.gasLimit ?? (await Transaction.estimateGas(client, rawTransaction, Number(rawTransaction?.gasLimit))).toString()
++  //   }
++
++  //   // Replace target rawTransaction with new options
++  //   if (options) {
++  //     if (options.data && options.data !== '0x') {
++  //       rawTransaction.data = options.data
++  //     }
++
++  //     if (options.nonce) {
++  //       rawTransaction.nonce = Number(options.nonce)
++  //     }
++
++  //     if (options.gasLimit) {
++  //       rawTransaction.gasLimit = options.gasLimit
++  //     }
++
++  //     if (!Number.isNaN(Number(options.gasPrice))) {
++  //       rawTransaction.gasPrice = convertBalanceToWei(
++  //         Number(options.gasPrice ?? 0).toFixed(9),
++  //         9
++  //       )
++  //     }
++
++  //     if (options.maxBaseFeePerGas) {
++  //       rawTransaction.maxFeePerGas = String(
++  //         Number(options.maxBaseFeePerGas).toFixed(0)
++  //       )
++  //     }
++
++  //     if (options.maxPriorityFee) {
++  //       rawTransaction.maxPriorityFeePerGas = String(
++  //         Number(options.maxPriorityFee).toFixed()
++  //       )
++  //     }
++  //   }
++
++  //   const sendNotification = (hash: string) => {
++  //     if (!this.config.service?.notifications) return
++  //     const { notifications } = this.config.service
++  //     let symbol = token?.symbol
++  //     if (!symbol) {
++  //       const currentChain = CHAIN_DATA[chain as string]
++  //       symbol = currentChain.symbol
++  //     }
++  //     notifications.send_token({
++  //       chain: chain ?? '',
++  //       data: {
++  //         hash,
++  //         symbol,
++  //         amount
++  //       }
++  //     })
++  //   }
++
++  //   let hash = ''
++
++  //   if (wallet.meta?.hardware) {
++  //     rawTransaction.nonce = await client.eth.getTransactionCount(
++  //       wallet.address
++  //     )
++
++  //     hash = await this.hardware.transferData({
++  //       chain: chain as string,
++  //       wallet,
++  //       rawTransaction,
++  //       client,
++  //       options: {
++  //         onTransactionHash: sendNotification
++  //       }
++  //     }) as string
++  //   } else {
++  //     // if (chain === CHAIN_TYPE.wanchain) {
++  //     //   delete rawTransaction.maxFeePerGas
++  //     //   delete rawTransaction.maxPriorityFeePerGas
++  //     // }
++
++  //     // Run Normal Transaction
++  //     hash = await Transaction.submitTransaction(client, wallet, rawTransaction, {
++  //       onTransactionHash: sendNotification
++  //     })
++  //   }
++
++  //   this.pendingTxData.set(`${hash}-${chain ?? '0x'}`, Object.assign(rawTransaction, { timestamp: Math.floor(Date.now() / 1000), amount, tokenInfo: token }))
++
++  //   return hash
++  // }
+ 
+   getRecipientData = async (hash: string, chain: string): Promise<TransactionReceipt | null> => {
+     const chainRpc = this.getRpc(chain)
+@@ -567,379 +569,379 @@ export class EvmEngine extends Engine {
+     return contract
+   }
+ 
+-  async transferNft<T extends TransferNftParams<TransferOptions>>(
+-    params: T
+-  ): Promise<string> {
+-    try {
+-      const { transaction, wallet, chain } = params
+-
+-      if (!chain) {
+-        throw new Error('@wallet/evm: chain is required')
+-      }
+-
+-      if (transaction.to.startsWith('sei')) {
+-        if (!(await hasTx(transaction.to))) {
+-          throw new Error(
+-            'In order to associate your EVM and SEI addresses, you should initiate a EVM recipient.'
+-          )
+-        }
+-        transaction.to = await convertSeiToEvm(transaction.to)
+-      } else {
+-        transaction.to = toHexedAddress(transaction.to)
+-      }
+-      const { options } = transaction
+-      const client = await this.getClient(chain)
+-      // const contract = new client.eth.Contract(ERC721 as any, transaction.nft.address)
+-      // const dataTx = contract.methods.transferFrom(wallet.address, transaction.to, transaction.nft.id).encodeABI()
+-      let dataTx
+-
+-      if (transaction.nft.type === 'ERC1155') {
+-        // const [keyAbi, func, params] = ['ERC1155', 'safeTransferFrom', [wallet.address, transaction.to, options.contract.id, value, '0x']]
+-        const contract = await this.getContract(
+-          transaction.nft.address,
+-          chain,
+-          ERC1155
+-        )
+-        dataTx = contract.methods
+-          .safeTransferFrom(
+-            wallet.address,
+-            transaction.to,
+-            transaction.nft.id,
+-            transaction.options.amount ?? 1,
+-            '0x'
+-          )
+-          .encodeABI()
+-      } else {
+-        const contract = await this.getContract(
+-          transaction.nft.address,
+-          chain,
+-          ERC721
+-        )
+-        dataTx = contract.methods
+-          .transferFrom(wallet.address, transaction.to, transaction.nft.id)
+-          .encodeABI()
+-      }
+-
+-      const rawTransaction: RawTransaction = {
+-        from: wallet.address,
+-        to: transaction.address,
+-        data: dataTx,
+-        value: '0x'
+-      }
+-      if (options) {
+-        if (options.nonce) {
+-          rawTransaction.nonce = Number(options.nonce)
+-        }
+-
+-        if (options.gasLimit) {
+-          rawTransaction.gasLimit = options.gasLimit
+-        }
+-
+-        if (options?.gasPrice) {
+-          rawTransaction.gasPrice = convertBalanceToWei(options.gasPrice, 9)
+-        }
+-      }
+-
+-      if (wallet.meta?.hardware) {
+-        rawTransaction.nonce = await client.eth.getTransactionCount(
+-          wallet.address
+-        )
+-        rawTransaction.value = '0x'
+-
+-        return (await this.hardware.transferData({
+-          chain,
+-          wallet,
+-          rawTransaction,
+-          client
+-        })) as string
+-      }
+-
+-      return await Transaction.submitTransaction(
+-        client,
+-        wallet,
+-        rawTransaction
+-      )
+-    } catch (error) {
+-      throw new Error(error as string)
+-    }
+-  }
+-
+-  async multipleTransfer<T extends MultipleTransferParams<TransferOptions>>(
+-    params: T
+-  ): Promise<string> {
+-    const { chain, token, to, wallet, onApproveComplete, options } = params
+-
+-    const client = await this.getClient(chain)
+-    const chainData =
+-      CHAIN_DATA[chain] || this.config.custom?.networks?.evm[chain]
+-    const contractAddress = chainData.multiTransferContract as string
+-
+-    const contract = new client.eth.Contract(
+-      C98MultiSend as any,
+-      contractAddress
+-    )
+-
+-    const isTransferToken: boolean = !!token?.address
+-
+-    const compactList = to.filter((t) => t.address && t.amount)
+-    const arrAddress: string[] = compactList.map((t) =>
+-      toHexedAddress(t.address)
+-    )
+-    const arrAmount: string[] = compactList.map((t) =>
+-      convertBalanceToWei(t.amount, token?.decimal)
+-    )
+-    const totalValue = calculateBigNumber(arrAmount, 'add')
+-
+-    const method = isTransferToken ? 'transferMultiToken' : 'transferMulti'
+-    let _params = [arrAddress, arrAmount]
+-
+-    if (isTransferToken) {
+-      // @ts-expect-error
+-      _params = [token?.address].concat(_params)
+-    }
+-
+-    const dataTx = contract.methods[method](..._params).encodeABI()
+-
+-    const rawTransaction: RawTransaction = {
+-      from: wallet.address,
+-      to: contractAddress,
+-      data: dataTx,
+-      value: isTransferToken ? '0' : totalValue
+-    }
+-
+-    if (options) {
+-      if (options.data && options.data !== '0x') {
+-        rawTransaction.data = options.data
+-      }
+-
+-      if (options.nonce) {
+-        rawTransaction.nonce = Number(options.nonce)
+-      }
+-
+-      if (options.gasLimit) {
+-        rawTransaction.gasLimit = options.gasLimit
+-      }
+-
+-      if (options.gasPrice) {
+-        rawTransaction.gasPrice = convertBalanceToWei(
+-          Number(options.gasPrice ?? 0).toFixed(9),
+-          9
+-        )
+-      }
+-
+-      if (options.maxBaseFeePerGas) {
+-        rawTransaction.maxFeePerGas = String(
+-          Number(options.maxBaseFeePerGas).toFixed(0)
+-        )
+-      }
+-
+-      if (options.maxPriorityFee) {
+-        rawTransaction.maxPriorityFeePerGas = String(
+-          Number(options.maxPriorityFee).toFixed()
+-        )
+-      }
+-    }
+-
+-    if (wallet.meta?.hardware) {
+-      return await this.hardware.submitTransactionWithApproveToken({
+-        client,
+-        wallet,
+-        rawTransaction,
+-        token: token as Token,
+-        amount: totalValue,
+-        options: {
+-          gasPrice: options?.gasPrice as string,
+-          // @ts-expect-error
+-          onApproveComplete
+-        }
+-      })
+-    }
+-
+-    if (chain === CHAIN_TYPE.wanchain) {
+-      delete rawTransaction.maxFeePerGas
+-      delete rawTransaction.maxPriorityFeePerGas
+-    }
+-
+-    const hash = await Transaction.submitTransactionWithApproveToken(
+-      client,
+-      wallet,
+-      rawTransaction,
+-      {
+-        spender: contractAddress,
+-        token,
+-        amount: String(totalValue),
+-        gasPrice: rawTransaction.gasPrice,
+-        // @ts-expect-error
+-        onApproveComplete
+-      }
+-    )
+-
+-    return hash ?? '0x'
+-  }
+-
+-  async transferMultiNfts<T extends TransferMultiNft>(
+-    params: T
+-  ): Promise<string> {
+-    const { chain, wallet, transferData, gasInfo } = params
+-    const client = await this.getClient(chain)
+-    const chainData =
+-      CHAIN_DATA[chain] || this.config.custom?.networks?.evm[chain]
+-    const multisendAddress = String(chainData?.multiTransferContract)
+-    // const transferData: INftTransferMulti[] = []
+-
+-    if (!multisendAddress) {
+-      throw new Error('This chain does not support multi transfer')
+-    }
+-    const listNftContract = uniqBy(transferData, 'recipient')
+-
+-    for (let index = 0; index < listNftContract.length; index++) {
+-      const { address } = listNftContract[index]
+-
+-      const { data: approveHex } = await handleNftApproveAll({
+-        client
+-      }).call(this, address, multisendAddress, wallet?.address)
+-      if (approveHex) {
+-        const rawTransaction: RawTransaction = {
+-          from: wallet.address,
+-          to: address,
+-          data: approveHex,
+-          value: '0',
+-          gasPrice: convertBalanceToWei(gasInfo?.gasPrice, 9)
+-        }
+-        await Transaction.submitTransaction(client, wallet, rawTransaction, {
+-          isWaitDone: true
+-        })
+-        await sleep(500)
+-      }
+-    }
+-
+-    const rawTransaction = await handleDataMultiNfts({
+-      client
+-    }).call(this, {
+-      wallet,
+-      transferData,
+-      to: multisendAddress
+-    })
+-
+-    if (wallet.meta?.hardware) {
+-      // return await this.sendTransactionWithHardware({ chain, wallet, rawTransaction, client })
+-    }
+-
+-    const hash = await Transaction.submitTransaction(
+-      client,
+-      wallet,
+-      {
+-        ...rawTransaction,
+-        gasPrice: convertBalanceToWei(gasInfo?.gasPrice, 9)
+-      },
+-      {
+-        isWaitDone: true
+-      }
+-    )
+-
+-    return hash ?? '0x'
+-  }
+-
+-  async transferNonRegistry<
+-    T extends ITransferNonRegistryParams<TransferOptions>
+-  >(params: T): Promise<string> {
+-    const {
+-      amount,
+-      chain,
+-      contractAddress,
+-      email,
+-      provider,
+-      wallet,
+-      token,
+-      options
+-    } = params
+-    try {
+-      const client = await this.getClient(chain)
+-      const contract = new client.eth.Contract(
+-        C98RamperContract as any,
+-        contractAddress
+-      )
+-
+-      let hexEncode = Web3.utils.asciiToHex(email)
+-
+-      // For a case size too much
+-      if (hexEncode.length > 66 && this.config.provider.ramper) {
+-        const response = await this.config.provider.ramper.post(
+-          'social/syncHash',
+-          {
+-            email
+-          }
+-        )
+-        if (!response) throw Error('txsFail')
+-        hexEncode = HashName(hexEncode)
+-      }
+-
+-      const rawAmount = convertBalanceToWei(amount, token?.decimal ?? 18)
+-      const dataTx = contract.methods
+-        .deposit(
+-          token?.address ?? ZERO_ADDRESS,
+-          rawAmount,
+-          hexEncode,
+-          provider,
+-          new Date().getTime()
+-        )
+-        .encodeABI()
+-
+-      const rawTransaction: RawTransaction = {
+-        from: wallet.address,
+-        to: contractAddress,
+-        data: dataTx,
+-        value: rawAmount
+-      }
+-
+-      if (options) {
+-        if (options.data && options.data !== '0x') {
+-          rawTransaction.data = options.data
+-        }
+-
+-        if (options.nonce) {
+-          rawTransaction.nonce = Number(options.nonce)
+-        }
+-
+-        if (options.gasLimit) {
+-          rawTransaction.gasLimit = options.gasLimit
+-        }
+-
+-        if (options.gasPrice) {
+-          rawTransaction.gasPrice = convertBalanceToWei(
+-            Number(options.gasPrice ?? 0).toFixed(9),
+-            9
+-          )
+-        }
+-
+-        if (options.maxBaseFeePerGas) {
+-          rawTransaction.maxFeePerGas = String(
+-            Number(options.maxBaseFeePerGas).toFixed(0)
+-          )
+-        }
+-
+-        if (options.maxPriorityFee) {
+-          rawTransaction.maxPriorityFeePerGas = String(
+-            Number(options.maxPriorityFee).toFixed()
+-          )
+-        }
+-      }
+-      const hash = await Transaction.submitTransactionWithApproveToken(
+-        client,
+-        wallet,
+-        rawTransaction,
+-        {
+-          spender: contractAddress,
+-          amount,
+-          gasPrice: rawTransaction.gasPrice,
+-          token
+-        }
+-      )
+-      return hash as string
+-    } catch (error) {
+-      throw new Error(error as string)
+-    }
+-  }
++  // async transferNft<T extends TransferNftParams<TransferOptions>>(
++  //   params: T
++  // ): Promise<string> {
++  //   try {
++  //     const { transaction, wallet, chain } = params
++
++  //     if (!chain) {
++  //       throw new Error('@wallet/evm: chain is required')
++  //     }
++
++  //     if (transaction.to.startsWith('sei')) {
++  //       if (!(await hasTx(transaction.to))) {
++  //         throw new Error(
++  //           'In order to associate your EVM and SEI addresses, you should initiate a EVM recipient.'
++  //         )
++  //       }
++  //       transaction.to = await convertSeiToEvm(transaction.to)
++  //     } else {
++  //       transaction.to = toHexedAddress(transaction.to)
++  //     }
++  //     const { options } = transaction
++  //     const client = await this.getClient(chain)
++  //     // const contract = new client.eth.Contract(ERC721 as any, transaction.nft.address)
++  //     // const dataTx = contract.methods.transferFrom(wallet.address, transaction.to, transaction.nft.id).encodeABI()
++  //     let dataTx
++
++  //     if (transaction.nft.type === 'ERC1155') {
++  //       // const [keyAbi, func, params] = ['ERC1155', 'safeTransferFrom', [wallet.address, transaction.to, options.contract.id, value, '0x']]
++  //       const contract = await this.getContract(
++  //         transaction.nft.address,
++  //         chain,
++  //         ERC1155
++  //       )
++  //       dataTx = contract.methods
++  //         .safeTransferFrom(
++  //           wallet.address,
++  //           transaction.to,
++  //           transaction.nft.id,
++  //           transaction.options.amount ?? 1,
++  //           '0x'
++  //         )
++  //         .encodeABI()
++  //     } else {
++  //       const contract = await this.getContract(
++  //         transaction.nft.address,
++  //         chain,
++  //         ERC721
++  //       )
++  //       dataTx = contract.methods
++  //         .transferFrom(wallet.address, transaction.to, transaction.nft.id)
++  //         .encodeABI()
++  //     }
++
++  //     const rawTransaction: RawTransaction = {
++  //       from: wallet.address,
++  //       to: transaction.address,
++  //       data: dataTx,
++  //       value: '0x'
++  //     }
++  //     if (options) {
++  //       if (options.nonce) {
++  //         rawTransaction.nonce = Number(options.nonce)
++  //       }
++
++  //       if (options.gasLimit) {
++  //         rawTransaction.gasLimit = options.gasLimit
++  //       }
++
++  //       if (options?.gasPrice) {
++  //         rawTransaction.gasPrice = convertBalanceToWei(options.gasPrice, 9)
++  //       }
++  //     }
++
++  //     if (wallet.meta?.hardware) {
++  //       rawTransaction.nonce = await client.eth.getTransactionCount(
++  //         wallet.address
++  //       )
++  //       rawTransaction.value = '0x'
++
++  //       return (await this.hardware.transferData({
++  //         chain,
++  //         wallet,
++  //         rawTransaction,
++  //         client
++  //       })) as string
++  //     }
++
++  //     return await Transaction.submitTransaction(
++  //       client,
++  //       wallet,
++  //       rawTransaction
++  //     )
++  //   } catch (error) {
++  //     throw new Error(error as string)
++  //   }
++  // }
++
++  // async multipleTransfer<T extends MultipleTransferParams<TransferOptions>>(
++  //   params: T
++  // ): Promise<string> {
++  //   const { chain, token, to, wallet, onApproveComplete, options } = params
++
++  //   const client = await this.getClient(chain)
++  //   const chainData =
++  //     CHAIN_DATA[chain] || this.config.custom?.networks?.evm[chain]
++  //   const contractAddress = chainData.multiTransferContract as string
++
++  //   const contract = new client.eth.Contract(
++  //     C98MultiSend as any,
++  //     contractAddress
++  //   )
++
++  //   const isTransferToken: boolean = !!token?.address
++
++  //   const compactList = to.filter((t) => t.address && t.amount)
++  //   const arrAddress: string[] = compactList.map((t) =>
++  //     toHexedAddress(t.address)
++  //   )
++  //   const arrAmount: string[] = compactList.map((t) =>
++  //     convertBalanceToWei(t.amount, token?.decimal)
++  //   )
++  //   const totalValue = calculateBigNumber(arrAmount, 'add')
++
++  //   const method = isTransferToken ? 'transferMultiToken' : 'transferMulti'
++  //   let _params = [arrAddress, arrAmount]
++
++  //   if (isTransferToken) {
++  //     // @ts-expect-error
++  //     _params = [token?.address].concat(_params)
++  //   }
++
++  //   const dataTx = contract.methods[method](..._params).encodeABI()
++
++  //   const rawTransaction: RawTransaction = {
++  //     from: wallet.address,
++  //     to: contractAddress,
++  //     data: dataTx,
++  //     value: isTransferToken ? '0' : totalValue
++  //   }
++
++  //   if (options) {
++  //     if (options.data && options.data !== '0x') {
++  //       rawTransaction.data = options.data
++  //     }
++
++  //     if (options.nonce) {
++  //       rawTransaction.nonce = Number(options.nonce)
++  //     }
++
++  //     if (options.gasLimit) {
++  //       rawTransaction.gasLimit = options.gasLimit
++  //     }
++
++  //     if (options.gasPrice) {
++  //       rawTransaction.gasPrice = convertBalanceToWei(
++  //         Number(options.gasPrice ?? 0).toFixed(9),
++  //         9
++  //       )
++  //     }
++
++  //     if (options.maxBaseFeePerGas) {
++  //       rawTransaction.maxFeePerGas = String(
++  //         Number(options.maxBaseFeePerGas).toFixed(0)
++  //       )
++  //     }
++
++  //     if (options.maxPriorityFee) {
++  //       rawTransaction.maxPriorityFeePerGas = String(
++  //         Number(options.maxPriorityFee).toFixed()
++  //       )
++  //     }
++  //   }
++
++  //   if (wallet.meta?.hardware) {
++  //     return await this.hardware.submitTransactionWithApproveToken({
++  //       client,
++  //       wallet,
++  //       rawTransaction,
++  //       token: token as Token,
++  //       amount: totalValue,
++  //       options: {
++  //         gasPrice: options?.gasPrice as string,
++  //         // @ts-expect-error
++  //         onApproveComplete
++  //       }
++  //     })
++  //   }
++
++  //   if (chain === CHAIN_TYPE.wanchain) {
++  //     delete rawTransaction.maxFeePerGas
++  //     delete rawTransaction.maxPriorityFeePerGas
++  //   }
++
++  //   const hash = await Transaction.submitTransactionWithApproveToken(
++  //     client,
++  //     wallet,
++  //     rawTransaction,
++  //     {
++  //       spender: contractAddress,
++  //       token,
++  //       amount: String(totalValue),
++  //       gasPrice: rawTransaction.gasPrice,
++  //       // @ts-expect-error
++  //       onApproveComplete
++  //     }
++  //   )
++
++  //   return hash ?? '0x'
++  // }
++
++  // async transferMultiNfts<T extends TransferMultiNft>(
++  //   params: T
++  // ): Promise<string> {
++  //   const { chain, wallet, transferData, gasInfo } = params
++  //   const client = await this.getClient(chain)
++  //   const chainData =
++  //     CHAIN_DATA[chain] || this.config.custom?.networks?.evm[chain]
++  //   const multisendAddress = String(chainData?.multiTransferContract)
++  //   // const transferData: INftTransferMulti[] = []
++
++  //   if (!multisendAddress) {
++  //     throw new Error('This chain does not support multi transfer')
++  //   }
++  //   const listNftContract = uniqBy(transferData, 'recipient')
++
++  //   for (let index = 0; index < listNftContract.length; index++) {
++  //     const { address } = listNftContract[index]
++
++  //     const { data: approveHex } = await handleNftApproveAll({
++  //       client
++  //     }).call(this, address, multisendAddress, wallet?.address)
++  //     if (approveHex) {
++  //       const rawTransaction: RawTransaction = {
++  //         from: wallet.address,
++  //         to: address,
++  //         data: approveHex,
++  //         value: '0',
++  //         gasPrice: convertBalanceToWei(gasInfo?.gasPrice, 9)
++  //       }
++  //       await Transaction.submitTransaction(client, wallet, rawTransaction, {
++  //         isWaitDone: true
++  //       })
++  //       await sleep(500)
++  //     }
++  //   }
++
++  //   const rawTransaction = await handleDataMultiNfts({
++  //     client
++  //   }).call(this, {
++  //     wallet,
++  //     transferData,
++  //     to: multisendAddress
++  //   })
++
++  //   if (wallet.meta?.hardware) {
++  //     // return await this.sendTransactionWithHardware({ chain, wallet, rawTransaction, client })
++  //   }
++
++  //   const hash = await Transaction.submitTransaction(
++  //     client,
++  //     wallet,
++  //     {
++  //       ...rawTransaction,
++  //       gasPrice: convertBalanceToWei(gasInfo?.gasPrice, 9)
++  //     },
++  //     {
++  //       isWaitDone: true
++  //     }
++  //   )
++
++  //   return hash ?? '0x'
++  // }
++
++  // async transferNonRegistry<
++  //   T extends ITransferNonRegistryParams<TransferOptions>
++  // >(params: T): Promise<string> {
++  //   const {
++  //     amount,
++  //     chain,
++  //     contractAddress,
++  //     email,
++  //     provider,
++  //     wallet,
++  //     token,
++  //     options
++  //   } = params
++  //   try {
++  //     const client = await this.getClient(chain)
++  //     const contract = new client.eth.Contract(
++  //       C98RamperContract as any,
++  //       contractAddress
++  //     )
++
++  //     let hexEncode = Web3.utils.asciiToHex(email)
++
++  //     // For a case size too much
++  //     if (hexEncode.length > 66 && this.config.provider.ramper) {
++  //       const response = await this.config.provider.ramper.post(
++  //         'social/syncHash',
++  //         {
++  //           email
++  //         }
++  //       )
++  //       if (!response) throw Error('txsFail')
++  //       hexEncode = HashName(hexEncode)
++  //     }
++
++  //     const rawAmount = convertBalanceToWei(amount, token?.decimal ?? 18)
++  //     const dataTx = contract.methods
++  //       .deposit(
++  //         token?.address ?? ZERO_ADDRESS,
++  //         rawAmount,
++  //         hexEncode,
++  //         provider,
++  //         new Date().getTime()
++  //       )
++  //       .encodeABI()
++
++  //     const rawTransaction: RawTransaction = {
++  //       from: wallet.address,
++  //       to: contractAddress,
++  //       data: dataTx,
++  //       value: rawAmount
++  //     }
++
++  //     if (options) {
++  //       if (options.data && options.data !== '0x') {
++  //         rawTransaction.data = options.data
++  //       }
++
++  //       if (options.nonce) {
++  //         rawTransaction.nonce = Number(options.nonce)
++  //       }
++
++  //       if (options.gasLimit) {
++  //         rawTransaction.gasLimit = options.gasLimit
++  //       }
++
++  //       if (options.gasPrice) {
++  //         rawTransaction.gasPrice = convertBalanceToWei(
++  //           Number(options.gasPrice ?? 0).toFixed(9),
++  //           9
++  //         )
++  //       }
++
++  //       if (options.maxBaseFeePerGas) {
++  //         rawTransaction.maxFeePerGas = String(
++  //           Number(options.maxBaseFeePerGas).toFixed(0)
++  //         )
++  //       }
++
++  //       if (options.maxPriorityFee) {
++  //         rawTransaction.maxPriorityFeePerGas = String(
++  //           Number(options.maxPriorityFee).toFixed()
++  //         )
++  //       }
++  //     }
++  //     const hash = await Transaction.submitTransactionWithApproveToken(
++  //       client,
++  //       wallet,
++  //       rawTransaction,
++  //       {
++  //         spender: contractAddress,
++  //         amount,
++  //         gasPrice: rawTransaction.gasPrice,
++  //         token
++  //       }
++  //     )
++  //     return hash as string
++  //   } catch (error) {
++  //     throw new Error(error as string)
++  //   }
++  // }
+ 
+   validateAddress (params: ValidateAddressParams): boolean {
+     const { address, chain } = params
+@@ -1010,6 +1012,7 @@ export class EvmEngine extends Engine {
+       market: {
+         cgkId: marketInfo?.id as string,
+         volume: Number(marketInfo?.total_volume),
++        current_price: price,
+         market_cap: Number(marketInfo?.market_cap),
+         circulating_supply: Number(marketInfo?.circulating_supply),
+         max_supply: Number(marketInfo?.total_supply),
+@@ -1117,7 +1120,7 @@ export class EvmEngine extends Engine {
+     ) as TokenInfo[]
+     const chunkData = chunk(santinizeData, 500)
+     // @ts-expect-error
+-    const rpc = client.currentProvider.host
++    const rpc = client.currentProvider.clientUrl
+ 
+     const asyncMap = chunkData.map(async (data) => {
+       try {
+@@ -1241,7 +1244,8 @@ export class EvmEngine extends Engine {
+           ...pick(token.market, [
+             'market_cap',
+             'circulating_supply',
+-            'price_change_percentage_24h'
++            'price_change_percentage_24h',
++            'current_price'
+           ])
+         },
+         address: token.tokenInfo.address,
+@@ -1354,6 +1358,7 @@ export class EvmEngine extends Engine {
+             market: {
+               cgkId: marketInfo?.id as string,
+               volume: Number(marketInfo?.total_volume),
++              current_price: price,
+               market_cap: Number(marketInfo?.market_cap),
+               circulating_supply: Number(marketInfo?.circulating_supply),
+               max_supply: Number(marketInfo?.total_supply),
+@@ -1416,6 +1421,7 @@ export class EvmEngine extends Engine {
+                   market: {
+                     cgkId: '',
+                     volume: 0,
++                    current_price: 0,
+                     market_cap: 0,
+                     circulating_supply: 0,
+                     max_supply: 0,
+@@ -1685,7 +1691,7 @@ export class EvmEngine extends Engine {
+                         }
+                         const client = await this.getClient(chain)
+                         // @ts-expect-error
+-                        const rpc = client.currentProvider.host
++                        const rpc = client.currentProvider.clientUrl
+                         const contract = new client.eth.Contract(
+                           ERC721 as any,
+                           contractAddress
+@@ -1884,29 +1890,29 @@ export class EvmEngine extends Engine {
+     return null
+   }
+ 
+-  public integrationHandle<T extends BaseIntegrationRequest>(
+-    request: T,
+-    options: IntegrationHandleOptions
+-  ): any {
+-    const { chain, method } = request
+-    const chainData =
+-      CHAIN_DATA[chain] || this.config.custom.networks.evm[chain]
+-    const rpcUrl = this.config.network[chain] || (chainData.rpcURL as string)
+-    const chainInfo = {
+-      ...options.chainInfo
+-    }
+-    chainInfo.rpcURL = rpcUrl
+-    options.chainInfo = chainInfo
+-
+-    if (
+-      options?.advance?.wallet?.meta?.hardware &&
+-      method !== 'eth_sendTransaction'
+-    ) {
+-      return this.hardware.handleRequestAction(method, request, options)
+-    }
+-    const client = new EvmIntegrationHandle(options.chainInfo)
+-    return client.handle(request, options)
+-  }
++  // public integrationHandle<T extends BaseIntegrationRequest>(
++  //   request: T,
++  //   options: IntegrationHandleOptions
++  // ): any {
++  //   const { chain, method } = request
++  //   const chainData =
++  //     CHAIN_DATA[chain] || this.config.custom.networks.evm[chain]
++  //   const rpcUrl = this.config.network[chain] || (chainData.rpcURL as string)
++  //   const chainInfo = {
++  //     ...options.chainInfo
++  //   }
++  //   chainInfo.rpcURL = rpcUrl
++  //   options.chainInfo = chainInfo
++
++  //   // if (
++  //   //   options?.advance?.wallet?.meta?.hardware &&
++  //   //   method !== 'eth_sendTransaction'
++  //   // ) {
++  //   //   return this.hardware.handleRequestAction(method, request, options)
++  //   // }
++  //   const client = new EvmIntegrationHandle(options.chainInfo)
++  //   return client.handle(request, options)
++  // }
+ 
+   public getClient = async (chain: string): Promise<Web3> => {
+     const chainData =
+@@ -1919,9 +1925,7 @@ export class EvmEngine extends Engine {
+ 
+     const rpcUrl = chain === CHAIN_TYPE.zetaMainnet
+       ? 'https://zetachain-mainnet.g.allthatnode.com/full/evm/f4c120fede37407a929e3f216cbae56d'
+-      : isCustomChain
+-        ? (chainData.rpcURL as string)
+-        : get(this.config, ['network', chain]) || (chainData.rpcURL as string)
++      : (chainData.rpcURL as string)
+ 
+     if (!this.clients.has(rpcUrl)) {
+       // || chainData.rpcURL as string
+@@ -2092,31 +2096,31 @@ export class EvmEngine extends Engine {
+     throw new Error('Method not implemented.')
+   }
+ 
+-  async history (params: HistoryParams): Promise<HistoryResponse[]> {
+-    const client = await this.getClient(params.chain)
+-    const decodeHash = (name: string, hex: string) =>
+-      decodeMessage(
+-        {
+-          name
+-        },
+-        hex
+-      )
+-    const decodeSwapAsync = decodeSwap(client)
+-    const generateAsync = generateInputCode(decodeHash, decodeSwapAsync)
+-    const fHistoryFunc = getAccountTransactionHistory(generateAsync)
+-
+-    return await fHistoryFunc(params)
+-  }
++  // async history (params: HistoryParams): Promise<HistoryResponse[]> {
++  //   const client = await this.getClient(params.chain)
++  //   const decodeHash = (name: string, hex: string) =>
++  //     decodeMessage(
++  //       {
++  //         name
++  //       },
++  //       hex
++  //     )
++  //   const decodeSwapAsync = decodeSwap(client)
++  //   const generateAsync = generateInputCode(decodeHash, decodeSwapAsync)
++  //   const fHistoryFunc = getAccountTransactionHistory(generateAsync)
++
++  //   return await fHistoryFunc(params)
++  // }
+   
+-  async onSwapToken<T extends SwapTokenParams<RawTransaction>> (params: T): Promise<string> {
+-    try {
+-      const client = await this.getClient(params.chain)
+-      const hash = await Transaction.onSwapToken(params, client)
+-      return hash
+-    } catch (error) {
+-      throw new Error(error as string)
+-    }
+-  }
++  // async onSwapToken<T extends SwapTokenParams<RawTransaction>> (params: T): Promise<string> {
++  //   try {
++  //     const client = await this.getClient(params.chain)
++  //     const hash = await Transaction.onSwapToken(params, client)
++  //     return hash
++  //   } catch (error) {
++  //     throw new Error(error as string)
++  //   }
++  // }
+ 
+   async checkAllowance (params: CheckAllowanceParams): Promise<string> {
+     const client = await this.getClient(params.chain)
+diff --git a/src/core/gas-oracle/oracle.ts b/src/core/gas-oracle/oracle.ts
+index eeb93e1d8d7d443b0063c927f53cafd8405d4ab9..1cd958a73c07fd51a6942948f247fc80a21766cd 100644
+--- a/src/core/gas-oracle/oracle.ts
++++ b/src/core/gas-oracle/oracle.ts
+@@ -1,3 +1,4 @@
++//@ts-nocheck
+ import Web3 from 'web3'
+ import { GAS_ORACLE_ABI } from '../../constants/ABI/GasOracle'
+ import { LegacyTransaction, TransactionFactory } from '@ethereumjs/tx'
+diff --git a/src/core/gasController.ts b/src/core/gasController.ts
+index 57af727ce76bf9fbcc310623fbed910867218994..679d39ac2b1f096ba87dc80bb67f709ce7f2b7ed 100644
+--- a/src/core/gasController.ts
++++ b/src/core/gasController.ts
+@@ -1,3 +1,4 @@
++//@ts-nocheck
+ import { CHAIN_DATA, CHAIN_TYPE, PRIORITY_LEVELS } from '@wallet/constants'
+ import { EngineConfiguration, EstimateGasParams, IGasEIP1559, IGasEstimate, IGasStep } from '@wallet/core'
+ import { convertBalanceToWei, convertWeiToBalance } from '@wallet/utils'
+diff --git a/src/core/hardware.ts b/src/core/hardware.ts
+index 5493295cec3b90327ec5f9b847757fad779bea65..260f109f557d2555e670b37ebfd8cda7fa4fbb76 100644
+--- a/src/core/hardware.ts
++++ b/src/core/hardware.ts
+@@ -1,3 +1,4 @@
++//@ts-nocheck
+ /* eslint-disable @typescript-eslint/no-var-requires */
+ import AppEth from '@ledgerhq/hw-app-eth'
+ import type Transport from '@ledgerhq/hw-transport'
+diff --git a/src/core/integration/handle.ts b/src/core/integration/handle.ts
+index 83d7ebad36321e24dd24d798827fec46a6312a43..8dddfc710cbdc6223486ba63450476d0086841b2 100644
+--- a/src/core/integration/handle.ts
++++ b/src/core/integration/handle.ts
+@@ -1,3 +1,4 @@
++//@ts-nocheck
+ import type { TypedDataV1, TypedMessage } from '@metamask/eth-sig-util'
+ import * as ethUtil from '@metamask/eth-sig-util'
+ import { BaseIntegrationRequest, Chain, IntegrationEngine, IntegrationHandleOptions } from '@wallet/core'
+@@ -10,9 +11,10 @@ import { CONNECT_METHOD, MESSAGE_METHOD, TRANSACTION_METHOD } from './methods'
+ import { cleanJson, safeParseJson, validateAddress } from '../../utils'
+ import { ERC20ABI } from '../../constants/ABI'
+ import { CHAIN_DATA } from '@wallet/constants'
++import Eth from 'web3-eth'
+ 
+ export class EvmIntegrationHandle extends IntegrationEngine {
+-  protected client = new Map<string, Web3>()
++  protected client: Map<string, Web3> = new Map<string, Web3>()
+   private readonly type = 'evm'
+   static instance: EvmIntegrationHandle
+   // protected keyring: Keyring
+@@ -224,7 +226,7 @@ export class EvmIntegrationHandle extends IntegrationEngine {
+     return ethUtil.getEncryptionPublicKey((options.advance.wallet.privateKey as string).slice(2))
+   }
+ 
+-  getNetworkInfo = async (transaction: RawTransaction) => {
++  getNetworkInfo = async (transaction: RawTransaction): Promise<{ standard: SupportStandard, chainId: number, client: Eth }> => {
+     const client = this.getClient()
+     let standard = SupportStandard.legacy
+     if (transaction.maxFeePerGas ?? transaction.maxPriorityFeePerGas) {
+diff --git a/src/core/transactions.ts b/src/core/transactions.ts
+index 56515fc73dd48fd1fe5ed5b605bff8d911de9fc4..ea85ff043599e75d02dc2bcef7e77135acbbb543 100644
+--- a/src/core/transactions.ts
++++ b/src/core/transactions.ts
+@@ -1,3 +1,4 @@
++//@ts-nocheck
+ /* eslint-disable @typescript-eslint/no-extraneous-class */
+ import { calculateBigNumber, compareNumber, convertBalanceToWei, convertWeiToBalance, roundedNumber, sleep } from '@wallet/utils'
+ import { Chain, IGateParams, SwapTokenParams, Token, Wallet } from '@wallet/core'
+diff --git a/src/types/hardware.ts b/src/types/hardware.ts
+index 411a829f06461fe8e83e199779e96324085f2d7c..47bb780fa5979b377e3d47edcf2a814ad8af3b8d 100644
+--- a/src/types/hardware.ts
++++ b/src/types/hardware.ts
+@@ -1,8 +1,9 @@
++//@ts-nocheck
+ import { Token, WalletV2 } from '@wallet/core'
+ import Web3 from 'web3'
+ import { RawTransaction } from './engine'
+ 
+-import type Transport from '@ledgerhq/hw-transport'
++// import type Transport from '@ledgerhq/hw-transport'
+ 
+ export interface HardwareTransfer<T> {
+   wallet: WalletV2
+@@ -27,7 +28,7 @@ export interface HardwareRestore<T> {
+ }
+ 
+ export interface RestoreLedgerWallets {
+-  transport: Transport
++  transport: any
+   derivePathType?: 'legacy' | 'bip44' | 'live'
+   start: number
+   end: number
+diff --git a/src/utils/common.ts b/src/utils/common.ts
+index 3ebaf5803fd7250067a5fdcf72ada4a1c66e94cd..e3635da6337e11bd80f2a881179941e8fb4fc23c 100644
+--- a/src/utils/common.ts
++++ b/src/utils/common.ts
+@@ -48,9 +48,7 @@ export const safeParseJson = (json: string): any => {
+ export const cleanJson = (json: object) => {
+   try {
+     Object.keys(json).forEach(key => {
+-    // @ts-expect-error
+       if (json[key] === null || !json[key]) {
+-      // @ts-expect-error
+       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+         delete json[key]
+       }
+diff --git a/src/utils/evmHwMethod.ts b/src/utils/evmHwMethod.ts
+index cb34ddc8082a51ae25e5d30e8618685d59c4a07d..6e63f5c5581b673327b6a5165a67da7197a66fd6 100644
+--- a/src/utils/evmHwMethod.ts
++++ b/src/utils/evmHwMethod.ts
+@@ -246,7 +246,7 @@ export const evmLedgerWallet = async (params: RestoreLedgerWallets): Promise<Wal
+ 
+   const app: AppEth = new AppEth(transport)
+ 
+-  const addresses = []
++  const addresses: { address: any; path: number }[] = []
+ 
+   for (let i = start; i < end; i++) {
+     const path = getDerivePathAddress(derivePathType as any, i)

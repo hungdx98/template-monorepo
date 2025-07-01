@@ -109,7 +109,7 @@ export const Modal = () => {
             >
               <Dialog.Panel
                 className={twMerge(
-                  'mx-auto transform overflow-hidden min-h-[60vh] rounded-2xl bg-background-1 px-6 py-8 ipadpro:py-6 ipad:px-4 text-left align-middle shadow-xl transition-all',
+                  'mx-auto transform overflow-hidden rounded-2xl bg-background-1 px-6 py-8 ipadpro:py-6 ipad:px-4 text-left align-middle shadow-xl transition-all',
                   modalSize && modalSizes[modalSize],
                 )}
               >

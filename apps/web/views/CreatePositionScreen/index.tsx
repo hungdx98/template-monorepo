@@ -1,16 +1,22 @@
 'use client'
 
 import { EPositionStep, usePositionContext } from '@/context/position';
+import { useTokensStore } from '@/stores';
 import cx from '@/utils/styled';
-import {useTranslations} from 'next-intl'
+import { get } from 'lodash';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useShallow } from 'zustand/shallow';
+import FeeSelections from './components/FeeSelections';
 import SelectPairSection from './components/SelectPairSection';
 import SelectPriceRangeSection from './components/SelectPriceRangeSection';
-
 
 export default function CreatePositionSreen() {
   const { state: { step }, jobs: { onChangeStep } } = usePositionContext();
 
-
+  const tokens = useTokensStore(useShallow(state => [
+    state.coinCurrent,
+  ]));
 
   const isPriceRangeStep = step === EPositionStep.price_range;
   const isTokenPairStep = step === EPositionStep.token_pair;

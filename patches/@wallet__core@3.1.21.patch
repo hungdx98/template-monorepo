@@ -1,0 +1,30 @@
+diff --git a/src/abstract/transactions.ts b/src/abstract/transactions.ts
+index 7bd6dce6a866c3f76ccac50eb9322a11e93c1a55..008084779b4e6a8f209d0068fc7b3f901eaf8b34 100644
+--- a/src/abstract/transactions.ts
++++ b/src/abstract/transactions.ts
+@@ -52,12 +52,6 @@ export interface TransferOptions {
+ 
+ export type TransferOptionsKey = keyof TransferOptions
+ 
+-export interface GetTokenInfoParams {
+-  chain: string
+-  value?: string
+-  field?: string
+-}
+-
+ export type TokenWithInfo = Token & {
+   tokenInfo: TokenInfo
+   rawBalance?: string
+diff --git a/src/types/integration.ts b/src/types/integration.ts
+index d20988e151cf098a7b4f4baa3dd5072746838e88..df1adf774ed69f1352fd844a5b4e4b5629237f82 100644
+--- a/src/types/integration.ts
++++ b/src/types/integration.ts
+@@ -5,7 +5,7 @@ export interface BaseIntegrationRequest{
+     params: any[]
+     contractId?: string
+     // eslint-disable-next-line no-undef
+-    sender?: chrome.runtime.MessageSender
++    // sender?: chrome.runtime.MessageSender
+ }
+ 
+ export interface IntegrationRequestType<T = any, S = any> {
