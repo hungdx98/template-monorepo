@@ -3,12 +3,13 @@ import get from "lodash/get";
 import { Icon } from "@/components/Icon";
 import { Disclosure, Transition } from "@headlessui/react";
 import cx from "@/utils/styled";
+import { EFeeTier } from "@/context";
 
 interface FeeSelectionsProps {
   className?: string;
   isDisplayed?: boolean;
-  onChangeFee: (fee: string) => () => void;
-  currentFee?: string;
+  onChangeFee: (fee: EFeeTier) => () => void;
+  currentFee?: EFeeTier;
 }
 const FeeSelections = (props: FeeSelectionsProps) => {
 
@@ -17,10 +18,10 @@ const FeeSelections = (props: FeeSelectionsProps) => {
   const t = useTranslations();
 
   const FEE_TIERS_DATA = [
-    { value: '0.01', label: t('fee_tier_0_01') },
-    { value: '0.05', label: t('fee_tier_0_05') },
-    { value: '0.3', label: t('fee_tier_0_3') },
-    { value: '1', label: t('fee_tier_1') }
+    // { value: '0.01', label: t('fee_tier_0_01') },
+    { value: EFeeTier.STANDARD, label: t('fee_tier_0_05') },
+    { value: EFeeTier.MEDIUM, label: t('fee_tier_0_3') },
+    { value: EFeeTier.HIGH, label: t('fee_tier_1') }
   ]
 
   return (
@@ -58,11 +59,11 @@ const FeeSelections = (props: FeeSelectionsProps) => {
                         <p className="text-font-size-150 text-text-subtle">6.753% select</p>
                       </div>
                       {
-                        isSelected &&  <div className="absolute right-2 top-2">
-                        <Icon name="app_status_checked" />
-                      </div>
+                        isSelected && <div className="absolute right-2 top-2">
+                          <Icon name="app_status_checked" />
+                        </div>
                       }
-                     
+
                     </div>
                   )
                 })

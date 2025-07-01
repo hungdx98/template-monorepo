@@ -1,55 +1,27 @@
 'use client'
 
-import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
 import Button from '@/components/Button';
 import { Icon } from '@/components/Icon';
-import { usePoolStore } from '@/stores/usePoolStore';
 import TokenSelector from '@/components/TokenSelector';
-import FeeSelections from './components/FeeSelections';
 import { EPositionStep, usePositionContext } from '@/context/position';
-import SelectTokenModal from './components/SelectTokenModal';
 import { useTokenStore } from '@/stores/useTokenStore';
 import { get } from 'lodash';
-
-
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import FeeSelections from './components/FeeSelections';
+import cx from '@/utils/styled';
 
 export default function CreatePositionSreen() {
+  const { state: { step, pairTokens, isContinue, feeTier }, jobs: { onChangeStep, onSelectPairToken, onSelectFeeTier } } = usePositionContext();
 
-  const { poolAddress } = usePoolStore();
-  const { state: { step, pairTokens,  }, jobs: { onChangeStep, onSelectPairToken } } = usePositionContext();
-
-  const {tokens} = useTokenStore()
-
-  const [tokenA, setTokenA] = useState("ETH");
-  const [tokenB, setTokenB] = useState("");
-  const [feeTier, setFeeTier] = useState("0.3");
+  const { tokens } = useTokenStore();
 
   const [isDisplayMoreFee, setIsDisplayMoreFee] = useState(false);
 
-  const canContinue = tokenA && tokenB && feeTier;
-
   const isPriceRangeStep = step === EPositionStep.price_range;
+  const isTokenPairStep = step === EPositionStep.token_pair;
 
   const t = useTranslations();
-
-  
-
-  // const onOpenModal = () => {
-  //   window.openModal({
-  //     title: t('select_token'),
-  //     size: 'sm',
-  //     content: <SelectTokenModal listToken={tokens}/>,
-  //     onClose: () => {
-  //       console.log("Modal closed");
-  //     }
-  //   })
-  // }
-
-  const onChangeFee = (fee: string) => () => {
-    setFeeTier(fee);
-  }
-
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
@@ -58,7 +30,7 @@ export default function CreatePositionSreen() {
       <div className="grid md:grid-cols-3 gap-6">
         {/* Step Indicator */}
         <div className="border border-border-1-subtle rounded-border-radius-huge p-5 h-fit">
-          <div className="flex items-center space-x-4" onClick={() => onChangeStep(EPositionStep.token_pair)}>
+          <div className={cx("flex items-center space-x-4", isPriceRangeStep && 'opacity-50 cursor-pointer')} onClick={onChangeStep(EPositionStep.token_pair)}>
             <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
               1
             </div>
@@ -70,7 +42,7 @@ export default function CreatePositionSreen() {
 
           <div className='h-[36] border-l-2 border-border-2 mx-4 my-2'></div>
 
-          <div className="flex items-center space-x-4 opacity-50 cursor-pointer" onClick={() => onChangeStep(EPositionStep.price_range)}>
+          <div className={cx("flex items-center space-x-4 cursor-pointer", isTokenPairStep && 'opacity-50 cursor-not-allowed')}>
             <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
               2
             </div>
@@ -84,66 +56,75 @@ export default function CreatePositionSreen() {
         {/* Form Area */}
         <div className="md:col-span-2 space-y-6">
           <div className="rounded-border-radius-huge border border-border-1-subtle p-5">
-            
-            <div className="space-y-6">
-              <div>
-                <div className="text-font-size-225">{t('select_pair')}</div>
-                <p className='text-sm text-text-subtle'>{t('select_pair_description')}</p>
-                <div className="flex space-x-4 mt-4">
-                  <TokenSelector 
-                    tokens={tokens}
-                    onSelectedToken={(token) => onSelectPairToken('token0', token)}
-                    key={'token0'}
-                    selectedToken={get(pairTokens, 'token0')}
-                  />
-                  <TokenSelector 
-                    tokens={tokens}
-                    onSelectedToken={(token) => onSelectPairToken('token1', token)}
-                    key={'token1'}
-                    selectedToken={get(pairTokens, 'token1')}
+            {
+              isTokenPairStep && <div className="space-y-6">
+                <div>
+                  <div className="text-font-size-225">{t('select_pair')}</div>
+                  <p className='text-sm text-text-subtle'>{t('select_pair_description')}</p>
+                  <div className="flex space-x-4 mt-4">
+                    <TokenSelector
+                      tokens={tokens}
+                      onSelectedToken={(token) => onSelectPairToken('token0', token)}
+                      key={'token0'}
+                      selectedToken={get(pairTokens, 'token0')}
+                    />
+                    <TokenSelector
+                      tokens={tokens}
+                      onSelectedToken={(token) => onSelectPairToken('token1', token)}
+                      key={'token1'}
+                      selectedToken={get(pairTokens, 'token1')}
 
-                  />
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-font-size-225">{t('fee_tier')}</h2>
-                <p className='text-sm text-text-subtle'>{t('fee_tier_description')}</p>
-              </div>
-
-              <div className='flex flex-col gap-y-2'>
-
-                <div className='rounded-border-radius-large border border-border-1-subtle p-4 flex items-center justify-between'>
-                  <div>
-                    <span className="text-font-size-200">{t('fee_tier_value', { value: feeTier })}</span>
-                    <p className='text-sm text-text-subtle'>{t('fee_earn_description')}</p>
-                  </div>
-
-                  <div
-                    onClick={() => setIsDisplayMoreFee(!isDisplayMoreFee)}
-                    className='flex items-center gap-x-space-100 cursor-pointer bg-button-sec-fill p-2 rounded-border-radius-medium hover:opacity-75 transition'>
-                    <p className='text-sm'>{t('more')}</p>
-                    <Icon name='app_chevron_down' />
+                    />
                   </div>
                 </div>
 
-                <FeeSelections
-                  isDisplayed={isDisplayMoreFee}
-                  currentFee={feeTier}
-                  onChangeFee={onChangeFee}
-                />
-              </div>
+                <div>
+                  <h2 className="text-font-size-225">{t('fee_tier')}</h2>
+                  <p className='text-sm text-text-subtle'>{t('fee_tier_description')}</p>
+                </div>
+
+                <div className='flex flex-col gap-y-2'>
+
+                  <div className='rounded-border-radius-large border border-border-1-subtle p-4 flex items-center justify-between'>
+                    <div>
+                      <span className="text-font-size-200">{t('fee_tier_value', { value: feeTier })}</span>
+                      <p className='text-sm text-text-subtle'>{t('fee_earn_description')}</p>
+                    </div>
+
+                    <div
+                      onClick={() => setIsDisplayMoreFee(!isDisplayMoreFee)}
+                      className='flex items-center gap-x-space-100 cursor-pointer bg-button-sec-fill p-2 rounded-border-radius-medium hover:opacity-75 transition'>
+                      <p className='text-sm'>{t('more')}</p>
+                      <Icon name='app_chevron_down' />
+                    </div>
+                  </div>
+
+                  <FeeSelections
+                    isDisplayed={isDisplayMoreFee}
+                    currentFee={feeTier}
+                    onChangeFee={onSelectFeeTier}
+                  />
+                </div>
 
 
-              <div>
-                <Button
-                  size='lg'
-                  disabled={!canContinue}
-                >
-                  Continue
-                </Button>
+                <div>
+                  <Button
+                    size='lg'
+                    disabled={!isContinue}
+                    onClick={onChangeStep(EPositionStep.price_range)}
+                  >
+                    Continue
+                  </Button>
+                </div>
               </div>
-            </div>
+            }
+            {
+              isPriceRangeStep && <div className="space-y-6">
+                <h2 className="text-font-size-225">hehehehe</h2>
+                {/* <p className='text-sm text-text-subtle'>{t('price_range_description')}</p> */}
+                {/* Price Range Input Component would go here */}
+              </div>
+            }
           </div>
         </div>
       </div>

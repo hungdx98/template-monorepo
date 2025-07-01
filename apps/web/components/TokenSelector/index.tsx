@@ -25,9 +25,6 @@ export const TokenSelector = (props: Props) => {
   const t = useTranslations()
   const { selectedToken = undefined, onSelectedToken = () => {}, tokens } = props
 
-  console.log("TokenSelector tokens", selectedToken)
-
-
   const onOpenModal = () => {
     window.openModal({
       title: t('select_token'),
