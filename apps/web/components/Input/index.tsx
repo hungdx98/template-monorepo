@@ -3,6 +3,7 @@
 import cx from '@/utils/styled'
 import get from 'lodash/get'
 import React from 'react'
+import { Icon } from '../Icon'
 
 type InputType = {
   variant?: 'outline' | 'filled' | 'flushed' | 'unstyled'
@@ -10,6 +11,7 @@ type InputType = {
   prefixIcon?: React.ReactNode
   suffixIcon?: React.ReactNode
   containerClassName?: string
+  isSearch?: boolean
 }
 
 const ALLOWED_KEYS = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab']
@@ -21,6 +23,7 @@ export const Input: React.FC<React.ComponentProps<'input'> & InputType> = ({
   colorScheme = 'blue',
   containerClassName,
   className,
+  isSearch = false,
   prefixIcon,
   suffixIcon,
   ...props
@@ -29,7 +32,7 @@ export const Input: React.FC<React.ComponentProps<'input'> & InputType> = ({
     switch (variant) {
       case 'filled':
         return `
-          bg-gray-100 border-transparent
+          bg-background-2-active border-transparent
           focus:bg-white focus:border-${colorScheme}-500
         `
       case 'flushed':
@@ -90,11 +93,15 @@ export const Input: React.FC<React.ComponentProps<'input'> & InputType> = ({
   return (
     <div
       className={cx(
-        `w-full px-4 py-2 text-base font-normal border border-solid rounded-md focus:outline-none transition duration-150 ease-in-out flex justify-between items-center gap-2`,
+        `w-full h-12 px-4 py-2 text-base font-normal border border-solid rounded-full focus:outline-none transition duration-150 ease-in-out flex justify-between items-center gap-2`,
         getVariantClasses(),
         containerClassName
       )}>
-      {prefixIcon && <div className="flex-shrink-0">{prefixIcon}</div>}
+      {prefixIcon && <div className="flex items-center">{prefixIcon}</div>}
+      {isSearch && <div className="flex items-center">
+          <Icon name="app_search"/>
+        </div>
+      }
       <input
         placeholder={placeholder}
         className={cx(

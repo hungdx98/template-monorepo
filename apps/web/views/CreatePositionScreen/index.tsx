@@ -7,13 +7,19 @@ import { Icon } from '@/components/Icon';
 import { usePoolStore } from '@/stores/usePoolStore';
 import TokenSelector from '@/components/TokenSelector';
 import FeeSelections from './components/FeeSelections';
-import { EPositionStep, usePositionService } from '@/context/position';
+import { EPositionStep, usePositionContext } from '@/context/position';
 import SelectTokenModal from './components/SelectTokenModal';
+import { useTokenStore } from '@/stores/useTokenStore';
+import { get } from 'lodash';
+
+
 
 export default function CreatePositionSreen() {
 
   const { poolAddress } = usePoolStore();
-  const { state: { step }, jobs: { onChangeStep } } = usePositionService();
+  const { state: { step, pairTokens,  }, jobs: { onChangeStep, onSelectPairToken } } = usePositionContext();
+
+  const {tokens} = useTokenStore()
 
   const [tokenA, setTokenA] = useState("ETH");
   const [tokenB, setTokenB] = useState("");
@@ -27,20 +33,23 @@ export default function CreatePositionSreen() {
 
   const t = useTranslations();
 
-  const onOpenModal = () => {
-    window.openModal({
-      title: t('select_token'),
-      size: 'sm',
-      content: <SelectTokenModal/>,
-      onClose: () => {
-        console.log("Modal closed");
-      }
-    })
-  }
+  
+
+  // const onOpenModal = () => {
+  //   window.openModal({
+  //     title: t('select_token'),
+  //     size: 'sm',
+  //     content: <SelectTokenModal listToken={tokens}/>,
+  //     onClose: () => {
+  //       console.log("Modal closed");
+  //     }
+  //   })
+  // }
 
   const onChangeFee = (fee: string) => () => {
     setFeeTier(fee);
   }
+
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
@@ -81,8 +90,19 @@ export default function CreatePositionSreen() {
                 <div className="text-font-size-225">{t('select_pair')}</div>
                 <p className='text-sm text-text-subtle'>{t('select_pair_description')}</p>
                 <div className="flex space-x-4 mt-4">
-                  <TokenSelector onClick={onOpenModal} />
-                  <TokenSelector onClick={onOpenModal} />
+                  <TokenSelector 
+                    tokens={tokens}
+                    onSelectedToken={(token) => onSelectPairToken('token0', token)}
+                    key={'token0'}
+                    selectedToken={get(pairTokens, 'token0')}
+                  />
+                  <TokenSelector 
+                    tokens={tokens}
+                    onSelectedToken={(token) => onSelectPairToken('token1', token)}
+                    key={'token1'}
+                    selectedToken={get(pairTokens, 'token1')}
+
+                  />
                 </div>
               </div>
 

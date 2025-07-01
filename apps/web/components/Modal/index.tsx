@@ -109,7 +109,7 @@ export const Modal = () => {
             >
               <Dialog.Panel
                 className={twMerge(
-                  'mx-auto transform overflow-hidden rounded-2xl bg-background-app px-6 py-8 ipadpro:py-6 ipad:px-4 text-left align-middle shadow-xl transition-all',
+                  'mx-auto transform overflow-hidden min-h-[60vh] rounded-2xl bg-background-1 px-6 py-8 ipadpro:py-6 ipad:px-4 text-left align-middle shadow-xl transition-all',
                   modalSize && modalSizes[modalSize],
                 )}
               >
@@ -117,11 +117,11 @@ export const Modal = () => {
                   <Dialog.Title
                     as="h2"
                     className={twMerge(
-                      'mb-8 ipad:mb-4 font-semibold text-center capitalize',
+                      'mb-4 ipad:mb-4 font-semibold text-center capitalize',
                       isClose && 'flex justify-between items-center gap-2',
                     )}
                   >
-                    <span className="truncate text-center">{modalTitle}</span>
+                    <span className="truncate text-center text-lg font-semibold">{modalTitle}</span>
                     {isClose && (
                       <Icon
                         className="cursor-pointer"

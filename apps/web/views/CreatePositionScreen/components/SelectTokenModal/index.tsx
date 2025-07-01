@@ -1,5 +1,7 @@
 import { Input } from "@/components/Input";
-import React, { useState } from "react";
+import { useTranslations } from "next-intl";
+import React, { useMemo, useState } from "react";
+import TokenItem from "../TokenItem";
 
 const tokens = [
   { name: "Ethereum", symbol: "ETH" },
@@ -17,18 +19,39 @@ const popularTokens = [
   { name: "Base ETH", symbol: "ETH", address: "" },
 ];
 
-const SelectTokenModal = () => {
+interface SelectTokenModalProps {
+  listToken?: any[];
+  onSelectToken: (token: any) => void;
+}
+
+const SelectTokenModal = (props: SelectTokenModalProps) => {
+  const { listToken, onSelectToken  } = props;
   const [search, setSearch] = useState("");
   const [recent, setRecent] = useState(["Ethereum", "Tether USD"]);
 
+  const t = useTranslations();
+
   const clearRecent = () => setRecent([]);
 
-  const filteredTokens = popularTokens.filter((token) =>
-    token.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredTokens = useMemo(() => {
+    return listToken?.filter((token) => {
+      const tokenName = token.name.toLowerCase();
+      const tokenSymbol = token.symbol.toLowerCase();
+      return (
+        tokenName.includes(search.toLowerCase()) ||
+        tokenSymbol.includes(search.toLowerCase())
+      );
+    });
+  }, [search, listToken]);
+
+  const handleSelectToken = (token: any) => () => {
+    onSelectToken(token);
+    window.closeModal();
+    
+  }
 
   return (
-    <div className="text-white rounded-xl p-4 space-y-4">
+    <div className="text-white rounded-xl space-y-4">
       {/* Search Bar */}
       {/* <div className="flex items-center bg-gray-800 rounded-lg px-3 py-2">
         <svg className="h-4 w-4 text-gray-400 mr-2" fill="none" stroke="currentColor" strokeWidth="2"
@@ -42,10 +65,15 @@ const SelectTokenModal = () => {
         />
       </div> */}
 
-      <Input/>
+      <Input 
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        isSearch 
+        placeholder={t('search_token')}
+      />
 
       {/* Token Shortcuts */}
-      <div className="flex space-x-2 overflow-x-auto">
+      {/* <div className="flex space-x-2 overflow-x-auto">
         {tokens.map((token) => (
           <div
             key={token.symbol}
@@ -54,10 +82,10 @@ const SelectTokenModal = () => {
             {token.symbol}
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Recent Searches */}
-      {recent.length > 0 && (
+      {/* {recent.length > 0 && (
         <div>
           <div className="flex justify-between items-center text-sm text-gray-400 mb-1">
             <span>Recent searches</span>
@@ -71,16 +99,18 @@ const SelectTokenModal = () => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Token List by 24H Volume */}
       <div>
-        <div className="text-sm text-gray-400 mb-2">Tokens by 24H volume</div>
-        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-          {filteredTokens.map((token, idx) => (
-            <div key={idx} className="flex justify-between text-sm">
-              <span>{token.name}</span>
-              <span className="text-gray-400">{token.symbol}</span>
+        <div className="text-sm  text-gray-400 mb-2">{t("tokens")}</div>
+        <div className="space-y-2 overflow-y-auto pr-1 max-h-96">
+          {filteredTokens?.map((token, idx) => (
+            <div key={idx} onClick={handleSelectToken(token)} >
+              <TokenItem
+                key={idx}
+                token={token}
+              />
             </div>
           ))}
         </div>

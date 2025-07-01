@@ -21,5 +21,7 @@
   "view_positions_title": "To view your positions and rewards you must connect your wallet.",
   "top_pools_tvl": "Top pools by TVL",
   "apr": "APR",
-  "explore_more": "Explore more pools"
+  "explore_more": "Explore more pools",
+  "search_token": "Search token",
+  "tokens": "Tokens"
 }

@@ -1,28 +1,40 @@
 "use client";
 
-import React, { createContext, PropsWithChildren, useContext } from 'react';
-import { EPositionStep, IStatePosition, IStatePositionContext } from "./position.context.styles";
-import { useGetSetState } from '@/hooks';
+import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
+import { EPositionStep, IStatePositionContext, IStatePositionPairTokens } from "./type";
+
+
 
 const PositionContext = createContext<IStatePositionContext>({} as IStatePositionContext);
 
 const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
-    const [getState, setState] = useGetSetState<IStatePosition>({
-        step: EPositionStep.token_pair,
-    });
+   const [step, setStep] = useState<EPositionStep>(EPositionStep.token_pair);
 
-    const { step } = getState();
+   const [pairTokens, setPairTokens] = useState<IStatePositionPairTokens>({
+    token0: undefined,
+    token1: undefined
+   })
 
-    const onChangeStep = (step: EPositionStep) => setState({ step });
+
+    const onChangeStep = (step: EPositionStep) => setStep(step);
+
+    const onSelectPairToken = (type: 'token0' | 'token1', token:any) => {
+        setPairTokens((prev) => ({
+            ...prev,
+            [type]: token
+        }));
+    };
 
     return (
         <PositionContext.Provider value={{
             state: {
                 step,
+                pairTokens
             },
             jobs: {
-                onChangeStep
+                onChangeStep,
+                onSelectPairToken
             },
             ref: {}
         }}>
@@ -31,6 +43,6 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     );
 };
 
-const usePositionService = () => useContext(PositionContext);
+const usePositionContext = () => useContext(PositionContext);
 
-export { PositionProvider, usePositionService };
+export { PositionProvider, usePositionContext };
