@@ -5,6 +5,7 @@ import { usePositionContext } from "@/context";
 import get from "lodash/get";
 import Image from "next/image";
 import { Input } from "@/components/Input";
+import Button from "@/components/Button";
 export default function SelectPriceRangeSection() {
 
   const t = useTranslations();
@@ -61,7 +62,7 @@ export default function SelectPriceRangeSection() {
               <Image width={48} height={48} src={get(token1, 'image', '')} alt="token" className="rounded-full"/>
           </div>
         </div>
-        <div className="text-2xl font-bold mr-2">{token0?.symbol} / {token1?.symbol}</div>
+        <div className="text-2xl font-bold mr-2 uppercase">{token0?.symbol} / {token1?.symbol}</div>
         <span className="bg-gray-700 text-xs px-2 py-1 rounded">v3</span>
         <span className="ml-2 bg-gray-700 text-xs px-2 py-1 rounded">0.05%</span>
       </div>
@@ -148,7 +149,7 @@ export default function SelectPriceRangeSection() {
                 <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
                   <Image width={32} height={32} src={get(token0, 'image', '')} alt="token" className="rounded-full"/>
                 </div>
-                <p>{token0?.symbol}</p>
+                <p className="uppercase">{token0?.symbol}</p>
               </div>
             </div>
           </div>
@@ -170,15 +171,16 @@ export default function SelectPriceRangeSection() {
                 <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
                   <Image width={32} height={32} src={get(token1, 'image', '')} alt="token" className="rounded-full"/>
                 </div>
-                <p>{token1?.symbol}</p>
+                <p className="uppercase">{token1?.symbol}</p>
               </div>
             </div>
           </div>
-          
-         
 
         </div>
+
+        <Button className="mt-4">Continue</Button>
       </div>
+     
     </div>
   );
 }
