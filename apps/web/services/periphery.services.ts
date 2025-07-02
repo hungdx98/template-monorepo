@@ -2,11 +2,12 @@ import Web3, { Transaction } from 'web3'
 import { NFT_POSITION_MANAGER_ABI } from './abi';
 import { IAddPosition, ICreatePool, PositionInfo } from './types';
 import { FACTORY_ABI } from './abi/factory';
+import { FACTORY_ADDRESS, NFT_POSITION_MANAGER_ADDRESS } from './constants';
 
 export class PeripheryService {
     static client: Web3 = new Web3('https://rpc.viction.xyz');
-    static nftPositionManagerAddress: string = "0x0762f5542f5436d56b7a1FcD70879eCF1Ea167b8";
-    static factoryAddress = '0x85368A086a23989ba326Aab2CCEf50DC649f9b39'; // UniswapV3Factory address
+    static nftPositionManagerAddress: string = NFT_POSITION_MANAGER_ADDRESS;
+    static factoryAddress = FACTORY_ADDRESS;
 
     static getContractNFTPositionManager = () => {
         return new this.client.eth.Contract(NFT_POSITION_MANAGER_ABI, this.nftPositionManagerAddress);
@@ -110,5 +111,25 @@ export class PeripheryService {
 
     static collectFees = async () => {
         // Logic to collect fees from a position in the Uniswap V3 pool
+    }
+
+    static getTotalSupplyNFT = async (): Promise<number> => {
+        const contract = this.getContractNFTPositionManager();
+        if (!contract.methods.totalSupply) {
+            throw new Error("totalSupply method is not available on the contract");
+        }
+        const totalSupply = await contract.methods.totalSupply().call();
+        return totalSupply as unknown as number;
+    }
+
+    static listPoolsWithSupply = async (totalSupply: number) => {
+        for (let i = 1; i <= totalSupply; i++) {
+            try {
+                const positionInfo = await this.getPositionInfo(i);
+                console.log(`Position ID: ${i}, Info:`, positionInfo);
+            } catch (error) {
+                console.error(`Error fetching position ${i}:`, error);
+            }
+        }
     }
 }
