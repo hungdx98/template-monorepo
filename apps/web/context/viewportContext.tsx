@@ -2,9 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-// import { useMounted } from 'hooks/useMounted';
-import { viewport } from 'config/viewport';
-import { useGlobalStore } from 'stores/useGlobalStore';
+import { viewport } from '@/config/viewport';
+import { useGlobalStore } from '@/stores/useGlobalStore';
 
 interface ViewportContextProps {
   width: number;

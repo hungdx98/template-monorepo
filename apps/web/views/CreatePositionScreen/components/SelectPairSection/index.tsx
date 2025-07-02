@@ -3,18 +3,42 @@ import { EPositionStep, usePositionContext } from "@/context";
 import { useTokenStore } from "@/stores/useTokenStore";
 import get from "lodash/get";
 import FeeSelections from "../FeeSelections";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {useTranslations } from "next-intl";
 import Button from "@/components/Button";
 import { Icon } from "@/components/Icon";
+import cx from "@/utils/styled";
 
 const SelectPairSection = () => {
 
-  const { state: {  pairTokens, isContinue, feeTier }, jobs: { onChangeStep, onSelectPairToken, onSelectFeeTier } } = usePositionContext();
+  const { state: {  pairTokens, isContinue, feeTier }, jobs: { 
+    onChangeStep, onSelectPairToken, onSelectFeeTier ,
+    isPoolCreated
+  } 
+} = usePositionContext();
   const { tokens } = useTokenStore();
 
   const t = useTranslations()
   const [isDisplayMoreFee, setIsDisplayMoreFee] = useState(false);
+
+  const [isCreatedPool, setIsCreatedPool] = useState(false);
+
+
+   const checkIsCreatedPool = async() => {
+      const isCreated = await isPoolCreated(feeTier.toString());
+      console.log("isCreatedPool", isCreated);
+      setIsCreatedPool(isCreated);
+    }
+  
+    useEffect(() => {
+      checkIsCreatedPool()
+    }, [feeTier])
+
+
+  const onShoMoreFee = () => {
+    if(!pairTokens.token0 || !pairTokens.token1) return
+    setIsDisplayMoreFee(!isDisplayMoreFee)
+  };
   
 
   return (
@@ -54,8 +78,10 @@ const SelectPairSection = () => {
             </div>
 
             <div
-              onClick={() => setIsDisplayMoreFee(!isDisplayMoreFee)}
-              className='flex items-center gap-x-space-100 cursor-pointer bg-button-sec-fill p-2 rounded-border-radius-medium hover:opacity-75 transition'>
+              onClick={onShoMoreFee}
+              className={cx('flex items-center gap-x-space-100 cursor-pointer bg-button-sec-fill p-2 rounded-border-radius-medium hover:opacity-75 transition', {
+                'cursor-not-allowed hover:opacity-100': !pairTokens.token0 || !pairTokens.token1
+              })}>
               <p className='text-sm'>{t('more')}</p>
               <Icon name='app_chevron_down' />
             </div>
@@ -75,7 +101,7 @@ const SelectPairSection = () => {
             disabled={!isContinue}
             onClick={onChangeStep(EPositionStep.price_range)}
           >
-            Continue
+            {isCreatedPool ? t('continue') : t('create_pool')}
           </Button>
         </div>
       </div>

@@ -10,6 +10,7 @@ import { useShallow } from 'zustand/shallow';
 import FeeSelections from './components/FeeSelections';
 import SelectPairSection from './components/SelectPairSection';
 import SelectPriceRangeSection from './components/SelectPriceRangeSection';
+import PageContainer from '@/layouts/PageContainer';
 
 export default function CreatePositionSreen() {
   const { state: { step }, jobs: { onChangeStep } } = usePositionContext();
@@ -24,7 +25,9 @@ export default function CreatePositionSreen() {
   const t = useTranslations();
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <PageContainer 
+      size='sm'
+      className="min-h-screen bg-black text-white p-6">
       <h1 className="text-3xl font-semibold mb-6">{t('new_position')}</h1>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -63,6 +66,6 @@ export default function CreatePositionSreen() {
           
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

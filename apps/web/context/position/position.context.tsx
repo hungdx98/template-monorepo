@@ -73,11 +73,11 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
 
     const isPoolCreated = async (fee: string): Promise<boolean> => {
-        if (!isContinue) throw new Error("Cannot check pool creation without selected tokens and fee tier. Some data is missing.");
+        if (!isContinue) return false
         const feeTier = Number(fee) * 10000; // Convert fee to basis points
         // This function can be used to check if the pool is created
         if (!pairTokens.token0 || !pairTokens.token1) {
-            throw new Error("Both tokens must be selected to check if the pool is created.");
+            return false
         }
         const poolAddress = await PeripheryService.getPoolAddress(
             pairTokens.token0.address as string,
