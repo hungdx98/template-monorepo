@@ -28,5 +28,7 @@
   "full_range": "Full Range",
   "full_range_description": "Providing full range liquidity ensures continuous market participation across all possible prices, offering simplicity but with potential for higher impermanent loss.",
   "custom_range_description": "Custom range allows you to concentrate your liquidity within specific price bounds, enhancing capital efficiency and fee earnings but requiring more active management.",
-  "deposit_tokens": "Deposit Tokens"
+  "deposit_tokens": "Deposit Tokens",
+  "create_pool": "Create Pool",
+  "continue": "Continue"
 }

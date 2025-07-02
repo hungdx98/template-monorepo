@@ -1,6 +1,6 @@
 import { Input } from "@/components/Input";
 import { useTranslations } from "next-intl";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import TokenItem from "../TokenItem";
 import { Token } from "@repo/utils/types";
 import _get from "lodash/get";
@@ -19,6 +19,8 @@ const SelectTokenModal = (props: SelectTokenModalProps) => {
   const [search, setSearch] = useState("");
 
   const t = useTranslations();
+
+ 
 
   const filteredTokens = useMemo(() => {
     return listToken?.filter((token) => {

@@ -90,10 +90,10 @@ export default function SelectPriceRangeSection() {
         </div>
 
         <p className="text-sm my-4">
-            { rangeMode === "full"
-              ? t('full_range_description')
-              : t('custom_range_description') 
-            }
+          { rangeMode === "full"
+            ? t('full_range_description')
+            : t('custom_range_description') 
+          }
         </p>
         
 
@@ -178,7 +178,11 @@ export default function SelectPriceRangeSection() {
 
         </div>
 
-        <Button className="mt-4">Continue</Button>
+        <Button 
+          size="lg" 
+          className="mt-4">
+            Continue
+        </Button>
       </div>
      
     </div>

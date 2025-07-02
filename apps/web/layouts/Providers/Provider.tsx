@@ -1,5 +1,6 @@
 import React from 'react';
 import { NextIntlClientProvider, useLocale, useMessages } from 'next-intl';
+import { ViewportProvider } from '@/context/viewportContext';
 
 
 
@@ -13,8 +14,8 @@ const Providers = ({ children }: ProvidersProps) => {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      {/* <ViewportProvider>{children}</ViewportProvider> */}
-      {children}
+      <ViewportProvider>{children}</ViewportProvider>
+      {/* {children} */}
     </NextIntlClientProvider>
   );
 };
