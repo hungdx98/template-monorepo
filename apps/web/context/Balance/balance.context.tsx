@@ -56,7 +56,7 @@ const BalanceProvider: React.FC<PropsWithChildren> = ({ children }) => {
             return coinsLocal;
         }
     };
-    console.log("coinCurrent", coinCurrent);
+
     const fetchTokensBalance = async () => {
         // Initialize an empty array to store synchronized wallet tokens
         let syncedWalletTokens: Token[] = [];
