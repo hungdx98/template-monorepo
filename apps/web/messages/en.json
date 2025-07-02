@@ -23,5 +23,10 @@
   "apr": "APR",
   "explore_more": "Explore more pools",
   "search_token": "Search token",
-  "tokens": "Tokens"
+  "tokens": "Tokens",
+  "set_price_range": "Set price range",
+  "full_range": "Full Range",
+  "full_range_description": "Providing full range liquidity ensures continuous market participation across all possible prices, offering simplicity but with potential for higher impermanent loss.",
+  "custom_range_description": "Custom range allows you to concentrate your liquidity within specific price bounds, enhancing capital efficiency and fee earnings but requiring more active management.",
+  "deposit_tokens": "Deposit Tokens"
 }

@@ -34,7 +34,7 @@ export default function CreatePositionSreen() {
             <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
               1
             </div>
-            <div>
+            <div className='flex-1'>
               <p className="text-text-subtle">{t('step', { number: 1 })}</p>
               <p>{t('select_token_pair_fee')}</p>
             </div>
@@ -46,7 +46,7 @@ export default function CreatePositionSreen() {
             <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
               2
             </div>
-            <div>
+            <div className='flex-1'>
               <p className="text-text-subtle">{t('step', { number: 2 })}</p>
               <p>{t('select_token_range_amount')}</p>
             </div>

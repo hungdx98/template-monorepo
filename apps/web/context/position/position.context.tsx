@@ -17,6 +17,19 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         token1: undefined
     })
 
+    const [priceRange, setPriceRange] = useState<{ min: string; max: string }>({
+        min: '',
+        max: ''
+    })
+
+    const [depositAmount, setDepositAmount] = useState<{
+        base: string;
+        pair: string;
+    }>({
+        base: '',
+        pair: ''
+    });
+
     const [feeTier, setFeeTier] = useState<EFeeTier>(EFeeTier.STANDARD);
 
     const onChangeStep = (stepProps: EPositionStep) => () => {
@@ -30,6 +43,22 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             return;
         }
         setStep(stepProps);
+    }
+
+    const onChangePriceRange = (type: 'min' | 'max') => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setPriceRange((prev) => ({
+            ...prev,
+            [type]: value
+        }));
+    }
+
+    const onChangeDepositAmount = (type: 'base' | 'pair') => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setDepositAmount((prev) => ({
+            ...prev,
+            [type]: value
+        }));
     }
 
     const onSelectPairToken = (type: 'token0' | 'token1', token: Token) => {
@@ -69,10 +98,14 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 step,
                 pairTokens,
                 feeTier,
+                priceRange,
+                depositAmount,
                 isContinue
             },
             jobs: {
                 onChangeStep,
+                onChangeDepositAmount,
+                onChangePriceRange,
                 onSelectPairToken,
                 isPoolCreated,
                 onSelectFeeTier

@@ -15,6 +15,11 @@ export interface IStatePosition {
     step: EPositionStep;
 }
 
+export interface IPriceRange {
+    min: string;
+    max: string;
+}
+
 export interface IStatePositionPairTokens {
     token0?: Token;
     token1?: Token;
@@ -25,12 +30,19 @@ export interface IStatePositionContext {
         step: EPositionStep;
         pairTokens: IStatePositionPairTokens;
         isContinue: boolean;
+        priceRange: IPriceRange;
+        depositAmount: {
+            base: string;
+            pair: string;
+        };
     };
     jobs: {
         onChangeStep: (step: EPositionStep) => () => void;
         onSelectPairToken: (type: 'token0' | 'token1', token: Token) => void;
         isPoolCreated: (fee: string) => Promise<boolean>;
         onSelectFeeTier: (fee: EFeeTier) => () => void;
+        onChangePriceRange: (type: 'min' | 'max') => (e: React.ChangeEvent<HTMLInputElement>) => void;
+        onChangeDepositAmount: (type: 'base' | 'pair') => (e: React.ChangeEvent<HTMLInputElement>) => void;
     };
     ref: {
 
