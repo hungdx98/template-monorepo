@@ -56,18 +56,18 @@ export default function PositionCard({ position }: any) {
 
             {/* Bottom: Stats */}
             <div className="grid grid-cols-4 px-4 py-3 text-sm text-gray-300">
-                <div>
+                {/* <div>
                     <div className="text-white font-semibold">$0.49</div>
                     <div className="text-xs">Position</div>
-                </div>
+                </div> */}
                 <div>
                     <div className="text-white font-semibold">$0.00</div>
                     <div className="text-xs">Fees</div>
                 </div>
-                <div>
+                {/* <div>
                     <div className="text-white font-semibold">4.34%</div>
                     <div className="text-xs">APR</div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
