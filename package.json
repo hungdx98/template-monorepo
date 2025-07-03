@@ -2,7 +2,7 @@
   "name": "with-tailwind",
   "private": true,
   "scripts": {
-    "deploy": "next build && vercel --prebuilt --prod",
+    "deploy": "cd ./apps/web && next build && vercel --prebuilt --prod",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
