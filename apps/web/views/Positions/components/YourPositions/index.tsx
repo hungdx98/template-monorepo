@@ -12,14 +12,28 @@ import { useShallow } from 'zustand/shallow';
 import { useTokensStore } from '@/stores';
 import { Token } from '@repo/utils/types';
 import _toLower from 'lodash/toLower';
+import { convertWeiToBalance, formatNumberBro } from '@wallet/utils';
 
 export default function PositionCard({ position }: any) {
     const { token0, token1, fee } = position;
     const coinLocal = useTokensStore(useShallow((state) => state.coinLocal));
     const coinLocalCurrent = coinLocal['tomo'];
-    const token0Meta = coinLocalCurrent?.find((tk): tk is Token => _toLower(token0) === _toLower(tk.address)) as Token;
-    const token1Meta = coinLocalCurrent?.find((tk): tk is Token => _toLower(token1) === _toLower(tk.address)) as Token;
-    const actualFee = Number(fee) / 10000; // Ensure fee is a number
+    
+    const getTokenMeta = (tokenAddress: string) =>
+        coinLocalCurrent?.find((tk): tk is Token => _toLower(tokenAddress) === _toLower(tk.address)) as Token;
+
+    const token0Meta = getTokenMeta(token0);
+    const token1Meta = getTokenMeta(token1);
+
+    const token0Price = Number(_get(token0Meta, 'current_price', '0'));
+    const token1Price = Number(_get(token1Meta, 'current_price', '0'));
+    const amount0 = convertWeiToBalance(_get(position, 'amount0', '0'), _get(token0Meta, 'decimals', 18));
+    const amount1 = convertWeiToBalance(_get(position, 'amount1', '0'), _get(token1Meta, 'decimals', 18));
+    const fiatToken0 = Number(amount0) * token0Price;
+    const fiatToken1 = Number(amount1) * token1Price;
+    const totalFiatValue = fiatToken0 + fiatToken1;
+    const actualFee = Number(fee) / 10000;
+
     return (
         <div className="bg-[#121212] text-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-lg">
             {/* Top */}
@@ -56,10 +70,10 @@ export default function PositionCard({ position }: any) {
 
             {/* Bottom: Stats */}
             <div className="grid grid-cols-4 px-4 py-3 text-sm text-gray-300">
-                {/* <div>
-                    <div className="text-white font-semibold">$0.49</div>
+                <div>
+                    <div className="text-white font-semibold">${formatNumberBro(totalFiatValue, 8)}</div>
                     <div className="text-xs">Position</div>
-                </div> */}
+                </div>
                 <div>
                     <div className="text-white font-semibold">$0.00</div>
                     <div className="text-xs">Fees</div>
@@ -95,6 +109,9 @@ export const YourPositions: FC = () => {
     });
 
     if (connected) {
+        if (isLoading) return <div className="flex items-center justify-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-white"></div>
+        </div>;
         if (!_size(data)) {
             return <div className="border border-border-1-subtle rounded-xl p-6 flex flex-col items-center justify-center min-h-[200px]">
                 <div className="p-3 rounded-[8px] mb-4 bg-button-sec-fill">
