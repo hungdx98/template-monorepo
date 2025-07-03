@@ -1,0 +1,6 @@
+{
+    "buildCommand": "echo 'skip build'",
+    "outputDirectory": ".next",
+    "ignoreCommand": "echo 'skip install'",
+    "framework": "nextjs"
+}
