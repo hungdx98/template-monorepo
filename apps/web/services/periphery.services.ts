@@ -3,7 +3,7 @@ import { NFT_POSITION_MANAGER_ABI } from './abi';
 import { IAddPosition, ICreatePool, PositionInfo } from './types';
 import { FACTORY_ABI } from './abi/factory';
 import { FACTORY_ADDRESS, NFT_POSITION_MANAGER_ADDRESS } from './constants';
-
+import _get from 'lodash/get';
 export class PeripheryService {
     static client: Web3 = new Web3('https://rpc.viction.xyz');
     static nftPositionManagerAddress: string = NFT_POSITION_MANAGER_ADDRESS;
@@ -132,4 +132,156 @@ export class PeripheryService {
             }
         }
     }
+
+    static decreaseLiquidity = async (tokenId: number, wallet: string) => {
+        // Logic to decrease liquidity in a position in the Uniswap V3 pool
+        const multicallData: any[] = [];
+        const MAX_UINT128 = (2n ** 128n - 1n).toString();
+        const contractNFTManager = this.getContractNFTPositionManager();
+        const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10 minutes from now
+        try {
+            if (!contractNFTManager.methods.positions) {
+                throw new Error("positions method is not available on the contract");
+            }
+            const pos = await contractNFTManager.methods.positions(tokenId).call();
+            const liquidity = _get(pos, 'liquidity', 0n);
+            if (liquidity > 0n) {
+                const decreaseParams = {
+                    tokenId,
+                    liquidity,
+                    amount0Min: 0,
+                    amount1Min: 0,
+                    deadline: deadline
+                };
+                const call1 = this.client.eth.abi.encodeFunctionCall({
+                    "inputs": [
+                        {
+                            "components": [
+                                {
+                                    "internalType": "uint256",
+                                    "name": "tokenId",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint128",
+                                    "name": "liquidity",
+                                    "type": "uint128"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "amount0Min",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "amount1Min",
+                                    "type": "uint256"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "deadline",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "internalType": "struct INonfungiblePositionManager.DecreaseLiquidityParams",
+                            "name": "params",
+                            "type": "tuple"
+                        }
+                    ],
+                    "name": "decreaseLiquidity",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "amount0",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "amount1",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "payable",
+                    "type": "function"
+                }, [decreaseParams]);
+                multicallData.push(call1)
+            }
+
+            const call2 = this.client.eth.abi.encodeFunctionCall({
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "recipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint128",
+                        "name": "amount0Max",
+                        "type": "uint128"
+                    },
+                    {
+                        "internalType": "uint128",
+                        "name": "amount1Max",
+                        "type": "uint128"
+                    }
+                ],
+                "name": "collect",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amount0",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount1",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            }, [{
+                tokenId,
+                recipient: wallet,
+                amount0Max: MAX_UINT128,
+                amount1Max: MAX_UINT128
+            }]);
+            multicallData.push(call2);
+
+
+            const call3 = this.client.eth.abi.encodeFunctionCall({
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "burn",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            }, [tokenId]);
+            multicallData.push(call3);
+
+
+            if (!contractNFTManager.methods.multicall) {
+                throw new Error("multicall method is not available on the contract");
+            }
+            const tx = await contractNFTManager.methods.multicall(multicallData).encodeABI();
+            return {
+                from: wallet,
+                to: this.nftPositionManagerAddress,
+                data: tx,
+            };
+        } catch (error) {
+            console.error(`Error closing position ${tokenId}:`, error);
+        }
+    }
+
 }
