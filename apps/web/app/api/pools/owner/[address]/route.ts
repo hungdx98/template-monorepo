@@ -90,7 +90,6 @@ export async function GET(_req: NextRequest, props: {
             positions.push(formattedPosition);
         }
 
-        console.log('Positions:', positions);
         return NextResponse.json(
             ResponseStructure.success(
                 { count: positions.length, positions },
