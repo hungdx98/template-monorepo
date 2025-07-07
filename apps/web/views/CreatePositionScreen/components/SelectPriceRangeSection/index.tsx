@@ -4,6 +4,8 @@ import Notice from "@/components/Notice";
 import { IDepositAmount, usePositionContext } from "@/context";
 import cx from "@/utils/styled";
 import { formatNumberBro } from '@wallet/utils';
+import { Bounce, toast } from 'react-toastify'
+import ToastSuccess from "@/components/ToastSuccess";
 import get from "lodash/get";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -11,6 +13,8 @@ import React, { useEffect, useMemo, useState } from "react";
 
 export const SetInitialPrice = () => {
   const t = useTranslations();
+
+  const {state: {initialRate, pairTokens}, jobs: {setInitialRate}} = usePositionContext();
 
   return (
     <div className="bg-black text-white max-w-xl rounded-xl py-4 space-y-5">
@@ -26,14 +30,14 @@ export const SetInitialPrice = () => {
       <div className="bg-[#1E1E1E] rounded-xl px-5 py-4 space-y-2">
         <div className="text-sm text-white/70">{t('initial_price')}</div>
         <Input
-          value={0}
-          // onChange={}
+          value={initialRate}
+          onChange={e => setInitialRate(e.target.value)}
           variant="unstyled"
           placeholder="0.00"
           containerClassName="px-0"
           className="text-font-size-300 text-3xl font-medium focus:outline-none appearance-none outline-none"
         />
-        <div className="text-sm text-white/60">C98 = 1 BNB</div>
+        <div className="text-sm text-white/60 uppercase">{get(pairTokens, 'token0.symbol')} = 1 {get(pairTokens, 'token1.symbol')}</div>
       </div>
     </div>
   );
@@ -66,7 +70,8 @@ export default function SelectPriceRangeSection() {
       setPriceRange,
       onCheckAllowance,
       setAllowanceAmount,
-      onAddPoolLiquidity
+      onAddPoolLiquidity,
+      // onRevokeToken,
       // onChangeDepositAmount
     }
   } = usePositionContext()
@@ -75,6 +80,8 @@ export default function SelectPriceRangeSection() {
   const token1 = get(pairTokens, 'token1')
   const price0 = parseFloat(get(token0, 'market.current_price', '0'));
   const price1 = parseFloat(get(token1, 'market.current_price', '1'));
+
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const marketRate = useMemo(() => {
@@ -109,8 +116,8 @@ export default function SelectPriceRangeSection() {
       pair: allowance1
     })
 
-    console.log('allowance0', allowance0);
-    console.log('allowance1', allowance1);
+    console.log('allowance0', { allowance0, token0 });
+    console.log('allowance1', {allowance1, token1});
   }
 
   useEffect(() => {
@@ -141,6 +148,28 @@ export default function SelectPriceRangeSection() {
 
 
   const pairRate = `${get(token0, 'symbol', '')} = 1 ${get(token1, 'symbol', '')}`;
+
+
+  const handleAddLiquidity = async () => {
+    setIsLoading(true);
+    const hash = await onAddPoolLiquidity();
+
+    console.log('hash', hash);
+
+    if(hash && typeof hash === 'string') {
+      toast.success(<ToastSuccess message={'Success'} hash={hash}/>, {
+        type: 'success',
+        delay: 50,
+        autoClose: 15000,
+        transition: Bounce
+      })
+    } else {
+      toast.error('Failed to add liquidity')
+    }
+    setIsLoading(false);
+  }
+
+
 
   return (
     <div className="">
@@ -291,7 +320,8 @@ export default function SelectPriceRangeSection() {
         <Button
           size="lg"
           disabled={!depositAmount.base || !depositAmount.pair}
-          onClick={onAddPoolLiquidity}
+          isLoading={isLoading}
+          onClick={handleAddLiquidity}
           className="mt-4">
           Continue
         </Button>

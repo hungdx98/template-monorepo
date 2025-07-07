@@ -11,7 +11,7 @@ import { useShallow } from 'zustand/shallow';
 import { NFT_POSITION_MANANGER_ADDRESS } from '@/services/types';
 import { convertBalanceToWei } from '@wallet/utils';
 import { calculateTicks } from '@/utils';
-
+import get from 'lodash/get';
 
 const PositionContext = createContext<IStatePositionContext>({} as IStatePositionContext);
 
@@ -24,8 +24,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     
 
     const [step, setStep] = useState<EPositionStep>(EPositionStep.token_pair);
-  const [isCreatedPool, setIsCreatedPool] = useState(false);
+    const [isCreatedPool, setIsCreatedPool] = useState(false);
+    const [initialRate, setInitialRate] = useState<string>('0');
 
+    
 
     const [pairTokens, setPairTokens] = useState<IStatePositionPairTokens>({
         token0: undefined,
@@ -123,9 +125,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
 
     const onCreatePool = async () => {
+        console.log("onCreatePool", {pairTokens, feeTier, initialRate});
         const txData = await PeripheryService.createPool({
             wallet: address as string,
-            rate: 1.2, // Replace with actual rate
+            rate: Number(initialRate), // Replace with actual rate
             token0: pairTokens.token0?.address as string,
             token1: pairTokens.token1?.address as string,
             fee: Number(feeTier) * 10000 // Convert fee to basis points
@@ -137,12 +140,16 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             gasLimit: '0x0'
         })
 
-        console.log("result", result);
+        console.log("result create pool", result);
+        return get(result, 'data', '')
+
     }
 
     const onApproveToken = async (token: Token, amount:string) => {
 
-        const rawAmount = convertBalanceToWei(amount, token.decimals || 18);
+        const rawAmount = !amount || Number(amount) === 0
+            ? '0'
+            : convertBalanceToWei(amount, token.decimals || 18);
 
         const txData = await PeripheryService.approveToken({
             wallet: address as string,
@@ -156,19 +163,32 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             gasLimit: '0x0'
         })
 
-        console.log("approve", result);
+        console.log("approval hash", result);
+    }
+
+    const onRevokeToken = async () => {
+        const hash1 = await onApproveToken(pairTokens.token0 as Token, '0');
+        console.log("revoke base token", hash1);
+        const hash2 = await onApproveToken(pairTokens.token1 as Token, '0');  
+        console.log("revoke pair token", hash2);
     }
 
     const onAddPoolLiquidity = async () => {
-        // if (Number(allowanceAmount.base) < Number(depositAmount.base || '0')) {
-        //     const hash1 = await onApproveToken(pairTokens.token0 as Token, depositAmount.base || '0');
+        if(!isCreatedPool){
+            const hasCreatePool = await onCreatePool()
+            if (!hasCreatePool) {
+                return new Error("Failed to create pool");
+            }
+        }
 
-        //     console.log("approve base token", hash1);
-        // }
-        // if (Number(allowanceAmount.pair) < Number(depositAmount.pair || '0')) {
-        //     const hash2 = await onApproveToken(pairTokens.token1 as Token, depositAmount.pair || '0');
-        //     console.log("approve pair token", hash2);
-        // }
+        if (Number(allowanceAmount.base) < Number(depositAmount.base || '0')) {
+            const hash1 = await onApproveToken(pairTokens.token0 as Token, depositAmount.base || '0');
+            console.log("approve base token", hash1);
+        }
+        if (Number(allowanceAmount.pair) < Number(depositAmount.pair || '0')) {
+            const hash2 = await onApproveToken(pairTokens.token1 as Token, depositAmount.pair || '0');
+            console.log("approve pair token", hash2);
+        }
 
         const tickSpacing = await PeripheryService.getTickSpacingForFee(Number(feeTier) * 10000);
 
@@ -201,7 +221,8 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             gas: '0x0'
         })
 
-        console.log("result", result);
+        return get(result, 'data', '')
+
     }
 
     const [isContinue] = useMemo(() => {
@@ -218,6 +239,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 priceRange,
                 depositAmount,
                 isCreatedPool,
+                initialRate,
                 isContinue
             },
             jobs: {
@@ -233,7 +255,9 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 onSelectFeeTier,
                 onCheckAllowance,
                 setAllowanceAmount,
-                onAddPoolLiquidity
+                onAddPoolLiquidity,
+                setInitialRate,
+                onRevokeToken
             }
         }}>
             {children}

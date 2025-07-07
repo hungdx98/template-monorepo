@@ -61,14 +61,13 @@ export class PeripheryService {
         }
 
         const spender = this.nftPositionManagerAddress; // NFT_POSITION_MANANGER_ADDRESS
-        const amountHex = this.client.utils.toHex(amount); // Convert amount to hex
+        const amountHex = `0x${Number(amount).toString(16)}`; // Convert amount to hex
 
-        const rawApproveAmountHex = this.client.utils.isHexStrict(amount) ? amount : this.client.utils.toHex(amount)
-
-        console.log("rawApproveAmountHex", rawApproveAmountHex);
+        // const rawApproveAmountHex = this.client.utils.isHexStrict(amount) ? amount : this.client.utils.toHex(amount)
+        // console.log("rawApproveAmountHex", rawApproveAmountHex);
 
         console.log("approveToken", { wallet, token, amount, amountHex });
-        const dataTx = contract?.methods?.approve(spender, rawApproveAmountHex).encodeABI()
+        const dataTx = contract?.methods?.approve(spender, amountHex).encodeABI()
 
         const tx: Transaction = {
             from: wallet, // Replace with your wallet address

@@ -12,6 +12,8 @@ const MainHeader = () => {
   const { openWalletModal } = useWalletModal();
   const { connected, disconnect, address = '' } = useWallet();
 
+ 
+
   const handleLogin = async () => {
     try {
       setIsLoading(true);
@@ -44,20 +46,22 @@ const MainHeader = () => {
   }, [isLoading, connected, address]);
 
   return (
-    <div className="flex items-center justify-between p-4 border border-border-1-subtle sticky top-0 z-50 bg-background h-20">
-      <div className='flex items-center gap-x-4'>
-        <Image
-          width={40}
-          height={40}
-          alt="Baryon Logo"
-          src={'/images/logo/baryon.svg'}
-        />
-        <h1>BARYON</h1>
+    <div>
+      <div className="flex items-center justify-between p-4 border border-border-1-subtle sticky top-0 z-50 bg-background h-20">
+        <div className='flex items-center gap-x-4'>
+          <Image
+            width={40}
+            height={40}
+            alt="Baryon Logo"
+            src={'/images/logo/baryon.svg'}
+          />
+          <h1>BARYON</h1>
+        </div>
+        {renderButton}
       </div>
-
-      {renderButton}
-
+     
     </div>
+   
   );
 }
 

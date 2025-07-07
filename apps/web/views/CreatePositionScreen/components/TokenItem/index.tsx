@@ -15,7 +15,7 @@ export default function TokenItem({ token }: TokenItemProps) {
         </div>
         <div>
           <h2 className="text-lg font-semibold">{get(token, 'name')}</h2>
-          <p className="text-sm text-text-subtle">{get(token, 'symbol')}</p>
+          <p className="text-sm text-text-subtle uppercase">{get(token, 'symbol')}</p>
         </div>
       </div>
       <div className="text-right">
