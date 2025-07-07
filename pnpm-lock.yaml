@@ -22,7 +22,7 @@ patchedDependencies:
     hash: zhmsh4xsj72urvlqiykt7viqty
     path: patches/@wallet__core@3.1.21.patch
   '@wallet/evm@3.1.21':
-    hash: nqfika5z3anzdzaclli5aor4cm
+    hash: 2znpcsihgnnwp7ja3vm2tw32ha
     path: patches/@wallet__evm@3.1.21.patch
 
 importers:
@@ -67,7 +67,7 @@ importers:
         version: 3.1.21(patch_hash=zhmsh4xsj72urvlqiykt7viqty)(react@19.1.0)
       '@wallet/evm':
         specifier: 3.1.21
-        version: 3.1.21(patch_hash=nqfika5z3anzdzaclli5aor4cm)(@solana/sysvars@2.1.1)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.80.1)(react@19.1.0)(tslib@2.8.1)(typescript@5.8.2)(ws@8.18.3)
+        version: 3.1.21(patch_hash=2znpcsihgnnwp7ja3vm2tw32ha)(@solana/sysvars@2.1.1)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.80.1)(react@19.1.0)(tslib@2.8.1)(typescript@5.8.2)(ws@8.18.3)
       '@wallet/utils':
         specifier: 3.1.21
         version: 3.1.21(react@19.1.0)
@@ -8193,7 +8193,7 @@ packages:
     dev: false
     patched: true
 
-  /@wallet/evm@3.1.21(patch_hash=nqfika5z3anzdzaclli5aor4cm)(@solana/sysvars@2.1.1)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.80.1)(react@19.1.0)(tslib@2.8.1)(typescript@5.8.2)(ws@8.18.3):
+  /@wallet/evm@3.1.21(patch_hash=2znpcsihgnnwp7ja3vm2tw32ha)(@solana/sysvars@2.1.1)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.80.1)(react@19.1.0)(tslib@2.8.1)(typescript@5.8.2)(ws@8.18.3):
     resolution: {integrity: sha512-4nJI2/dR7VtYocPQNKznm1XjYqqD3RODV+Sdi5AOxklGVfrCUakBzc0XeBifZlg9bB0azIL+/YJUckPXEPEm4A==}
     engines: {node: '>=10'}
     dependencies:
@@ -13573,8 +13573,6 @@ packages:
   /lightningcss-darwin-arm64@1.27.0:
     resolution: {integrity: sha512-Gl/lqIXY+d+ySmMbgDf0pgaWSqrWYxVHoc88q+Vhf2YNzZ8DwoRzGt5NZDVqqIW5ScpSnmmjcgXP87Dn2ylSSQ==}
     engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [darwin]
     requiresBuild: true
     dev: false
     optional: true
@@ -13591,8 +13589,6 @@ packages:
   /lightningcss-darwin-x64@1.27.0:
     resolution: {integrity: sha512-0+mZa54IlcNAoQS9E0+niovhyjjQWEMrwW0p2sSdLRhLDc8LMQ/b67z7+B5q4VmjYCMSfnFi3djAAQFIDuj/Tg==}
     engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [darwin]
     requiresBuild: true
     dev: false
     optional: true
@@ -13609,8 +13605,6 @@ packages:
   /lightningcss-freebsd-x64@1.27.0:
     resolution: {integrity: sha512-n1sEf85fePoU2aDN2PzYjoI8gbBqnmLGEhKq7q0DKLj0UTVmOTwDC7PtLcy/zFxzASTSBlVQYJUhwIStQMIpRA==}
     engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [freebsd]
     requiresBuild: true
     dev: false
     optional: true
@@ -13627,8 +13621,6 @@ packages:
   /lightningcss-linux-arm-gnueabihf@1.27.0:
     resolution: {integrity: sha512-MUMRmtdRkOkd5z3h986HOuNBD1c2lq2BSQA1Jg88d9I7bmPGx08bwGcnB75dvr17CwxjxD6XPi3Qh8ArmKFqCA==}
     engines: {node: '>= 12.0.0'}
-    cpu: [arm]
-    os: [linux]
     requiresBuild: true
     dev: false
     optional: true
@@ -13645,8 +13637,6 @@ packages:
   /lightningcss-linux-arm64-gnu@1.27.0:
     resolution: {integrity: sha512-cPsxo1QEWq2sfKkSq2Bq5feQDHdUEwgtA9KaB27J5AX22+l4l0ptgjMZZtYtUnteBofjee+0oW1wQ1guv04a7A==}
     engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
     requiresBuild: true
     dev: false
     optional: true
@@ -13663,8 +13653,6 @@ packages:
   /lightningcss-linux-arm64-musl@1.27.0:
     resolution: {integrity: sha512-rCGBm2ax7kQ9pBSeITfCW9XSVF69VX+fm5DIpvDZQl4NnQoMQyRwhZQm9pd59m8leZ1IesRqWk2v/DntMo26lg==}
     engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [linux]
     requiresBuild: true
     dev: false
     optional: true
@@ -13681,8 +13669,6 @@ packages:
   /lightningcss-linux-x64-gnu@1.27.0:
     resolution: {integrity: sha512-Dk/jovSI7qqhJDiUibvaikNKI2x6kWPN79AQiD/E/KeQWMjdGe9kw51RAgoWFDi0coP4jinaH14Nrt/J8z3U4A==}
     engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
     requiresBuild: true
     dev: false
     optional: true
@@ -13699,8 +13685,6 @@ packages:
   /lightningcss-linux-x64-musl@1.27.0:
     resolution: {integrity: sha512-QKjTxXm8A9s6v9Tg3Fk0gscCQA1t/HMoF7Woy1u68wCk5kS4fR+q3vXa1p3++REW784cRAtkYKrPy6JKibrEZA==}
     engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [linux]
     requiresBuild: true
     dev: false
     optional: true
@@ -13717,8 +13701,6 @@ packages:
   /lightningcss-win32-arm64-msvc@1.27.0:
     resolution: {integrity: sha512-/wXegPS1hnhkeG4OXQKEMQeJd48RDC3qdh+OA8pCuOPCyvnm/yEayrJdJVqzBsqpy1aJklRCVxscpFur80o6iQ==}
     engines: {node: '>= 12.0.0'}
-    cpu: [arm64]
-    os: [win32]
     requiresBuild: true
     dev: false
     optional: true
@@ -13735,8 +13717,6 @@ packages:
   /lightningcss-win32-x64-msvc@1.27.0:
     resolution: {integrity: sha512-/OJLj94Zm/waZShL8nB5jsNj3CfNATLCTyFxZyouilfTmSoLDX7VlVAmhPHoZWVFp4vdmoiEbPEYC8HID3m6yw==}
     engines: {node: '>= 12.0.0'}
-    cpu: [x64]
-    os: [win32]
     requiresBuild: true
     dev: false
     optional: true
