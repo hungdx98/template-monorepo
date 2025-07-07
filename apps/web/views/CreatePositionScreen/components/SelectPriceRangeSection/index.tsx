@@ -1,17 +1,17 @@
-import React, { use, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import cx from "@/utils/styled";
-import { usePositionContext } from "@/context";
+import { IDepositAmount, usePositionContext } from "@/context";
 import get from "lodash/get";
 import Image from "next/image";
 import { Input } from "@/components/Input";
 import Button from "@/components/Button";
-export default function SelectPriceRangeSection() {
+import { formatNumberBro } from '@wallet/utils';
 
+
+export default function SelectPriceRangeSection() {
   const t = useTranslations();
   const [rangeMode, setRangeMode] = useState<"full" | "custom">("custom");
-  const [minPrice, setMinPrice] = useState(2284.7593);
-  const [maxPrice, setMaxPrice] = useState(2651.8386);
 
   const {
     state: {
@@ -21,51 +21,116 @@ export default function SelectPriceRangeSection() {
     },
     jobs: {
       onChangePriceRange,
-      onChangeDepositAmount
+      setDepositAmount,
+      setPriceRange,
+      onCheckAllowance,
+      setAllowanceAmount,
+      onAddPoolLiquidity
+      // onChangeDepositAmount
     }
 } = usePositionContext()
 
+
+  console.log('pairTokens', pairTokens);
+
   const token0 = get(pairTokens, 'token0')
   const token1 = get(pairTokens, 'token1')
+  const price0 = parseFloat(get(token0, 'market.current_price', '0'));
+  const price1 = parseFloat(get(token1, 'market.current_price', '1'));
 
-  const adjustPrice = (
-    type: "min" | "max",
-    delta: number
-  ) => {
-    if (type === "min") {
-      setMinPrice((prev) => prev + delta);
-    } else {
-      setMaxPrice((prev) => prev + delta);
-    }
-  };
 
-  const handleChangePrice = (type: "min" | "max") => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const marketRate = useMemo(() => {
+    if (!token0 || !token1) return 0;
+   
+    return Number(price0 / price1).toFixed(4);
+  }, [token0, token1]);
+
+  const handleChangeDepositAmount = (type: "base" | "pair") => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (type === "min") {
-      setMinPrice(value ? parseFloat(value) : 0);
-    } else {
-      setMaxPrice(value ? parseFloat(value) : 0);
+    if(!value) return setDepositAmount({ base: '', pair: '' } as IDepositAmount);
+    const rate = type === "base"
+      ? price0 / price1
+      : price1 / price0;
+    const otherValue = Number(value) === 0 ? '0' : (parseFloat(value) * rate).toFixed(4).toString();
+    
+    const depositAmount = {
+      [type]: value,
+      [type === "base" ? "pair" : "base"]: otherValue
     }
+    setDepositAmount(depositAmount as IDepositAmount);
+    
   };
+
+  const handleCheckAllowance = async () => {
+    if(!token0 || !token1) return;
+    const allowance0 = await onCheckAllowance(token0);
+    const allowance1 = await onCheckAllowance(token1);
+
+    setAllowanceAmount({
+      base: allowance0,
+      pair: allowance1})
+
+    console.log('allowance0', allowance0);
+    console.log('allowance1', allowance1);
+  }
+
+  useEffect(() => {
+    handleCheckAllowance()
+  },[])
+
+  useEffect(() => {
+    handleSetInitPriceRange()
+  }, [rangeMode]);
+
+
+
+  const handleSetInitPriceRange = () => {
+    if(rangeMode === "full") {
+      return setPriceRange({
+        min: '0',
+        max: '0'
+      });
+    }
+    const pairRate = price1/price0
+    const minPrice = pairRate * 0.95
+    const maxPrice = pairRate * 1.05;
+    setPriceRange({
+      min: minPrice.toFixed(4).toString(),
+      max: maxPrice.toFixed(4).toString()
+    })
+  }
+
+
+  const pairRate = `${get(token0, 'symbol', '')} = 1 ${get(token1, 'symbol', '')}`;
 
 
 
   return (
     <div className="">
-      <div className="flex items-center mb-4 rounded-border-radius-huge border border-border-1-subtle p-5">
-
-        <div className="flex items-center gap-x-space-100 mr-4">
-          <div className="relative w-12 h-12 rounded-full flex items-center justify-center">
-              <Image width={48} height={48} src={get(token0, 'image', '')} alt="token" className="rounded-full"/>
+      <div className="rounded-border-radius-huge border border-border-1-subtle p-5 mb-4">
+        <div className="flex items-center">
+          <div className="flex items-center gap-x-space-100 mr-4">
+            <div className="relative w-12 h-12 rounded-full flex items-center justify-center">
+              <Image width={48} height={48} src={get(token0, 'image', '')} alt="token" className="rounded-full" />
+            </div>
+            <div className="relative w-12 h-12 rounded-full flex items-center justify-center">
+              <Image width={48} height={48} src={get(token1, 'image', '')} alt="token" className="rounded-full" />
+            </div>
           </div>
-           <div className="relative w-12 h-12 rounded-full flex items-center justify-center">
-              <Image width={48} height={48} src={get(token1, 'image', '')} alt="token" className="rounded-full"/>
-          </div>
+          <div className="text-2xl font-bold mr-2 uppercase">{token0?.symbol} / {token1?.symbol}</div>
+          <span className="bg-gray-700 text-xs px-2 py-1 rounded">v3</span>
+          <span className="ml-2 bg-gray-700 text-xs px-2 py-1 rounded">0.05%</span>
         </div>
-        <div className="text-2xl font-bold mr-2 uppercase">{token0?.symbol} / {token1?.symbol}</div>
-        <span className="bg-gray-700 text-xs px-2 py-1 rounded">v3</span>
-        <span className="ml-2 bg-gray-700 text-xs px-2 py-1 rounded">0.05%</span>
+
+        <div className="flex items-center mt-2">
+          <p className="text-text-subtle">Market price:</p>
+          <p className="uppercase ml-1">1 {get(token0, 'symbol')} ~ {marketRate} {get(token1, 'symbol')}</p>
+          <p className="text-text-subtle ml-1">(${formatNumberBro(get(token1, 'market.current_price', '0'), 2)})</p>
+        </div>
+       
+
       </div>
+    
 
       <div className="rounded-border-radius-huge border border-border-1-subtle p-5 ">
         <div className="text-font-size-300 mb-4">{t('set_price_range')}</div>
@@ -110,7 +175,7 @@ export default function SelectPriceRangeSection() {
                 className="text-font-size-300"
               />
             </div>
-            <div className="text-xs mt-1 text-gray-400"> = 1 ETH</div>
+            <div className="text-xs mt-1 text-gray-400 uppercase"> {pairRate}</div>
           </div>
 
           <div className="bg-background-2 p-4 rounded-border-radius-large">
@@ -125,7 +190,7 @@ export default function SelectPriceRangeSection() {
                 className="text-font-size-300"
               />
             </div>
-            <div className="text-xs mt-1 text-gray-400">{token0?.symbol} = 1 {token1?.symbol}</div>
+            <div className="text-xs mt-1 text-gray-400 uppercase">{pairRate}</div>
           </div>
         </div>
 
@@ -137,19 +202,24 @@ export default function SelectPriceRangeSection() {
               <div className="flex flex-col">
                 <Input 
                   value={depositAmount.base}
-                  onChange={onChangeDepositAmount('base')}
+                  onChange={handleChangeDepositAmount('base')}
                   variant="unstyled" 
                   placeholder="0" 
                   containerClassName="px-0" 
                   className="text-font-size-300"
                 />
-                <p className="text-text-subtle">$0</p>
+                <p className="text-text-subtle">${price0 * Number(depositAmount.base)}</p>
               </div>
-              <div className="flex items-center gap-x-space-100">
-                <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
-                  <Image width={32} height={32} src={get(token0, 'image', '')} alt="token" className="rounded-full"/>
+
+              <div className="flex flex-col gap-y-space-100">
+                <div className="flex items-center gap-x-space-100">
+                  <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
+                    <Image width={32} height={32} src={get(token0, 'image', '')} alt="token" className="rounded-full"/>
+                  </div>
+                  <p className="uppercase">{token0?.symbol}</p>
                 </div>
-                <p className="uppercase">{token0?.symbol}</p>
+                <div className="uppercase text-font-size-175 text-text-subtle">{formatNumberBro(get(token0, 'balance', '0'), 4)} {get(token0, 'symbol')}</div>
+
               </div>
             </div>
           </div>
@@ -159,19 +229,22 @@ export default function SelectPriceRangeSection() {
               <div className="flex flex-col">
                 <Input 
                   value={depositAmount.pair}
-                  onChange={onChangeDepositAmount('pair')}
+                  onChange={handleChangeDepositAmount('pair')}
                   variant="unstyled" 
                   placeholder="0" 
                   containerClassName="px-0" 
                   className="text-font-size-300"
                 />
-                <p className="text-text-subtle">$0</p>
+                <p className="text-text-subtle">${price1 * Number(depositAmount.pair)}</p>
               </div>
-              <div className="flex items-center gap-x-space-100">
-                <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
-                  <Image width={32} height={32} src={get(token1, 'image', '')} alt="token" className="rounded-full"/>
+              <div className="flex flex-col gap-y-space-100">
+                <div className="flex items-center gap-x-space-100">
+                  <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
+                    <Image width={32} height={32} src={get(token1, 'image', '')} alt="token" className="rounded-full"/>
+                  </div>
+                  <p className="uppercase">{token1?.symbol}</p>
                 </div>
-                <p className="uppercase">{token1?.symbol}</p>
+                <div className="uppercase text-font-size-175 text-text-subtle">{formatNumberBro(get(token1, 'balance', '0'), 4)} {get(token1, 'symbol')}</div>
               </div>
             </div>
           </div>
@@ -180,6 +253,8 @@ export default function SelectPriceRangeSection() {
 
         <Button 
           size="lg" 
+          disabled={!depositAmount.base || !depositAmount.pair}
+          onClick={onAddPoolLiquidity}
           className="mt-4">
             Continue
         </Button>

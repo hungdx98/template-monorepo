@@ -11,9 +11,9 @@ import cx from "@/utils/styled";
 
 const SelectPairSection = () => {
 
-  const { state: {  pairTokens, isContinue, feeTier }, jobs: { 
-    onChangeStep, onSelectPairToken, onSelectFeeTier ,
-    isPoolCreated
+  const { state: {  pairTokens, isContinue, feeTier, isCreatedPool }, jobs: { 
+    onChangeStep, onSelectPairToken, onSelectFeeTier , setIsCreatedPool,
+    isPoolCreated, onCreatePool
   } 
 } = usePositionContext();
   const { tokens } = useTokenStore();
@@ -21,24 +21,28 @@ const SelectPairSection = () => {
   const t = useTranslations()
   const [isDisplayMoreFee, setIsDisplayMoreFee] = useState(false);
 
-  const [isCreatedPool, setIsCreatedPool] = useState(false);
 
 
    const checkIsCreatedPool = async() => {
       const isCreated = await isPoolCreated(feeTier.toString());
-      console.log("isCreatedPool", isCreated);
       setIsCreatedPool(isCreated);
     }
   
     useEffect(() => {
       checkIsCreatedPool()
-    }, [feeTier])
+    }, [feeTier, JSON.stringify(pairTokens)]);
 
 
   const onShoMoreFee = () => {
     if(!pairTokens.token0 || !pairTokens.token1) return
     setIsDisplayMoreFee(!isDisplayMoreFee)
   };
+
+  const handleContinue = () => {
+    onChangeStep(EPositionStep.price_range)
+  }
+
+
   
 
   return (
@@ -99,9 +103,10 @@ const SelectPairSection = () => {
           <Button
             size='lg'
             disabled={!isContinue}
-            onClick={onChangeStep(EPositionStep.price_range)}
+            onClick={handleContinue}
           >
-            {isCreatedPool ? t('continue') : t('create_pool')}
+            {/* {isCreatedPool ? t('continue') : t('create_pool')} */}
+            {t('continue')}
           </Button>
         </div>
       </div>

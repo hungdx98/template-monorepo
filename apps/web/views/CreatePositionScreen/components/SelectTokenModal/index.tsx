@@ -20,8 +20,6 @@ const SelectTokenModal = (props: SelectTokenModalProps) => {
 
   const t = useTranslations();
 
- 
-
   const filteredTokens = useMemo(() => {
     return listToken?.filter((token) => {
       const tokenName = _get(token, 'name', '').toLowerCase();
