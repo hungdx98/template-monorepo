@@ -7,6 +7,8 @@ import Image from "next/image";
 import { Input } from "@/components/Input";
 import Button from "@/components/Button";
 import { formatNumberBro } from '@wallet/utils';
+import { Bounce, toast } from 'react-toastify'
+import ToastSuccess from "@/components/ToastSuccess";
 
 
 export default function SelectPriceRangeSection() {
@@ -25,7 +27,8 @@ export default function SelectPriceRangeSection() {
       setPriceRange,
       onCheckAllowance,
       setAllowanceAmount,
-      onAddPoolLiquidity
+      onAddPoolLiquidity,
+      // onRevokeToken,
       // onChangeDepositAmount
     }
 } = usePositionContext()
@@ -37,6 +40,8 @@ export default function SelectPriceRangeSection() {
   const token1 = get(pairTokens, 'token1')
   const price0 = parseFloat(get(token0, 'market.current_price', '0'));
   const price1 = parseFloat(get(token1, 'market.current_price', '1'));
+
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const marketRate = useMemo(() => {
@@ -70,8 +75,8 @@ export default function SelectPriceRangeSection() {
       base: allowance0,
       pair: allowance1})
 
-    console.log('allowance0', allowance0);
-    console.log('allowance1', allowance1);
+    console.log('allowance0', { allowance0, token0 });
+    console.log('allowance1', {allowance1, token1});
   }
 
   useEffect(() => {
@@ -102,6 +107,34 @@ export default function SelectPriceRangeSection() {
 
 
   const pairRate = `${get(token0, 'symbol', '')} = 1 ${get(token1, 'symbol', '')}`;
+
+
+  const handleAddLiquidity = async () => {
+    setIsLoading(true);
+    const hash = await onAddPoolLiquidity();
+
+    console.log('hash', hash);
+
+    if(hash){
+      toast.success(<ToastSuccess message={'Success'} hash={hash}/>, {
+        type: 'success',
+        delay: 50,
+        autoClose: 15000,
+        transition: Bounce
+      })
+    }
+    setIsLoading(false);
+  }
+
+
+  useEffect(() => {
+    toast.success(<ToastSuccess message={'Success'} hash="0x72c4e398b286598f0960cde936728bdf07983554737429a0bc0296a4d979b835"/>, {
+      type: 'success',
+      delay: 50,
+      autoClose: 25000,
+      transition: Bounce
+    })
+  }, [])
 
 
 
@@ -254,7 +287,8 @@ export default function SelectPriceRangeSection() {
         <Button 
           size="lg" 
           disabled={!depositAmount.base || !depositAmount.pair}
-          onClick={onAddPoolLiquidity}
+          isLoading={isLoading}
+          onClick={handleAddLiquidity}
           className="mt-4">
             Continue
         </Button>

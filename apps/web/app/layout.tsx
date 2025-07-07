@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FC, PropsWithChildren, Suspense } from "react";
+import 'react-toastify/dist/ReactToastify.min.css'
 import "./globals.css";
 import MainHeader from "../layouts/MainHeader";
 import Providers from "../layouts/Providers/Provider";
@@ -8,6 +9,8 @@ import { AdapterProvider } from "@/context";
 import InitializeService from "./InitializeService";
 import { getCoinsService } from "@/services/handler";
 import { BalanceProvider } from "@/context/Balance";
+import ToastContainer from "@/layouts/ToastContainer";
+
 
 export const metadata: Metadata = {
   title: "Baryon",
@@ -18,6 +21,8 @@ export default async function RootLayout({
   children,
 }: Readonly<PropsWithChildren>) {
   const { coinLocal, coinGecko } = await getCoinsService();
+
+  
 
   return (
     <html lang="en" data-theme="dark" className="dark">
@@ -31,9 +36,11 @@ export default async function RootLayout({
                 {children}
               </Suspense>
               <Modal />
+              <ToastContainer/>
             </Providers>
           </BalanceProvider>
         </AdapterProvider>
+        
       </body>
     </html>
   );
