@@ -106,14 +106,6 @@ export class PeripheryService {
         return tx;
     }
 
-    static removePosition = async () => {
-        // Logic to remove an existing position from the Uniswap V3 pool
-    }
-
-    static collectFees = async () => {
-        // Logic to collect fees from a position in the Uniswap V3 pool
-    }
-
     static getTotalSupplyNFT = async (): Promise<number> => {
         const contract = this.getContractNFTPositionManager();
         if (!contract.methods.totalSupply) {
