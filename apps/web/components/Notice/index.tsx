@@ -1,8 +1,7 @@
 import cx from "@/utils/styled";
-import { CircleAlert, CircleCheck } from "lucide-react"
 import { useTranslations } from "next-intl";
 import { FC, HTMLAttributes, PropsWithChildren, useMemo } from "react";
-
+import { Icon } from '@/components/Icon'
 export interface NoticeProps extends HTMLAttributes<HTMLSpanElement> {
     className?: string;
     icon?: 'warning' | 'success';
@@ -20,18 +19,18 @@ const Notice: FC<PropsWithChildren<NoticeProps>> = ({
 }) => {
     const t = useTranslations();
 
-    const IconComp = useMemo(
+    const iconName = useMemo(
         () =>
         ({
-            warning: CircleAlert,
-            success: CircleCheck,
+            warning: 'icon-app_status_warning',
+            success: 'icon-app_status_warning'
         }[icon]),
         [icon],
     );
 
     return <div className={cx("bg-[#1E1E1E] text-sm text-white rounded-lg p-4 flex items-start gap-3 max-w-xl mt-4", className)}>
         <div className="pt-1">
-            {!!IconComp && <IconComp className="text-white/70 w-5 h-5" />}
+            {!!iconName && <Icon name={iconName} className="text-white/70 w-5 h-5" />}
         </div>
         <div className="space-y-1">
             <div className="font-medium">{t(content)}</div>
