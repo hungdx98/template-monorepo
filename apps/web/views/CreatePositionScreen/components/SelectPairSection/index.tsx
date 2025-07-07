@@ -39,9 +39,7 @@ const SelectPairSection = () => {
   };
 
   const handleContinue = () => {
-    if(isCreatedPool){
-      return onChangeStep(EPositionStep.price_range)
-    }
+    onChangeStep(EPositionStep.price_range)
   }
 
 
