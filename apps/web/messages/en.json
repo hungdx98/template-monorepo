@@ -31,5 +31,8 @@
   "create_pool": "Create Pool",
   "continue": "Continue",
   "create_new_pool": "Create new pool",
-  "create_new_pool_description": "Your selections will create a new liquidity pool which may result in lower initial liquidity and increased volatility. Consider adding to an existing pool to minimize these risks."
+  "create_new_pool_description": "Your selections will create a new liquidity pool which may result in lower initial liquidity and increased volatility. Consider adding to an existing pool to minimize these risks.",
+  "initial_price": "Initial Price",
+  "set_initial_price": "Set initial price",
+  "set_initial_price_description": "When creating a new pool, you must set the starting exchange rate for both tokens. This rate will reflect the initial market price."
 }

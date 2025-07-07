@@ -10,19 +10,21 @@ import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
 
 export const SetInitialPrice = () => {
+  const t = useTranslations();
+
   return (
     <div className="bg-black text-white max-w-xl rounded-xl py-4 space-y-5">
       {/* Title + subtitle */}
       <div className="space-y-1">
-        <h2 className="text-lg font-semibold">Set initial price</h2>
+        <h2 className="text-lg font-semibold">{t('set_initial_price')}</h2>
         <p className="text-sm text-white/70">
-          When creating a new pool, you must set the starting exchange rate for both tokens. This rate will reflect the initial market price.
+          {t('set_initial_price_description')}
         </p>
       </div>
 
       {/* Price box */}
       <div className="bg-[#1E1E1E] rounded-xl px-5 py-4 space-y-2">
-        <div className="text-sm text-white/70">Initial price</div>
+        <div className="text-sm text-white/70">{t('initial_price')}</div>
         <Input
           value={0}
           // onChange={}
