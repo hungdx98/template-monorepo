@@ -25,6 +25,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const [step, setStep] = useState<EPositionStep>(EPositionStep.token_pair);
     const [isCreatedPool, setIsCreatedPool] = useState(false);
+    const [initialRate, setInitialRate] = useState<string>('0');
 
     
 
@@ -124,9 +125,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
 
     const onCreatePool = async () => {
+        console.log("onCreatePool", {pairTokens, feeTier, initialRate});
         const txData = await PeripheryService.createPool({
             wallet: address as string,
-            rate: 1.2, // Replace with actual rate
+            rate: Number(initialRate), // Replace with actual rate
             token0: pairTokens.token0?.address as string,
             token1: pairTokens.token1?.address as string,
             fee: Number(feeTier) * 10000 // Convert fee to basis points
@@ -138,7 +140,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             gasLimit: '0x0'
         })
 
-        console.log("result", result);
+        console.log("result create pool", result);
         return get(result, 'data', '')
 
     }
@@ -172,6 +174,13 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }
 
     const onAddPoolLiquidity = async () => {
+        if(!isCreatedPool){
+            const hasCreatePool = await onCreatePool()
+            if (!hasCreatePool) {
+                return new Error("Failed to create pool");
+            }
+        }
+
         if (Number(allowanceAmount.base) < Number(depositAmount.base || '0')) {
             const hash1 = await onApproveToken(pairTokens.token0 as Token, depositAmount.base || '0');
             console.log("approve base token", hash1);
@@ -230,6 +239,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 priceRange,
                 depositAmount,
                 isCreatedPool,
+                initialRate,
                 isContinue
             },
             jobs: {
@@ -246,6 +256,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 onCheckAllowance,
                 setAllowanceAmount,
                 onAddPoolLiquidity,
+                setInitialRate,
                 onRevokeToken
             }
         }}>

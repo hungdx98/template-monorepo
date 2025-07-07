@@ -36,6 +36,7 @@ export interface IStatePositionContext {
         isContinue: boolean;
         priceRange: IPriceRange;
         isCreatedPool: boolean;
+        initialRate: string;
         depositAmount: {
             base: string;
             pair: string;
@@ -51,8 +52,9 @@ export interface IStatePositionContext {
         setDepositAmount: (params:IDepositAmount) => void;
         setPriceRange: (params:IPriceRange) => void;
         setIsCreatedPool: (params:boolean) => void;
-        onCreatePool: () => Promise<void>;
-        onAddPoolLiquidity: () => Promise<void>;
+        setInitialRate: (params:string) => void;
+        onCreatePool: () => Promise<string | any>;
+        onAddPoolLiquidity: () => Promise<string | any>;
 
         setAllowanceAmount: (params: { base: string; pair: string }) => void;
         onCheckAllowance: (token: Token) => Promise<string>;

@@ -14,6 +14,8 @@ import React, { useEffect, useMemo, useState } from "react";
 export const SetInitialPrice = () => {
   const t = useTranslations();
 
+  const {state: {initialRate, pairTokens}, jobs: {setInitialRate}} = usePositionContext();
+
   return (
     <div className="bg-black text-white max-w-xl rounded-xl py-4 space-y-5">
       {/* Title + subtitle */}
@@ -28,14 +30,14 @@ export const SetInitialPrice = () => {
       <div className="bg-[#1E1E1E] rounded-xl px-5 py-4 space-y-2">
         <div className="text-sm text-white/70">{t('initial_price')}</div>
         <Input
-          value={0}
-          // onChange={}
+          value={initialRate}
+          onChange={e => setInitialRate(e.target.value)}
           variant="unstyled"
           placeholder="0.00"
           containerClassName="px-0"
           className="text-font-size-300 text-3xl font-medium focus:outline-none appearance-none outline-none"
         />
-        <div className="text-sm text-white/60">C98 = 1 BNB</div>
+        <div className="text-sm text-white/60 uppercase">{get(pairTokens, 'token0.symbol')} = 1 {get(pairTokens, 'token1.symbol')}</div>
       </div>
     </div>
   );
@@ -154,13 +156,15 @@ export default function SelectPriceRangeSection() {
 
     console.log('hash', hash);
 
-    if(hash){
+    if(hash && typeof hash === 'string') {
       toast.success(<ToastSuccess message={'Success'} hash={hash}/>, {
         type: 'success',
         delay: 50,
         autoClose: 15000,
         transition: Bounce
       })
+    } else {
+      toast.error('Failed to add liquidity')
     }
     setIsLoading(false);
   }
