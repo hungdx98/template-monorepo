@@ -255,7 +255,7 @@ export default function SelectPriceRangeSection() {
                   </div>
                   <p className="uppercase">{token0?.symbol}</p>
                 </div>
-                <div className="uppercase text-font-size-175 text-text-subtle">{formatNumberBro(get(token0, 'balance', '0'), 4)} {get(token0, 'symbol')}</div>
+                <div className="uppercase text-font-size-175 text-text-subtle text-right">{formatNumberBro(get(token0, 'balance', '0'), 4)} {get(token0, 'symbol')}</div>
 
               </div>
             </div>
@@ -281,7 +281,7 @@ export default function SelectPriceRangeSection() {
                   </div>
                   <p className="uppercase">{token1?.symbol}</p>
                 </div>
-                <div className="uppercase text-font-size-175 text-text-subtle">{formatNumberBro(get(token1, 'balance', '0'), 4)} {get(token1, 'symbol')}</div>
+                <div className="uppercase text-font-size-175 text-text-subtle text-right">{formatNumberBro(get(token1, 'balance', '0'), 4)} {get(token1, 'symbol')}</div>
               </div>
             </div>
           </div>
