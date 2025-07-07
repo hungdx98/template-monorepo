@@ -32,3 +32,5 @@ export interface ICreatePool {
     token1: string; // Address of token1
     fee: number; // Fee tier (e.g., 500, 3000, 10000)
 }
+
+export const NFT_POSITION_MANANGER_ADDRESS = "0x0762f5542f5436d56b7a1FcD70879eCF1Ea167b8";
