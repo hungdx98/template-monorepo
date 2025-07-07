@@ -4,6 +4,7 @@ import { IAddPosition, ICreatePool, PositionInfo } from './types';
 import { FACTORY_ABI } from './abi/factory';
 import { FACTORY_ADDRESS, NFT_POSITION_MANAGER_ADDRESS } from './constants';
 import _get from 'lodash/get';
+import { POOL_ABI } from './abi/pool';
 export class PeripheryService {
     static client: Web3 = new Web3('https://rpc.viction.xyz');
     static nftPositionManagerAddress: string = NFT_POSITION_MANAGER_ADDRESS;
@@ -283,5 +284,20 @@ export class PeripheryService {
             console.error(`Error closing position ${tokenId}:`, error);
         }
     }
-
+    static initializeSqrtPriceX96 = (rate: number, wallet: string, poolAddress: string): Transaction => {
+        const sqrtPrice = Math.sqrt(rate); // token1/token0
+        const sqrtPriceX96 = BigInt(sqrtPrice * 2 ** 96); // sqrtPriceX96 = sqrtPrice * 2^96
+        const contractPool = new this.client.eth.Contract(POOL_ABI, poolAddress);
+        if (!contractPool.methods.initialize) {
+            throw new Error("initialize method is not available on the contract");
+        }
+        const txRaw = contractPool.methods.initialize(sqrtPriceX96).encodeABI();
+        // Create the transaction object
+        const tx: Transaction = {
+            from: wallet, // Replace with your wallet address
+            to: poolAddress,
+            data: txRaw,
+        };
+        return tx;
+    }
 }
