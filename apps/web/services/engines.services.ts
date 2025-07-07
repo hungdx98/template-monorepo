@@ -34,6 +34,7 @@ export class EnginesService {
                 network: this.getRpcConfig(),
                 tokenInfos: this.getTokenInfos(),
                 marketInfos: this.coinGeckoList,
+                //@ts-ignore
                 provider: this.getProvider(),
                 enableLogger: true,
                 //@ts-ignore

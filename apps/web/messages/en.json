@@ -15,7 +15,6 @@
   "fee_tier_0_05": "Best for stable pairs.",
   "fee_tier_0_3": "Best for most pairs.",
   "fee_tier_1": "Best for exotic pairs.",
-
   "connect_wallet": "Connect wallet",
   "connect_y_wallet": "Connect your wallet",
   "view_positions_title": "To view your positions and rewards you must connect your wallet.",
@@ -30,5 +29,10 @@
   "custom_range_description": "Custom range allows you to concentrate your liquidity within specific price bounds, enhancing capital efficiency and fee earnings but requiring more active management.",
   "deposit_tokens": "Deposit Tokens",
   "create_pool": "Create Pool",
-  "continue": "Continue"
+  "continue": "Continue",
+  "create_new_pool": "Create new pool",
+  "create_new_pool_description": "Your selections will create a new liquidity pool which may result in lower initial liquidity and increased volatility. Consider adding to an existing pool to minimize these risks.",
+  "initial_price": "Initial Price",
+  "set_initial_price": "Set initial price",
+  "set_initial_price_description": "When creating a new pool, you must set the starting exchange rate for both tokens. This rate will reflect the initial market price."
 }
