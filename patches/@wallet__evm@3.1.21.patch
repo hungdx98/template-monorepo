@@ -12,7 +12,7 @@ index 3c6108d6f4bd2a544092e65cf848f60a2e15873a..d90902d2ccbb625e35b392b80bc54b59
    for (let p = 0; p < data.length; ++p) {
      const value = data[p]
 diff --git a/src/core/engine.ts b/src/core/engine.ts
-index 4225275f7c6a777e6d14c8857026bfd40daacf14..0cf3815f0fde4ce7e45c4544bbd24920756ae022 100644
+index 4225275f7c6a777e6d14c8857026bfd40daacf14..2bc38649fbc48b7bbfe8f1c911bd18595044092b 100644
 --- a/src/core/engine.ts
 +++ b/src/core/engine.ts
 @@ -1,3 +1,4 @@
@@ -1547,7 +1547,7 @@ index 4225275f7c6a777e6d14c8857026bfd40daacf14..0cf3815f0fde4ce7e45c4544bbd24920
  
      if (!this.clients.has(rpcUrl)) {
        // || chainData.rpcURL as string
-@@ -2092,31 +2096,31 @@ export class EvmEngine extends Engine {
+@@ -2092,49 +2096,45 @@ export class EvmEngine extends Engine {
      throw new Error('Method not implemented.')
    }
  
@@ -1603,6 +1603,33 @@ index 4225275f7c6a777e6d14c8857026bfd40daacf14..0cf3815f0fde4ce7e45c4544bbd24920
  
    async checkAllowance (params: CheckAllowanceParams): Promise<string> {
      const client = await this.getClient(params.chain)
+     if (!params.tokenAddress) return '0'
+     const exchange = EXCHANGE_TYPE[params.chain as DefiChainTypeExchange]
+-
+-    if (exchange?.type === 'defi') {
+-      const spender = params?.spender ?? exchange.address
+-      const result = await Transaction.checkAllowance(client, {
+-        token: {
+-          address: params.tokenAddress
+-        } as unknown as Token,
+-        owner: params.owner,
+-        spender
+-      })
+-      return result
+-    }
+-    return '0'
++    const spender = params?.spender ?? exchange.address
++    const result = await Transaction.checkAllowance(client, {
++      token: {
++        address: params.tokenAddress
++      } as unknown as Token,
++      owner: params.owner,
++      spender
++    })
++    return result || '0'
+   }
+ 
+   async exchangeSpaceGate (params: IGateParams): Promise<string> {
 diff --git a/src/core/gas-oracle/oracle.ts b/src/core/gas-oracle/oracle.ts
 index eeb93e1d8d7d443b0063c927f53cafd8405d4ab9..1cd958a73c07fd51a6942948f247fc80a21766cd 100644
 --- a/src/core/gas-oracle/oracle.ts

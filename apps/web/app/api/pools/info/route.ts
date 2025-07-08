@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Web3 from 'web3';
 import _get from 'lodash/get';
 import { POOL_ABI } from '@/services/abi/pool';
+import axios from 'axios';
 // Set the DNS resolver to use IPv4 first
 // This is important for environments where IPv6 might not be configured properly
 // This ensures that DNS lookups prioritize IPv4 addresses, which is often necessary in server environments.
@@ -17,82 +18,68 @@ dns.setDefaultResultOrder('ipv4first');
 // It allows cross-origin requests to the API, which is necessary for frontend applications to access the API.
 Cors({ methods: ['GET', 'HEAD'] });
 
-const web3 = new Web3('https://rpc.viction.xyz');
+const web3 = new Web3('https://viction.blockpi.network/v1/rpc/public');
 const Q96 = 2n ** 96n;
 const Q192 = Q96 * Q96;
 
-export async function GET(_req: NextRequest, props: {
-    params: Promise<{
-        address: string;
-    }>
-}) {
-    const params = await props.params;
-    const { address } = params;
-
-    if (!address || !web3.utils.isAddress(address)) {
+export async function GET(_req: NextRequest) {
+    // Extracting nftId and address from the query parameters
+    const { searchParams } = new URL(_req.url);
+    const nftId = searchParams.get('nftId');
+    const address = searchParams.get('position');
+    console.log('nftId:', nftId, 'address:', address);
+    if (!address || !web3.utils.isAddress(address) || !nftId) {
         return NextResponse.json(
-            ResponseStructure.error('Invalid or missing address'),
+            ResponseStructure.error('Invalid or missing positions address or NFT ID'),
             { status: 400 }
         );
     }
-
     const contract = new web3.eth.Contract(NFT_POSITION_MANAGER_ABI, NFT_POSITION_MANAGER_ADDRESS);
     const contractFactory = new web3.eth.Contract(FACTORY_ABI, FACTORY_ADDRESS);
     try {
         if (!contract.methods.balanceOf) {
             throw new Error('balanceOf method is not available on the contract');
         }
-        const balance = await contract.methods.balanceOf(address).call();
 
-        const positions = [];
-
-        for (let i = 0; i < Number(balance); i++) {
-            if (!contract.methods.tokenOfOwnerByIndex) {
-                throw new Error('tokenOfOwnerByIndex method is not available on the contract');
-            }
-            const tokenId = await contract.methods.tokenOfOwnerByIndex(address, i).call();
-            if (!contract.methods.positions) {
-                throw new Error('positions method is not available on the contract');
-            }
-            const position = await contract.methods.positions(tokenId).call();
-            if (!contractFactory.methods.getPool) {
-                throw new Error('getPool method is not available on the contractFactory');
-            }
-            const poolAddress = await contractFactory.methods.getPool(
-                _get(position, 'token0', ''),
-                _get(position, 'token1', ''),
-                _get(position, 'fee', '0'),
-            ).call() as unknown as string;
-            if (!poolAddress || !web3.utils.isAddress(poolAddress as unknown as string)) {
-                throw new Error(`Pool not found for token0: ${_get(position, 'token0', '')}, token1: ${_get(position, 'token1', '')}, fee: ${_get(position, 'fee', '0')}`);
-            }
-            const contractPool = new web3.eth.Contract(POOL_ABI, poolAddress);
-            if (!contractPool.methods.slot0) {
-                throw new Error('slot0 method is not available on the contractPool');
-            }
-            const slot0 = await contractPool.methods.slot0().call();
-            const sqrtPriceX96 = _get(slot0, 'sqrtPriceX96', 0n);
-            const tick = Number(_get(slot0, 'tick', 0).toString());
-            const { amount0, amount1 } = getAmountsForLiquidity(
-                sqrtPriceX96,
-                BigInt(_get(position, 'tickLower', 0)),
-                BigInt(_get(position, 'tickUpper', 0)),
-                BigInt(_get(position, 'liquidity', 0)),
-            );
-            // Convert all bigint values to strings
-            const formattedPosition = Object.fromEntries(
-                Object.entries({ tokenId, ...position, sqrtPriceX96, tick, amount0, amount1, pool: poolAddress }).map(([key, value]) => [
-                    key,
-                    typeof value === 'bigint' ? (value as bigint).toString() : value,
-                ])
-            );
-
-            positions.push(formattedPosition);
+        if (!contract.methods.positions) {
+            throw new Error('positions method is not available on the contract');
         }
+        const position = await contract.methods.positions(nftId).call();
+        if (!contractFactory.methods.getPool) {
+            throw new Error('getPool method is not available on the contractFactory');
+        }
+
+        const contractPool = new web3.eth.Contract(POOL_ABI, address);
+        if (!contractPool.methods.slot0) {
+            throw new Error('slot0 method is not available on the contractPool');
+        }
+        const slot0 = await contractPool.methods.slot0().call();
+
+        const sqrtPriceX96 = _get(slot0, 'sqrtPriceX96', 0n);
+        const tick = Number(_get(slot0, 'tick', 0).toString());
+        const { amount0, amount1 } = getAmountsForLiquidity(
+            sqrtPriceX96,
+            BigInt(_get(position, 'tickLower', 0)),
+            BigInt(_get(position, 'tickUpper', 0)),
+            BigInt(_get(position, 'liquidity', 0)),
+        );
+        if (!contract.methods.tokenURI) {
+            throw new Error('tokenURI method is not available on the contract');
+        }
+        const uri: string = await contract.methods.tokenURI(nftId).call();
+        const responseURI = await axios.get(uri);
+        const nftMetadata = JSON.parse(_get(responseURI, 'data', {}));
+        // Convert all bigint values to strings
+        const formattedPosition = Object.fromEntries(
+            Object.entries({ tokenId: nftId, nftMetadata, ...position, sqrtPriceX96, tick, amount0, amount1 }).map(([key, value]) => [
+                key,
+                typeof value === 'bigint' ? (value as bigint).toString() : value,
+            ])
+        );
 
         return NextResponse.json(
             ResponseStructure.success(
-                { count: positions.length, positions },
+                { position: formattedPosition },
                 'Fetched positions successfully'
             ),
             { status: 200 }

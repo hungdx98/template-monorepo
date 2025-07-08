@@ -5,6 +5,7 @@ export interface ITokenResponse {
     address: string;
 }
 export interface IPools {
+    tokenId: string;
     token0: ITokenResponse;
     token1: ITokenResponse;
     fee: string;

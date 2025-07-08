@@ -3,7 +3,6 @@ import { TopPools, YourPositions } from './components';
 
 export default function Positions() {
 
-
     return (
         <div className="min-h-screen bg-background text-white p-8">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8">

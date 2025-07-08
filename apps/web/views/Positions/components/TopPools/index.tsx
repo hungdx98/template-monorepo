@@ -10,6 +10,8 @@ import { useTranslations } from "next-intl";
 import { FC, useMemo } from "react";
 import { useShallow } from 'zustand/shallow';
 import _toLower from 'lodash/toLower';
+import Link from 'next/link';
+import Web3 from 'web3';
 
 export default function PoolCardSkeleton() {
     return (
@@ -59,17 +61,18 @@ export const TopPools: FC = () => {
         if (isLoading) {
             return Array.from({ length: 4 }, (_, idx) => <PoolCardSkeleton key={idx} />);
         }
-        return _get(data, 'pools', []).map(({ token0, token1, fee }: IPools, idx) => {
+        return _get(data, 'pools', []).map(({ token0, token1, fee, pool, tokenId }: IPools, idx) => {
             const actualFee = Number(fee) / 10000 // Ensure fee is a string
             const token0Meta: Token | ITokenResponse = coinLocalCurrent?.find((tk): tk is Token => _toLower(token0.address) === _toLower(tk.address)) || token0;
             const token1Meta: Token | ITokenResponse = coinLocalCurrent?.find((tk): tk is Token => _toLower(token1.address) === _toLower(tk.address)) || token1;
+            // const poolAddress = encodePoolAndNftId(pool, tokenId); // Assuming '0' is the NFT ID for the pool
 
-            return <div key={idx} className="flex items-start justify-between border border-border-1-subtle rounded-lg p-3">
-                <div className="flex items-center gap-5">
+            return <div key={idx} className="flex items-start justify-between border border-border-1-subtle rounded-lg p-3 cursor-pointer">
+                <div className="flex items-center gap-5 w-full">
                     {
-                        !!_get(token0Meta, 'image') && <div className="w-10 h-10 bg-button-sec-fill rounded-full flex items-center justify-center">
-                            <img src={_get(token0Meta, 'image')} alt="" className='rounded-full z-10' />
-                            <img src={_get(token1Meta, 'image')} alt="" className='rounded-full ml-[-50%]' />
+                        !!_get(token0Meta, 'image') && <div className="w-15 rounded-full flex items-center justify-center">
+                            <img src={_get(token0Meta, 'image')} alt="" className='rounded-full z-10' width={40} height={40} />
+                            <img src={_get(token1Meta, 'image')} alt="" className='rounded-full ml-[-30%]' width={40} height={40} />
                         </div>
                     }
                     <div>
@@ -85,6 +88,8 @@ export const TopPools: FC = () => {
                     {/* {pool.extra && <div className="text-pink-400 text-xs">{pool.extra}</div>} */}
                 </div>
             </div>
+            // <Link href={`/explore/pools/${poolAddress}}`} className="no-underline" key={idx}>
+            // </Link>
         });
     }, [data, isLoading]);
 
