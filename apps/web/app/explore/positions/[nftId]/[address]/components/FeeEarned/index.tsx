@@ -1,6 +1,6 @@
 export function FeesEarned() {
     return (
-        <div className="bg-[#1E1E1E] text-white rounded-xl p-5 w-64 space-y-4">
+        <div className="bg-[#1E1E1E] text-white rounded-xl p-5 w-full space-y-4">
             <div className="text-sm text-white/70">Fees earned</div>
             <div className="text-2xl font-medium">$0.000133</div>
 
