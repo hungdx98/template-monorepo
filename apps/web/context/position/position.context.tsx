@@ -9,9 +9,10 @@ import { EvmEngine } from "@wallet/evm";
 import { useBaseStore } from '@/stores';
 import { useShallow } from 'zustand/shallow';
 import { NFT_POSITION_MANANGER_ADDRESS } from '@/services/types';
-import { convertBalanceToWei } from '@wallet/utils';
+import { convertBalanceToWei, convertWeiToBalance } from '@wallet/utils';
 import { calculateTicks } from '@/utils';
 import get from 'lodash/get';
+import { set } from 'lodash';
 
 const PositionContext = createContext<IStatePositionContext>({} as IStatePositionContext);
 
@@ -63,8 +64,9 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             spender: NFT_POSITION_MANANGER_ADDRESS
         })
 
-        console.log("sAllowance", sAllowance);
-        return sAllowance || '0';
+        const convertAllowance = convertWeiToBalance(String(Number(sAllowance || '0')), token.decimals || 18); 
+        console.log("convertAllowance", convertAllowance);
+        return convertAllowance || '0';
     }
 
     const onChangeStep = (stepProps: EPositionStep)  => {
@@ -106,6 +108,13 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const onSelectFeeTier = (fee: EFeeTier) => () => {
         setFeeTier(fee);
     };
+
+    const clearState = () => {
+       setDepositAmount({
+        base: '',
+        pair: ''
+       })
+    }
 
     const isPoolCreated = async (fee: string): Promise<boolean> => {
         if (!isContinue) return false
@@ -176,10 +185,15 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const onAddPoolLiquidity = async () => {
         if(!isCreatedPool){
             const hasCreatePool = await onCreatePool()
+
+            if(hasCreatePool) setIsCreatedPool(true);
             if (!hasCreatePool) {
                 return new Error("Failed to create pool");
             }
         }
+
+        console.log("allowanceAmount", allowanceAmount)
+        console.log("depositAmount", depositAmount)
 
         if (Number(allowanceAmount.base) < Number(depositAmount.base || '0')) {
             const hash1 = await onApproveToken(pairTokens.token0 as Token, depositAmount.base || '0');
@@ -193,12 +207,12 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         const tickSpacing = await PeripheryService.getTickSpacingForFee(Number(feeTier) * 10000);
 
         console.log("tickSpacing", tickSpacing);
-        const price = Number(pairTokens.token0?.market?.current_price || 1) / Number(pairTokens.token1?.market?.current_price || 1);
+        // const price = Number(pairTokens.token0?.market?.current_price || 1) / Number(pairTokens.token1?.market?.current_price || 1);
 
-        const lowerTick = calculateTicks(1, Number(tickSpacing), 10);
-        const upperTick = calculateTicks(2, Number(tickSpacing), 10);
+        const lowerTick = calculateTicks(Number(priceRange.min), Number(tickSpacing), 10);
+        const upperTick = calculateTicks(Number(priceRange.max), Number(tickSpacing), 10);
 
-        console.log("calTick", {lowerTick,upperTick, price, tickSpacing});
+        console.log("calTick", {lowerTick,upperTick, tickSpacing});
 
         const rawBaseAmount = convertBalanceToWei(depositAmount.base || '0', pairTokens.token0?.decimals || 18);
         const rawPairAmount = convertBalanceToWei(depositAmount.pair || '0', pairTokens.token1?.decimals || 18);
@@ -257,6 +271,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 setAllowanceAmount,
                 onAddPoolLiquidity,
                 setInitialRate,
+                clearState,
                 onRevokeToken
             }
         }}>
