@@ -1,28 +1,18 @@
 import Button from '@/components/Button';
-import { useTranslations } from 'next-intl';
-import { FC } from 'react';
-import Link from 'next/link';
+import { useTokensStore } from '@/stores';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { useWalletModal } from '@coin98-com/wallet-adapter-react-ui';
+import { Token } from '@repo/utils/types';
 import { useQuery } from '@tanstack/react-query';
+import { convertWeiToBalance, formatNumberBro } from '@wallet/utils';
+import axios from 'axios';
 import _get from 'lodash/get';
 import _size from 'lodash/size';
-import axios from 'axios';
-import { useShallow } from 'zustand/shallow';
-import { useTokensStore } from '@/stores';
-import { Token } from '@repo/utils/types';
 import _toLower from 'lodash/toLower';
-import { convertWeiToBalance, formatNumberBro } from '@wallet/utils';
-import Web3 from 'web3';
-
-const web3 = new Web3();
-
-function encodePoolAndNftId(poolAddress: string, nftId: string) {
-    return web3.eth.abi.encodeParameters(
-        ['address', 'uint256'],
-        [poolAddress, nftId]
-    );
-}
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { FC } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 export default function PositionCard({ position }: any) {
     const { token0, token1, fee } = position;
