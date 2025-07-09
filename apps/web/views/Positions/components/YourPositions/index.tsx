@@ -113,8 +113,7 @@ export const YourPositions: FC = () => {
         queryFn: async () => {
             try {
                 if (!address) return []; // If no address, return empty array
-                // const response = await axios.get(`/api/pools/owner/${address}`);
-                const response = await axios.get(`/api/pools/owner/${'0xA1dc6F033eB10565753C22b2791c76629893b1f9'}`);
+                const response = await axios.get(`/api/pools/owner/${address}`);
                 return _get(response, 'data.data.positions', []);
             } catch (error) {
                 return []; // Return empty array on error
