@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "deploy": "vercel build --prod && vercel deploy --prebuilt --prod",
     "dev": "next dev --port 3001 --turbopack",
     "build": "next build",
     "start": "next start",
