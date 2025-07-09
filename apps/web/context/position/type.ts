@@ -58,5 +58,6 @@ export interface IStatePositionContext {
 
         setAllowanceAmount: (params: { base: string; pair: string }) => void;
         onCheckAllowance: (token: Token) => Promise<string>;
+        clearState: () => void;
     };
 }

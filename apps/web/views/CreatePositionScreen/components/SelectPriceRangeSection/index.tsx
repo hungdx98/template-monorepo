@@ -71,6 +71,7 @@ export default function SelectPriceRangeSection() {
       onCheckAllowance,
       setAllowanceAmount,
       onAddPoolLiquidity,
+      clearState,
       // onRevokeToken,
       // onChangeDepositAmount
     }
@@ -163,8 +164,15 @@ export default function SelectPriceRangeSection() {
         autoClose: 15000,
         transition: Bounce
       })
+
+      setIsLoading(false);
+      return clearState()
     } else {
-      toast.error('Failed to add liquidity')
+      toast.error('Failed to add liquidity', {
+        delay: 50,
+        autoClose: 250,
+        transition: Bounce
+      })
     }
     setIsLoading(false);
   }
