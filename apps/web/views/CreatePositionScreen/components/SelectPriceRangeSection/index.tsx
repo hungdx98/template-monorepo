@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import { Input } from "@/components/Input";
 import Notice from "@/components/Notice";
-import { IDepositAmount, usePositionContext } from "@/context";
+import { IDepositAmount, useCreatePositionContext } from "@/context";
 import cx from "@/utils/styled";
 import { formatNumberBro } from '@wallet/utils';
 import { Bounce, toast } from 'react-toastify'
@@ -10,38 +10,11 @@ import get from "lodash/get";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
+import { SetInitialPrice } from "../InitalPrice";
+import PageContainer from "@/layouts/PageContainer";
+import TokenInput from "@/components/TokenInput";
 
-export const SetInitialPrice = () => {
-  const t = useTranslations();
 
-  const {state: {initialRate, pairTokens}, jobs: {setInitialRate}} = usePositionContext();
-
-  return (
-    <div className="bg-black text-white max-w-xl rounded-xl py-4 space-y-5">
-      {/* Title + subtitle */}
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">{t('set_initial_price')}</h2>
-        <p className="text-sm text-white/70">
-          {t('set_initial_price_description')}
-        </p>
-      </div>
-
-      {/* Price box */}
-      <div className="bg-[#1E1E1E] rounded-xl px-5 py-4 space-y-2">
-        <div className="text-sm text-white/70">{t('initial_price')}</div>
-        <Input
-          value={initialRate}
-          onChange={e => setInitialRate(e.target.value)}
-          variant="unstyled"
-          placeholder="0.00"
-          containerClassName="px-0"
-          className="text-font-size-300 text-3xl font-medium focus:outline-none appearance-none outline-none"
-        />
-        <div className="text-sm text-white/60 uppercase">{get(pairTokens, 'token0.symbol')} = 1 {get(pairTokens, 'token1.symbol')}</div>
-      </div>
-    </div>
-  );
-}
 
 // Mini component cho token pill
 export const TokenPill = ({ label }: { label: string }) => {
@@ -72,10 +45,12 @@ export default function SelectPriceRangeSection() {
       setAllowanceAmount,
       onAddPoolLiquidity,
       clearState,
+      setPairTokens,
+      calculateDepositAmount,
       // onRevokeToken,
       // onChangeDepositAmount
     }
-  } = usePositionContext()
+  } = useCreatePositionContext()
 
   const token0 = get(pairTokens, 'token0')
   const token1 = get(pairTokens, 'token1')
@@ -85,19 +60,38 @@ export default function SelectPriceRangeSection() {
   const [isLoading, setIsLoading] = useState(false);
 
 
+  const [rateBy, setRateBy] = useState<'base' | 'pair'>('base');
+
+
   const marketRate = useMemo(() => {
     if (!token0 || !token1) return 0;
 
     return Number(price0 / price1).toFixed(4);
   }, [token0, token1]);
 
+
+  const handleCheckTokensOrder = () => {
+    const token0Address = get(token0, 'address', '');
+    const token1Address = get(token1, 'address', '');
+    if(token0Address > token1Address) {
+      setPairTokens({
+        token0: token1,
+        token1: token0
+      })
+    }
+  }
+
   const handleChangeDepositAmount = (type: "base" | "pair") => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (!value) return setDepositAmount({ base: '', pair: '' } as IDepositAmount);
-    const rate = type === "base"
-      ? price0 / price1
-      : price1 / price0;
-    const otherValue = Number(value) === 0 ? '0' : (parseFloat(value) * rate).toFixed(4).toString();
+    // const rate = type === "base"
+    //   ? price0 / price1
+    //   : price1 / price0;
+    
+    
+    // const otherValue = Number(value) === 0 ? '0' : (parseFloat(value) * rate).toFixed(4).toString();
+
+    const otherValue = calculateDepositAmount(value);
 
     const depositAmount = {
       [type]: value,
@@ -123,11 +117,12 @@ export default function SelectPriceRangeSection() {
 
   useEffect(() => {
     handleCheckAllowance()
+    handleCheckTokensOrder();
   }, [])
 
   useEffect(() => {
     handleSetInitPriceRange()
-  }, [rangeMode]);
+  }, [rangeMode, rateBy]);
 
 
 
@@ -138,9 +133,13 @@ export default function SelectPriceRangeSection() {
         max: '0'
       });
     }
-    const pairRate = price1 / price0
-    const minPrice = pairRate * 0.95
-    const maxPrice = pairRate * 1.05;
+
+    const pairRate = rateBy === 'base'
+      ? price0 / price1
+      : price1 / price0
+    
+    const minPrice = pairRate * 0.85
+    const maxPrice = pairRate * 1.15;
     setPriceRange({
       min: minPrice.toFixed(4).toString(),
       max: maxPrice.toFixed(4).toString()
@@ -148,8 +147,10 @@ export default function SelectPriceRangeSection() {
   }
 
 
-  const pairRate = `${get(token0, 'symbol', '')} = 1 ${get(token1, 'symbol', '')}`;
-
+  const pairRateSymbol = rateBy === 'base'
+    ? `${get(token0, 'symbol', '')} = 1 ${get(token1, 'symbol', '')}`
+    : `${get(token1, 'symbol', '')} = 1 ${get(token0, 'symbol', '')}`;
+  
 
   const handleAddLiquidity = async () => {
     setIsLoading(true);
@@ -199,7 +200,7 @@ export default function SelectPriceRangeSection() {
       </div>
 
       <div className="rounded-border-radius-huge border border-border-1-subtle p-5 ">
-        {!isCreatedPool && <SetInitialPrice />}
+        {!isCreatedPool && <SetInitialPrice rateBy={rateBy} setRateBy={setRateBy} />}
 
         <div className="flex items-center mb-2 bg-[#1E1E1E] rounded-xl px-5 py-4 space-y-2">
           <p className="text-text-subtle">Market price:</p>
@@ -249,7 +250,7 @@ export default function SelectPriceRangeSection() {
                 className="text-font-size-300"
               />
             </div>
-            <div className="text-xs mt-1 text-gray-400 uppercase"> {pairRate}</div>
+            <div className="text-xs mt-1 text-gray-400 uppercase"> {pairRateSymbol}</div>
           </div>
 
           <div className="bg-background-2 p-4 rounded-border-radius-large">
@@ -264,14 +265,14 @@ export default function SelectPriceRangeSection() {
                 className="text-font-size-300"
               />
             </div>
-            <div className="text-xs mt-1 text-gray-400 uppercase">{pairRate}</div>
+            <div className="text-xs mt-1 text-gray-400 uppercase">{pairRateSymbol}</div>
           </div>
         </div>
 
         <div className="text-font-size-300 mb-4">{t('deposit_tokens')}</div>
 
         <div className="flex flex-col gap-y-space-200">
-          <div className="bg-background-2 p-4 rounded-border-radius-large">
+          {/* <div className="bg-background-2 p-4 rounded-border-radius-large">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
                 <Input
@@ -296,9 +297,21 @@ export default function SelectPriceRangeSection() {
 
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="bg-background-2 p-4 rounded-border-radius-large">
+          <TokenInput
+            token={token0}
+            value={depositAmount.base}
+            onChange={handleChangeDepositAmount('base')}
+          />
+
+          <TokenInput
+            token={token1}
+            value={depositAmount.pair}
+            onChange={handleChangeDepositAmount('pair')}
+          />
+
+          {/* <div className="bg-background-2 p-4 rounded-border-radius-large">
             <div className="flex justify-between items-center">
               <div className="flex flex-col">
                 <Input
@@ -321,7 +334,7 @@ export default function SelectPriceRangeSection() {
                 <div className="uppercase text-font-size-175 text-text-subtle text-right">{formatNumberBro(get(token1, 'balance', '0'), 4)} {get(token1, 'symbol')}</div>
               </div>
             </div>
-          </div>
+          </div> */}
 
         </div>
 

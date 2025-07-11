@@ -12,7 +12,6 @@ import { NFT_POSITION_MANANGER_ADDRESS } from '@/services/types';
 import { convertBalanceToWei, convertWeiToBalance } from '@wallet/utils';
 import { calculateTicks } from '@/utils';
 import get from 'lodash/get';
-import { set } from 'lodash';
 
 const PositionContext = createContext<IStatePositionContext>({} as IStatePositionContext);
 
@@ -65,7 +64,6 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         })
 
         const convertAllowance = convertWeiToBalance(String(Number(sAllowance || '0')), token.decimals || 18); 
-        console.log("convertAllowance", convertAllowance);
         return convertAllowance || '0';
     }
 
@@ -88,6 +86,9 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             ...prev,
             [type]: value
         }));
+
+        setDepositAmount({ base: '', pair: ''} )
+        
     }
 
     const onChangeDepositAmount = (type: 'base' | 'pair') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,9 +136,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const onCreatePool = async () => {
         console.log("onCreatePool", {pairTokens, feeTier, initialRate});
+        const rate = Number(get(pairTokens, 'token1.market.current_price', 0)) / Number(get(pairTokens, 'token0.market.current_price', 0));
         const txData = await PeripheryService.createPool({
             wallet: address as string,
-            rate: Number(initialRate), // Replace with actual rate
+            rate: Number(rate), // Replace with actual rate
             token0: pairTokens.token0?.address as string,
             token1: pairTokens.token1?.address as string,
             fee: Number(feeTier) * 10000 // Convert fee to basis points
@@ -239,6 +241,15 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     }
 
+    const calculateDepositAmount = (amountIn:string) => {
+        const L1 = Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+        const L2 = (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate))) / Number(amountIn);
+        const L = Math.min(L1, L2);
+        const amountOut = L * (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+
+        return amountOut.toFixed(6)
+    }
+
     const [isContinue] = useMemo(() => {
         const ctn = !!pairTokens.token0 && !!pairTokens.token1 && !!feeTier;
         return [ctn];
@@ -262,6 +273,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 onCreatePool,
                 onChangeDepositAmount,
                 setDepositAmount,
+                setPairTokens,
                 setPriceRange,
                 onChangePriceRange,
                 onSelectPairToken,
@@ -272,6 +284,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 onAddPoolLiquidity,
                 setInitialRate,
                 clearState,
+                calculateDepositAmount,
                 onRevokeToken
             }
         }}>
@@ -280,6 +293,6 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     );
 };
 
-const usePositionContext = () => useContext(PositionContext);
+const useCreatePositionContext = () => useContext(PositionContext);
 
-export { PositionProvider, usePositionContext };
+export { PositionProvider, useCreatePositionContext };

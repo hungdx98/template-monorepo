@@ -59,7 +59,7 @@ const BalanceProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const fetchTokensBalance = async () => {
         // Initialize an empty array to store synchronized wallet tokens
-        let syncedWalletTokens: Token[] = [];
+        const syncedWalletTokens: Token[] = [];
 
         // If no wallet address is available, update the current coin state with an empty array
         if (!address) {
@@ -130,7 +130,7 @@ const BalanceProvider: React.FC<PropsWithChildren> = ({ children }) => {
         queryKey: ['tokens-balance-list', { address }],
         queryFn,
         enabled: !!baseService && !connecting,
-        refetchInterval: 20 * 1000,
+        // refetchInterval: 20 * 1000,
     });
 
     return (

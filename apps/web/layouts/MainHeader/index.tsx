@@ -6,6 +6,7 @@ import { useWalletModal } from '@coin98-com/wallet-adapter-react-ui';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { useMemo, useState } from 'react';
 import { truncate } from '@repo/utils/helpers';
+import LeftHeader from './components/LeftHeader';
 
 const MainHeader = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,7 +26,7 @@ const MainHeader = () => {
     }
   }
 
-  const renderButton = useMemo(() => {
+  const renderButtonConnect = useMemo(() => {
     const onClickFunc = connected ? disconnect : handleLogin;
     const content = connected ? truncate(address as string) : 'Connect wallet'
     if (connected) {
@@ -45,19 +46,26 @@ const MainHeader = () => {
     return <Button size='md' className='whitespace-nowrap w-fit' onClick={onClickFunc}>{content}</Button>
   }, [isLoading, connected, address]);
 
+
+
+
   return (
     <div>
       <div className="flex items-center justify-between p-4 border border-border-1-subtle sticky top-0 z-50 bg-background h-20">
         <div className='flex items-center gap-x-4'>
-          <Image
-            width={40}
-            height={40}
-            alt="Baryon Logo"
-            src={'/images/logo/baryon.svg'}
-          />
-          <h1>BARYON</h1>
+
+          <div className='flex items-center gap-x-4'>
+            <Image
+              width={40}
+              height={40}
+              alt="Baryon Logo"
+              src={'/images/logo/baryon.svg'}
+            />
+            <h1>BARYON</h1>
+          </div>
+          <LeftHeader />
         </div>
-        {renderButton}
+        {renderButtonConnect}
       </div>
      
     </div>
