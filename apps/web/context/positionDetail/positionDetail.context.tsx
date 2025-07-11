@@ -7,7 +7,7 @@ import axios from 'axios';
 import get from 'lodash/get';
 import toLower from 'lodash/toLower';
 import pick from 'lodash/pick';
-import { useTokensStore } from '@/stores';
+import { useBaseStore, useTokensStore } from '@/stores';
 import { useShallow } from 'zustand/shallow';
 import { Token } from '@repo/utils/types';
 import { PeripheryService } from '@/services';
@@ -36,8 +36,13 @@ const PoolDetailContext = createContext<PoolDetailContextType | undefined>(undef
 export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
 
   const { address = '', sendTransaction } = useWallet();
+   const [baseService] = useBaseStore(useShallow(state => [
+              state.baseService
+          ]));
   
   const { address: positionAddress, nftId } = useParams<{ address: string, nftId: string }>()
+
+  const [tokenRawBalances, setTokenRawBalances] = useState<{ base: string, pair: string }>({ base: '0', pair: '0' });
 
 
   const coinLocal = useTokensStore(useShallow((state) => state.coinLocal));
@@ -47,20 +52,62 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
    const { data, isLoading, error } = useQuery({
         queryKey: ['pools-info', address, positionAddress, nftId],
         queryFn: async () => {
-            try {
-                if (!address) return []; // If no address, return empty array
-                const response = await axios.get(`/api/pools/info?nftId=${nftId}&position=${positionAddress}`);
-                return get(response, 'data.data', {});
-            } catch (error) {
-                throw error; // Rethrow error to be caught by the query
-            }
+          if (!address) return []; // If no address, return empty array
+            const response = await axios.get(`/api/pools/info?nftId=${nftId}&position=${positionAddress}`);
+            return get(response, 'data.data', {});
         },
         enabled: !!address && !!positionAddress && !!nftId, // Only fetch if address exists
         staleTime: 10 * 60 * 1000, // 10 minutes
         refetchOnWindowFocus: false,
     });
 
-  console.log("🚀 ~ PoolDetailProvider ~ data:", data);
+  
+    const { data: rawBalances, isLoading: isLoadingBalance, refetch } = useQuery({
+    queryKey: ['token-balance' + JSON.stringify(data)],
+    queryFn: async () => {
+      if (!data || !address) return { base: '0', pair: '0' };
+      try {
+        const fromToken = get(data, 'position.token0', {});
+        const toToken = get(data, 'position.token1', {});
+        // const fromChain = get(fromToken, 'chain') || get(pairTokens, 'chain')
+        const randomId = Math.random().toString()
+
+        const results = await Promise.all([fromToken, toToken].map(async (tkAddress, index) => {
+          const rawBalance = await baseService?.getBalance({
+            address: address!,
+            token: {
+              address: tkAddress,
+              chain: 'tomo',
+            },
+            chain: 'tomo',
+            func: index === 0 ? 'from-swap-balance' + randomId : 'to-swap-balance' + randomId
+          })
+
+          return rawBalance
+
+        }))
+
+        setTokenRawBalances({
+          base: results[0] || '0',
+          pair: results[1] || '0'
+        });
+      
+        return {
+          base: results[0],
+          pair: results[1]
+        }
+      } catch (error) {
+        return {
+          base: '0',
+          pair: '0'
+        }
+      }
+    },
+    refetchOnWindowFocus: false,
+    refetchInterval: 15000
+  })
+
+    // const balances
   
 
   const poolData = useMemo(() => {
@@ -68,17 +115,23 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
 
     const token0Address = get(data, 'position.token0', '');
     const token1Address = get(data, 'position.token1', '');
+    
 
     const token0Meta = coinLocalCurrent?.find((tk): tk is Token => toLower(token0Address) === toLower(tk.address)) as Token
     const token1Meta = coinLocalCurrent?.find((tk): tk is Token => toLower(token1Address) === toLower(tk.address)) as Token
+
+    const token0Balance = convertWeiToBalance(get(tokenRawBalances, 'base', '0'), get(token0Meta, 'decimals', 18));
+    const token1Balance = convertWeiToBalance(get(tokenRawBalances, 'pair', '0'), get(token1Meta, 'decimals', 18));
+
+    token0Meta.balance = token0Balance;
+    token1Meta.balance = token1Balance;
 
     const getData = pick(get(data, 'position', {}), ['tickLower', 'tickUpper', 'amount0', 'amount1', 'tokenId', 'nftMetadata', 'tick', 'sqrtPriceX96', 'fee', 'token0', 'token1'])
     getData.token0 = token0Meta;
     getData.token1 = token1Meta;
 
-    console.log("getData:", getData);
     return getData 
-  }, [data, isLoading]);
+  }, [data, isLoading, tokenRawBalances]);
 
 
   const calculateAmountOut = (amountIn: string, type: 'base' | 'pair') => {
@@ -95,15 +148,11 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
     const amount0 = convertWeiToBalance(get(poolData, 'amount0', '0'), get(poolData, 'token0.decimals', 18));
     const amount1 = convertWeiToBalance(get(poolData, 'amount1', '0'), get(poolData, 'token1.decimals', 18));
 
-    console.log(amount1, amount0)
     const rate = type === 'base'
       ? Number(amount1) / Number(amount0 || 1)
       : Number(amount0) / Number(amount1 || 1);
 
-    console.log('rate', rate)
     const amountOut = Number(amountIn) * rate;
-
-    console.log("🚀 ~ calculateAmountOut ~ amountIn:", amountIn, "amountOut:", amountOut);
     return amountOut.toFixed(6);
   }
 
@@ -111,9 +160,6 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
     const rawAmount0 = convertBalanceToWei(amount0, get(poolData, 'token0.decimals', 18));
     const rawAmount1 = convertBalanceToWei(amount1, get(poolData, 'token1.decimals', 18));
     const tokenId = get(poolData, 'tokenId', '');
-
-    console.log("🚀 ~ increaseLiquidity ~ rawAmount0:", rawAmount0, "rawAmount1:", rawAmount1, "tokenId:", tokenId, "address:", address);
-
     const txData = await PeripheryService.increaseLiquidity( 
       Number(tokenId),
       rawAmount0,
@@ -126,9 +172,6 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
         gasPrice: '0x0',
         gas: '0x0'
     })
-
-    console.log("🚀 ~ increaseLiquidity ~ result:", result);
-
     return result.data;
   }
 
