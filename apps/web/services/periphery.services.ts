@@ -163,6 +163,32 @@ export class PeripheryService {
         }
     }
 
+    static increaseLiquidity = async (tokenId: number, amount0Desired: string, amount1Desired: string, wallet: string) => {
+        // Logic to increase liquidity in a position in the Uniswap V3 pool
+        const contractNFTManager = this.getContractNFTPositionManager();
+        const deadline = Math.floor(Date.now() / 1000) + 60 * 30; // 30 minutes from now
+
+        if (!contractNFTManager.methods.increaseLiquidity) {
+            throw new Error("increaseLiquidity method is not available on the contract");
+        }
+        
+        const dataTx = contractNFTManager.methods.increaseLiquidity({
+            tokenId,
+            amount0Desired,
+            amount1Desired,
+            amount0Min: 0,
+            amount1Min: 0,
+            deadline,
+        }).encodeABI();
+
+        const tx: Transaction = {
+            from: wallet,
+            to: this.nftPositionManagerAddress,
+            data: dataTx,
+        };
+        return tx;
+    }
+
     static decreaseLiquidity = async (tokenId: number, wallet: string) => {
         // Logic to decrease liquidity in a position in the Uniswap V3 pool
         const multicallData: any[] = [];
@@ -313,6 +339,7 @@ export class PeripheryService {
             console.error(`Error closing position ${tokenId}:`, error);
         }
     }
+
     static initializeSqrtPriceX96 = (rate: number, wallet: string, poolAddress: string): Transaction => {
         const sqrtPrice = Math.sqrt(rate); // token1/token0
         const sqrtPriceX96 = BigInt(sqrtPrice * 2 ** 96); // sqrtPriceX96 = sqrtPrice * 2^96
