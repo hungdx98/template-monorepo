@@ -24,10 +24,10 @@ export default function PositionDetailScreen() {
     poolData: data,
     isLoadingPool
   },
-  jobs:{
-    calculateAmountOut
-  }
- } = usePoolDetailContext();
+    jobs: {
+      calculateAmountOut
+    }
+  } = usePoolDetailContext();
 
   console.log("🚀 ~ PositionViewer ~ data:", data);
 
@@ -113,8 +113,12 @@ export default function PositionDetailScreen() {
 
             <div className="flex flex-col w-full text-xs gap-4">
               <div className='flex items-center w-full'>
-                <div className={`w-[${percentage0.toFixed(0)}%] h-1 bg-blue-400`} />
-                <div className={`w-[${percentage1.toFixed(0)}%] h-1 bg-purple-400`} />
+                <div className={`h-1 bg-blue-400`} style={{
+                  width: percentage0.toFixed(0) + '%'
+                }} />
+                <div className={`h-1 bg-purple-400`} style={{
+                  width: percentage1.toFixed(0) + '%'
+                }} />
               </div>
               <div className='flex justify-between items-center w-full'>
                 <div className="flex items-center gap-1 text-blue-400">

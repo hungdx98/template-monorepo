@@ -17,19 +17,20 @@ interface Props
   size?: number
   showName?: boolean
   iconClassName?: string
+  textClassName?: string
   page?: string
   tokens: Token[]
 }
 
 export const TokenSelector = (props: Props) => {
   const t = useTranslations()
-  const { selectedToken = undefined, onSelectedToken = () => {}, tokens } = props
+  const { selectedToken = undefined, onSelectedToken = () => { }, tokens } = props
 
   const onOpenModal = () => {
     window.openModal({
       title: t('select_token'),
       size: 'sm',
-      content: <SelectTokenModal listToken={tokens} onSelectToken={onSelectedToken}/>,
+      content: <SelectTokenModal listToken={tokens} onSelectToken={onSelectedToken} />,
       onClose: () => {
         console.log("Modal closed");
       }
@@ -66,18 +67,18 @@ export const TokenSelector = (props: Props) => {
                 />
               )}
 
-              <span className="custom-text-small ml-space-150 uppercase">
+              <span className={cx("custom-text-small ml-space-150 uppercase", props.textClassName)}>
                 {get(selectedToken, 'symbol', '')}
               </span>
 
               {props.showName && (
-                <span className="custom-text-large ml-space-150 text-text-subtlest">
+                <span className={cx("custom-text-large ml-space-150 text-text-subtlest", props.textClassName)}>
                   {get(selectedToken, 'name', '')}
                 </span>
               )}
             </div>
           ) : (
-            <div className="flex justify-start w-full custom-text-large text-text-subtlest">
+            <div className={cx("flex justify-start w-full custom-text-large text-text-subtlest", props.textClassName)}>
               {t('select_token')}
             </div>
           )}
@@ -95,7 +96,7 @@ export const TokenSelector = (props: Props) => {
         </div>
       </Button>
     </div>
-    
+
   )
 }
 
