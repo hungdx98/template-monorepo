@@ -20,6 +20,7 @@
   --color-button-pri-fill: var(--constant-color-brand);
   --color-button-sec-text: var(--text-text);
   --color-button-sec-fill: var(--button-secondary-button-sec-fill);
+  --color-button-sec-hover: var(--button-secondary-button-sec-fill-active);
   --color-semantic-sematic-branding: var(--semantic-sematic-branding);
 
   /* BORDER */

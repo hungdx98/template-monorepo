@@ -1,5 +1,5 @@
 import TokenSelector from "@/components/TokenSelector";
-import { EPositionStep, usePositionContext } from "@/context";
+import { EPositionStep, useCreatePositionContext } from "@/context";
 import { useTokenStore } from "@/stores/useTokenStore";
 import get from "lodash/get";
 import FeeSelections from "../FeeSelections";
@@ -15,7 +15,7 @@ const SelectPairSection = () => {
     onChangeStep, onSelectPairToken, onSelectFeeTier , setIsCreatedPool,
     isPoolCreated, onCreatePool
   } 
-} = usePositionContext();
+} = useCreatePositionContext();
   const { tokens } = useTokenStore();
 
   const t = useTranslations()
