@@ -1,5 +1,6 @@
 import { CalculateTicksProps, CalculateTicksReturn } from "./types";
 
+export const CONSECUTIVE_TICKS_RATIO = 1.0001;
 // Update the function signature to use the types
 export const calculateTicks = (
     price: CalculateTicksProps['price'],

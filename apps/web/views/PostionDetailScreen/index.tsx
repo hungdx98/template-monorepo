@@ -23,10 +23,18 @@ export default function PositionDetailScreen() {
   const { state: {
     poolData: data,
     isLoadingPool
-  } } = usePoolDetailContext();
+  },
+  jobs:{
+    calculateAmountOut
+  }
+ } = usePoolDetailContext();
 
   console.log("🚀 ~ PositionViewer ~ data:", data);
 
+
+  const amountOut = calculateAmountOut('0.1'); // Example amount in wei
+
+  console.log('amountOut cal', amountOut)
 
 
   if (isLoadingPool || !data) return <PoolCardSkeleton />

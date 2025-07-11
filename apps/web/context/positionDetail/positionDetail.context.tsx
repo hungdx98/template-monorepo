@@ -10,6 +10,9 @@ import pick from 'lodash/pick';
 import { useTokensStore } from '@/stores';
 import { useShallow } from 'zustand/shallow';
 import { Token } from '@repo/utils/types';
+import { PeripheryService } from '@/services';
+import { convertBalanceToWei } from '@wallet/utils';
+import { CONSECUTIVE_TICKS_RATIO } from '@/utils';
 type PoolDetail = {
   id: string;
   name: string;
@@ -23,7 +26,8 @@ type PoolDetailContextType = {
     isLoadingPool: boolean;
   };
   jobs: {
-
+    increaseLiquidity: (amount0: string, amount1: string) => Promise<string | any>;
+    calculateAmountOut: (amount0: string) => string
   }
 };
 
@@ -31,7 +35,8 @@ const PoolDetailContext = createContext<PoolDetailContextType | undefined>(undef
 
 export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
 
-  const { address } = useWallet();
+  const { address = '', sendTransaction } = useWallet();
+  
   const { address: positionAddress, nftId } = useParams<{ address: string, nftId: string }>()
 
 
@@ -78,6 +83,42 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
 
   const calculateAmountOut = (amountIn: string) => {
 
+    const SQRTPriceUpper = CONSECUTIVE_TICKS_RATIO ** (Number(get(poolData, 'tickUpper', 0)) / 2);
+    const SQRTPriceLower = CONSECUTIVE_TICKS_RATIO ** (Number(get(poolData, 'tickLower', 0)) / 2);
+    const SQRTPriceCurrent = CONSECUTIVE_TICKS_RATIO ** (Number(get(poolData, 'tick', 0)) / 2);
+    const L1 = (SQRTPriceUpper - SQRTPriceCurrent) / (Number(amountIn) * SQRTPriceUpper * SQRTPriceUpper);
+    const L2 = (SQRTPriceCurrent - SQRTPriceLower) / Number(amountIn);
+    const L = Math.min(L1, L2);
+
+    console.log('check Ls', {L, L1, L2})
+
+    const amountOut = L * (SQRTPriceCurrent - SQRTPriceLower);
+
+    console.log("🚀 ~ calculateAmountOut ~ amountIn:", amountIn, "amountOut:", amountOut);
+    return amountOut.toFixed(6);
+  }
+
+  const increaseLiquidity = async (amount0: string, amount1: string) => {
+    const rawAmount0 = convertBalanceToWei(amount0, get(poolData, 'token0.decimals', 18));
+    const rawAmount1 = convertBalanceToWei(amount1, get(poolData, 'token1.decimals', 18));
+    const tokenId = get(poolData, 'tokenId', '');
+
+    const txData = await PeripheryService.increaseLiquidity( 
+      Number(tokenId),
+      rawAmount0,
+      rawAmount1,
+      address as string)
+  
+    const result = await sendTransaction({
+        ...txData,
+        gasLimit: '0x0',
+        gasPrice: '0x0',
+        gas: '0x0'
+    })
+
+    console.log("🚀 ~ increaseLiquidity ~ result:", result);
+
+    return result.data;
   }
 
   return (
@@ -86,7 +127,10 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
         poolData: poolData,
         isLoadingPool: isLoading,
       },
-      jobs:{ } 
+      jobs:{
+        increaseLiquidity,
+        calculateAmountOut
+      } 
     }}>
       {children}
     </PoolDetailContext.Provider>
