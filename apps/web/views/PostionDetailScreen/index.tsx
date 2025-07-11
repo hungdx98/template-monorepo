@@ -23,21 +23,12 @@ export default function PositionDetailScreen() {
   const { state: {
     poolData: data,
     isLoadingPool
-  },
-  jobs:{
-    calculateAmountOut
   }
  } = usePoolDetailContext();
 
   console.log("🚀 ~ PositionViewer ~ data:", data);
 
 
-  const amountOut = calculateAmountOut('0.1'); // Example amount in wei
-
-  console.log('amountOut cal', amountOut)
-
-
-  if (isLoadingPool || !data) return <PoolCardSkeleton />
 
   const token0Meta = get(data, 'token0', {}) as Token;
   const token1Meta = get(data, 'token1', {}) as Token;
@@ -57,6 +48,9 @@ export default function PositionDetailScreen() {
   const percentage1 = totalValue1 / totalValue * 100;
   const rate = Number(priceToken1) / Number(priceToken0);
 
+
+  if (isLoadingPool || !data) return <PoolCardSkeleton />
+
   return (
     <PageContainer
       size="md"
@@ -68,10 +62,10 @@ export default function PositionDetailScreen() {
         <div className="flex items-center space-x-4">
           <div className="flex items-center gap-x-space-100 mr-4">
             <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
-              <Image width={32} height={32} src={get(token0Meta, 'image', '_')} alt="token" className="rounded-full" />
+              {get(token0Meta, 'image') && <Image width={32} height={32} src={get(token0Meta, 'image', '#')} alt="token" className="rounded-full" />}
             </div>
             <div className="relative w-8 h-8 rounded-full flex items-center justify-center">
-              <Image width={32} height={32} src={get(token1Meta, 'image', '_')} alt="token" className="rounded-full" />
+              {get(token0Meta, 'image') && <Image width={32} height={32} src={get(token1Meta, 'image', '#')} alt="token" className="rounded-full" />}
             </div>
           </div>
           <div>

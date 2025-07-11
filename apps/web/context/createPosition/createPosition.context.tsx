@@ -241,11 +241,22 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     }
 
-    const calculateDepositAmount = (amountIn:string) => {
-        const L1 = Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
-        const L2 = (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate))) / Number(amountIn);
+    const calculateDepositAmount = (amountIn:string, type: 'base' | 'pair') => {
+        const currentRate = type === 'base'
+            ? Number(get(pairTokens, 'token1.market.current_price', 0)) / Number(get(pairTokens, 'token0.market.current_price', 1))
+            : Number(get(pairTokens, 'token0.market.current_price', 0)) / Number(get(pairTokens, 'token1.market.current_price', 1));
+
+        const theoryAmountOut = Number(amountIn) * currentRate;
+
+        console.log("theoryAmountOut", {theoryAmountOut});
+        const L1 = (Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn)) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+
+       
+        const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
         const L = Math.min(L1, L2);
         const amountOut = L * (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+
+        console.log("L1", L1, "L2", L2, "L", L, "amountOut", amountOut);
 
         return amountOut.toFixed(6)
     }

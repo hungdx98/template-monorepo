@@ -46,6 +46,7 @@ export default function SelectPriceRangeSection() {
       onAddPoolLiquidity,
       clearState,
       setPairTokens,
+      setInitialRate,
       calculateDepositAmount,
       // onRevokeToken,
       // onChangeDepositAmount
@@ -68,6 +69,18 @@ export default function SelectPriceRangeSection() {
 
     return Number(price0 / price1).toFixed(4);
   }, [token0, token1]);
+
+
+   useEffect(() => {
+    const token0Price = get(token0, 'market.current_price', 0);
+    const token1Price = get(token1, 'market.current_price', 0);
+    const initRate = rateBy === 'base'
+      ? Number(token0Price) / Number(token1Price)
+      : Number(token1Price) / Number(token0Price);
+
+    setInitialRate(initRate.toFixed(6));
+
+  }, [rateBy, pairTokens])
 
 
   const handleCheckTokensOrder = () => {

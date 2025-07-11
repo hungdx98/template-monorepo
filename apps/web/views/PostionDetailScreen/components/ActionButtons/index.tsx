@@ -1,17 +1,20 @@
 import Button from "@/components/Button";
-import { useTranslations } from "next-intl";
 import AddLiquidityModal from "../AddLiquidityModal";
 import { usePoolDetailContext } from "@/context/positionDetail";
 
 const ActionsButtons = () => {
 
-  const {state: { poolData }} = usePoolDetailContext();
+  const {state: { poolData }, jobs:{calculateAmountOut,increaseLiquidity}} = usePoolDetailContext();
 
   const onOpenModalAddLiquidity = () => {
     window.openModal({
       // title: t('select_token'),
       size: 'sm',
-      content: <AddLiquidityModal poolData={poolData}/>,
+      content: <AddLiquidityModal 
+        poolData={poolData} 
+        calculateAmountOut={calculateAmountOut} 
+        increaseLiquidity={increaseLiquidity}
+      />,
       onClose: () => {
         console.log("Modal closed");
       }

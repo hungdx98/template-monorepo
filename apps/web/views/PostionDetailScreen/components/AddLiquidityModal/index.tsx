@@ -4,15 +4,25 @@ import { convertWeiToBalance, formatNumberBro } from "@wallet/utils";
 import get from "lodash/get";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useState } from "react";
 
 interface AddLiquidityModalProps {
   poolData: any
+  calculateAmountOut?: (amount0: string, type: 'base' | 'pair') => string
+  increaseLiquidity?: (amount0: string, amount1: string) => Promise<string | any>
 }
 const AddLiquidityModal = (props: AddLiquidityModalProps) => {
-  const { poolData } = props;
+  const { poolData, calculateAmountOut, increaseLiquidity } = props;
   console.log("🚀 ~ AddLiquidityModal ~ poolData:", poolData)
 
   const t = useTranslations()
+
+  const [amount, setAmount] = useState({
+    base: '',
+    pair: ''
+  })
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const token0 = get(poolData, 'token0', {});
   const token1 = get(poolData, 'token1', {});
@@ -21,6 +31,23 @@ const AddLiquidityModal = (props: AddLiquidityModalProps) => {
 
   const token0Position = formatNumberBro(convertWeiToBalance(amount0, get(token0, 'decimals', 18)), 6) ;
   const token1Position = formatNumberBro(convertWeiToBalance(amount1, get(token1, 'decimals', 18)), 6) ;
+
+  const onChangeAmount = (type: 'base' | 'pair') => (e) => {
+    const value = e.target.value;
+
+    const otherValue = calculateAmountOut?.(value, type)
+    setAmount((prev) => ({
+      ...prev,
+      [type]: value,
+      [type === "base" ? "pair" : "base"]: otherValue
+    }));
+  }
+
+  const handleAddLiquidity = async () => {
+    setIsLoading(true);
+    const hash = await increaseLiquidity?.(amount.base, amount.pair);
+    setIsLoading(false);
+  }
 
   return (
     <div className="w-full">
@@ -57,13 +84,13 @@ const AddLiquidityModal = (props: AddLiquidityModalProps) => {
 
         <TokenInput
           token={token0}
-          value=""
-          onChange={() => {}}
+          value={amount.base}
+          onChange={onChangeAmount('base')}
         />
         <TokenInput
           token={token1}
-          value=""
-          onChange={() => {}}
+          value={amount.pair}
+          onChange={onChangeAmount('pair')}
         />
 
       </div>
@@ -87,6 +114,9 @@ const AddLiquidityModal = (props: AddLiquidityModalProps) => {
       </div>
 
       <Button
+        disabled={!amount.base || !amount.pair}
+        onClick={handleAddLiquidity}
+        isLoading={isLoading}
       >
         {t('review')}
       </Button>
