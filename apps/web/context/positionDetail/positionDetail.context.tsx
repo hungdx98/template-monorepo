@@ -27,7 +27,8 @@ type PoolDetailContextType = {
   };
   jobs: {
     increaseLiquidity: (amount0: string, amount1: string) => Promise<string | any>;
-    calculateAmountOut: (amount0: string) => string
+    calculateAmountOut: (amount0: string, type: 'base' | 'pair') => string
+    dereaseLiquidity: () => Promise<string | any>;
   }
 };
 
@@ -36,9 +37,9 @@ const PoolDetailContext = createContext<PoolDetailContextType | undefined>(undef
 export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
 
   const { address = '', sendTransaction } = useWallet();
-   const [baseService] = useBaseStore(useShallow(state => [
-              state.baseService
-          ]));
+  const [baseService] = useBaseStore(useShallow(state => [
+      state.baseService
+  ]));
   
   const { address: positionAddress, nftId } = useParams<{ address: string, nftId: string }>()
 
@@ -136,15 +137,6 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
 
   const calculateAmountOut = (amountIn: string, type: 'base' | 'pair') => {
 
-    // const SQRTPriceUpper = CONSECUTIVE_TICKS_RATIO ** (Number(get(poolData, 'tickUpper', 0)) / 2);
-    // const SQRTPriceLower = CONSECUTIVE_TICKS_RATIO ** (Number(get(poolData, 'tickLower', 0)) / 2);
-    // const SQRTPriceCurrent = CONSECUTIVE_TICKS_RATIO ** (Number(get(poolData, 'tick', 0)) / 2);
-    // const L1 = (SQRTPriceUpper - SQRTPriceCurrent) / (Number(amountIn) * SQRTPriceUpper * SQRTPriceUpper);
-    // const L2 = (SQRTPriceCurrent - SQRTPriceLower) / Number(amountIn);
-    // const L = Math.min(L1, L2);
-    // console.log('check Ls', {L, L1, L2})
-    // const amountOut = L * (SQRTPriceCurrent - SQRTPriceLower);
-
     const amount0 = convertWeiToBalance(get(poolData, 'amount0', '0'), get(poolData, 'token0.decimals', 18));
     const amount1 = convertWeiToBalance(get(poolData, 'amount1', '0'), get(poolData, 'token1.decimals', 18));
 
@@ -175,6 +167,23 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
     return result.data;
   }
 
+  const dereaseLiquidity = async () => {
+    const tokenId = get(poolData, 'tokenId', '');
+     const txData = await PeripheryService.decreaseLiquidity( 
+      Number(tokenId),
+      address as string)
+  
+    const result = await sendTransaction({
+        ...txData,
+        gasLimit: '0x0',
+        gasPrice: '0x0',
+        gas: '0x0'
+    })
+   
+    return result.data;
+
+  }
+
   return (
     <PoolDetailContext.Provider value={{ 
       state: {
@@ -183,6 +192,7 @@ export const PoolDetailProvider = ({ children }: { children: ReactNode }) => {
       },
       jobs:{
         increaseLiquidity,
+        dereaseLiquidity,
         calculateAmountOut
       } 
     }}>

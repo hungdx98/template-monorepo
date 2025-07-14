@@ -35,6 +35,7 @@ export interface IStatePositionContext {
         pairTokens: IStatePositionPairTokens;
         isContinue: boolean;
         priceRange: IPriceRange;
+        poolAddress: string;
         isCreatedPool: boolean;
         initialRate: string;
         depositAmount: {
@@ -45,8 +46,9 @@ export interface IStatePositionContext {
     jobs: {
         onChangeStep: (step: EPositionStep) => void;
         onSelectPairToken: (type: 'token0' | 'token1', token: Token) => void;
-        isPoolCreated: (fee: string) => Promise<boolean>;
+        findPoolAddress: (fee: string) => Promise<string | undefined>;
         onSelectFeeTier: (fee: EFeeTier) => () => void;
+        setPoolAddress: (poolAddress: string) => void;
         onChangePriceRange: (type: 'min' | 'max') => (e: React.ChangeEvent<HTMLInputElement>) => void;
         onChangeDepositAmount: (type: 'base' | 'pair') => (e: React.ChangeEvent<HTMLInputElement>) => void;
         setDepositAmount: (params:IDepositAmount) => void;
@@ -59,6 +61,7 @@ export interface IStatePositionContext {
 
         setAllowanceAmount: (params: { base: string; pair: string }) => void;
         onCheckAllowance: (token: Token) => Promise<string>;
+        getPoolInfo: (poolAddress: string) => Promise<any>;
         clearState: () => void;
         calculateDepositAmount: any
     };

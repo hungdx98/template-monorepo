@@ -13,6 +13,8 @@ const TokenInput = (props: TokenInputProps) => {
   const {token, value, onChange} = props;
 
   const price = get(token, 'market.current_price', 0);
+
+  const fiatPrice = Number(price) * Number(value)
   return (
      <div className="bg-background-2 p-4 rounded-border-radius-large">
       <div className="flex justify-between items-center">
@@ -25,7 +27,7 @@ const TokenInput = (props: TokenInputProps) => {
             containerClassName="px-0"
             className="text-font-size-300"
           />
-          <p className="text-text-subtle">${Number(price) * Number(value)}</p>
+          <p className="text-text-subtle">${formatNumberBro(fiatPrice, 4) }</p>
         </div>
 
         <div className="flex flex-col gap-y-space-100">

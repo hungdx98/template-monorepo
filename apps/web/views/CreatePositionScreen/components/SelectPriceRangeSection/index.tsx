@@ -11,8 +11,8 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
 import { SetInitialPrice } from "../InitalPrice";
-import PageContainer from "@/layouts/PageContainer";
 import TokenInput from "@/components/TokenInput";
+import { convertSqrtPriceX96 } from "@/utils";
 
 
 
@@ -35,7 +35,8 @@ export default function SelectPriceRangeSection() {
       pairTokens,
       priceRange,
       depositAmount,
-      isCreatedPool
+      isCreatedPool,
+      poolAddress
     },
     jobs: {
       onChangePriceRange,
@@ -47,6 +48,7 @@ export default function SelectPriceRangeSection() {
       clearState,
       setPairTokens,
       setInitialRate,
+      getPoolInfo,
       calculateDepositAmount,
       // onRevokeToken,
       // onChangeDepositAmount
@@ -59,8 +61,6 @@ export default function SelectPriceRangeSection() {
   const price1 = parseFloat(get(token1, 'market.current_price', '1'));
 
   const [isLoading, setIsLoading] = useState(false);
-
-
   const [rateBy, setRateBy] = useState<'base' | 'pair'>('base');
 
 
@@ -72,15 +72,25 @@ export default function SelectPriceRangeSection() {
 
 
    useEffect(() => {
-    const token0Price = get(token0, 'market.current_price', 0);
-    const token1Price = get(token1, 'market.current_price', 0);
-    const initRate = rateBy === 'base'
-      ? Number(token0Price) / Number(token1Price)
-      : Number(token1Price) / Number(token0Price);
+    getPoolRate()
+  }, [rateBy, pairTokens, poolAddress])
 
-    setInitialRate(initRate.toFixed(6));
 
-  }, [rateBy, pairTokens])
+  const getPoolRate = async () => {
+    if (!poolAddress) {
+      const token0Price = get(token0, 'market.current_price', 0);
+      const token1Price = get(token1, 'market.current_price', 0);
+      const initRate = rateBy === 'base'
+        ? Number(token0Price) / Number(token1Price)
+        : Number(token1Price) / Number(token0Price);
+      return setInitialRate(initRate.toFixed(6));
+    }
+
+    const poolInfo = await getPoolInfo(poolAddress);
+    const sqrtPriceX96 = get(poolInfo, 'sqrtPriceX96', 0);
+    const price = convertSqrtPriceX96(sqrtPriceX96);
+    setInitialRate(price.toFixed(6));
+  }
 
 
   const handleCheckTokensOrder = () => {
