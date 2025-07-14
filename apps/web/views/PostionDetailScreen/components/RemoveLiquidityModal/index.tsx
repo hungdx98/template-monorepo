@@ -5,7 +5,7 @@ import { convertWeiToBalance, formatNumberBro } from "@wallet/utils";
 import get from "lodash/get";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Bounce, toast } from "react-toastify";
 
 interface RemoveLiquidityModalProps {
@@ -29,12 +29,12 @@ const RemoveLiquidityModal = (props: RemoveLiquidityModalProps) => {
   const token0 = get(poolData, 'token0', {});
   const token1 = get(poolData, 'token1', {});
 
-  const {fee, amount0, amount1} = poolData;
+  const { fee, amount0, amount1 } = poolData;
 
-  const token0Position = formatNumberBro(convertWeiToBalance(amount0, get(token0, 'decimals', 18)), 6) ;
-  const token1Position = formatNumberBro(convertWeiToBalance(amount1, get(token1, 'decimals', 18)), 6) ;
+  const token0Position = formatNumberBro(convertWeiToBalance(amount0, get(token0, 'decimals', 18)), 6);
+  const token1Position = formatNumberBro(convertWeiToBalance(amount1, get(token1, 'decimals', 18)), 6);
 
-  const onChangeAmount = (type: 'base' | 'pair') => (e) => {
+  const onChangeAmount = (type: 'base' | 'pair') => (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
     const otherValue = calculateAmountOut?.(value, type)
@@ -49,8 +49,8 @@ const RemoveLiquidityModal = (props: RemoveLiquidityModalProps) => {
     setIsLoading(true);
     const hash = await dereaseLiquidity?.();
     console.log('hash remove liquidity', hash);
-    if(hash && typeof hash === 'string') {
-      toast.success(<ToastSuccess message={'remove_liquidity_success'} hash={hash}/>, {
+    if (hash && typeof hash === 'string') {
+      toast.success(<ToastSuccess message={'remove_liquidity_success'} hash={hash} />, {
         type: 'success',
         delay: 50,
         autoClose: 15000,
@@ -99,11 +99,11 @@ const RemoveLiquidityModal = (props: RemoveLiquidityModalProps) => {
 
       <div className="text-font-size-175 mb-4 flex flex-col gap-y-space-100 mt-3">
         <div className="flex justify-between">
-          <span className="text-text-subtle">{t('symbol_position', {symbol: token0?.symbol?.toUpperCase()})}</span>
+          <span className="text-text-subtle">{t('symbol_position', { symbol: token0?.symbol?.toUpperCase() })}</span>
           <span className="uppercase">{token0Position} {token0?.symbol?.toUpperCase()}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-text-subtle">{t('symbol_position', {symbol: token1?.symbol})}</span>
+          <span className="text-text-subtle">{t('symbol_position', { symbol: token1?.symbol })}</span>
           <span className="uppercase">{token1Position} {token1?.symbol}</span>
         </div>
       </div>
@@ -117,5 +117,5 @@ const RemoveLiquidityModal = (props: RemoveLiquidityModalProps) => {
     </div>
   );
 }
- 
+
 export default RemoveLiquidityModal;
