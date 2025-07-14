@@ -92,7 +92,7 @@ export async function GET() {
 }
 
 // ✅ Helper: fetch token info
-const getTokenInfo = async (tokenAddress: string) => {
+export const getTokenInfo = async (tokenAddress: string) => {
     try {
         const token = new web3.eth.Contract(ERC20_ABI, tokenAddress);
         if (token.methods.symbol === undefined || token.methods.name === undefined || token.methods.decimals === undefined) {
