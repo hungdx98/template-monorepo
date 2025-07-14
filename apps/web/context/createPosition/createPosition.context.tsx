@@ -263,11 +263,11 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
         const theoryAmountOut = Number(amountIn) * currentRate;
 
-        console.log("theoryAmountOut", {theoryAmountOut});
+        console.log("theoryAmountOut", {theoryAmountOut, initialRate});
         const L1 = (Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn)) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
-        const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+        const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
         const L = Math.min(L1, L2);
-        const amountOut = L * (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+        const amountOut = L * (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
 
         console.log("L1", L1, "L2", L2, "L", L, "amountOut", amountOut);
 
