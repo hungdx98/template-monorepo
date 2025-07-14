@@ -1,13 +1,13 @@
-import TokenSelector from "@/components/TokenSelector";
-import { EPositionStep, useCreatePositionContext } from "@/context";
-import { useTokenStore } from "@/stores/useTokenStore";
-import get from "lodash/get";
-import FeeSelections from "../FeeSelections";
-import { useEffect, useState } from "react";
-import {useTranslations } from "next-intl";
 import Button from "@/components/Button";
 import { Icon } from "@/components/Icon";
+import TokenSelector from "@/components/TokenSelector";
+import { EPositionStep, useCreatePositionContext } from "@/context";
+import { useTokensStore } from "@/stores";
 import cx from "@/utils/styled";
+import get from "lodash/get";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import FeeSelections from "../FeeSelections";
 
 const SelectPairSection = () => {
 
@@ -16,7 +16,7 @@ const SelectPairSection = () => {
     findPoolAddress, setPoolAddress
   } 
 } = useCreatePositionContext();
-  const { tokens } = useTokenStore();
+  const tokens = useTokensStore((state) => state.coinCurrent);
 
   const t = useTranslations()
   const [isDisplayMoreFee, setIsDisplayMoreFee] = useState(false);

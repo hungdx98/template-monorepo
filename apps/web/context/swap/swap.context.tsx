@@ -7,16 +7,23 @@ import get from 'lodash/get';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import debounce from 'lodash/debounce';
+import _debounce from 'lodash/debounce';
+import _uniqBy from 'lodash/uniqBy';
 import { convertBalanceToWei, convertWeiToBalance } from '@wallet/utils';
 import Web3 from 'web3';
 import { Bounce, toast } from 'react-toastify';
 import ToastSuccess from '@/components/ToastSuccess';
+import { useTokensStore } from '@/stores';
+import { useShallow } from 'zustand/shallow';
 
 const SwapContext = createContext<IStateSwapContext>({} as IStateSwapContext);
 
 const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const { address, sendTransaction } = useWallet();
+    const coinLocal = useTokensStore(useShallow(state => state.coinLocal));
+    const tokens = useTokensStore(useShallow(state => state.coinCurrent));
+    const coinCurrentByChain = coinLocal["tomo"] || [];
+
     const [pairTokens, setPairTokens] = useState<IStatePositionPairTokens>({
         token0: undefined,
         token1: undefined
@@ -26,7 +33,7 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [amountIn, setAmountIn] = useState<string>('0');
     const [amountOut, setAmountOut] = useState<string>('0');
 
-    const onChangeAmountIn = debounce((e: ChangeEvent<HTMLInputElement>) => {
+    const onChangeAmountIn = _debounce((e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         const value = e.target.value;
         if (isNaN(Number(value)) || value === '' || !value) {
@@ -129,6 +136,12 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
         }
     }
 
+    const coinCurrent = useMemo(() => {
+        const mergeCoinCurrent = [...tokens, ...coinCurrentByChain];
+        const uniqCoinCurrent = _uniqBy(mergeCoinCurrent, 'address');
+        return uniqCoinCurrent;
+    }, [tokens, coinCurrentByChain])
+
     return <SwapContext.Provider value={{
         state: {
             pairTokens,
@@ -141,7 +154,8 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             quote,
             isFetching,
             isLoadingTx,
-            error
+            error,
+            coinCurrent
         },
         jobs: {
             onSelectPairToken,

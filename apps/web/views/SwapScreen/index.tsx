@@ -7,7 +7,6 @@ import Notice from "@/components/Notice";
 import TokenSelector from "@/components/TokenSelector";
 import { useSwapService } from "@/context";
 import PageContainer from "@/layouts/PageContainer";
-import { useTokensStore } from "@/stores";
 import { generateErrorMessage } from "@/utils";
 import cx from "@/utils/styled";
 import { useWallet } from "@coin98-com/wallet-adapter-react";
@@ -15,14 +14,11 @@ import { convertWeiToBalance, formatNumberBro, truncate } from "@wallet/utils";
 import dayjs from "dayjs";
 import get from "lodash/get";
 import { useTranslations } from "next-intl";
-import { useShallow } from "zustand/shallow";
 
 const SwapScreen = () => {
     const t = useTranslations();
-    const tokens = useTokensStore(useShallow(state => state.coinCurrent));
-    const { state: { pairTokens, fiatIn, fiatOut, priceImpact, isHigherPriceImpact, quote, isFetching, error, isLoadingTx }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange } } = useSwapService();
+    const { state: { pairTokens, fiatIn, fiatOut, priceImpact, isHigherPriceImpact, quote, isFetching, error, isLoadingTx, coinCurrent: tokens }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange } } = useSwapService();
     const { address } = useWallet();
-
     const amountOutExpect = convertWeiToBalance(get(quote, 'amountOut', '0'), get(pairTokens, 'token0.decimals', 18));
 
     return <PageContainer

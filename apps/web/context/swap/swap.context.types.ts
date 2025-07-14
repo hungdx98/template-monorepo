@@ -37,6 +37,7 @@ export interface IStateSwapContext {
         isLoadingTx: boolean;
         error?: any; // Error object or message
         isHigherPriceImpact: boolean;
+        coinCurrent: Token[];
     };
     jobs: {
         onSelectPairToken: (type: 'token0' | 'token1', token: Token) => void;

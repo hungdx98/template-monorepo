@@ -1,11 +1,9 @@
 import { Input } from "@/components/Input";
-import { useTranslations } from "next-intl";
-import React, { useEffect, useMemo, useState } from "react";
-import TokenItem from "../TokenItem";
 import { Token } from "@repo/utils/types";
 import _get from "lodash/get";
-import { useTokensStore } from "@/stores";
-import { useShallow } from "zustand/shallow";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
+import TokenItem from "../TokenItem";
 
 interface SelectTokenModalProps {
   listToken?: Token[];
@@ -14,7 +12,7 @@ interface SelectTokenModalProps {
 
 const SelectTokenModal = (props: SelectTokenModalProps) => {
   const { onSelectToken } = props;
-  const listToken = useTokensStore(useShallow(state => state.coinCurrent));
+  const listToken = props.listToken
 
   const [search, setSearch] = useState("");
 
