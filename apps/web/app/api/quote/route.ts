@@ -1,5 +1,7 @@
+import { FACTORY_ABI } from '@/services/abi';
 import { QUOTER_ABI, QUOTER_ADDRESS } from '@/services/abi/quoter';
 import { SWAP_ROUTER_ABI, SWAP_ROUTER_ADDRESS } from '@/services/abi/swapRouter';
+import { FACTORY_ADDRESS, ZERO_ADDRESS } from '@/services/constants';
 import { ResponseStructure } from '@/structure'; // Assuming ResponseStructure is imported here
 import { applySlippage } from '@/utils/quote';
 import Cors from 'cors';
@@ -35,22 +37,25 @@ export async function POST(_req: NextRequest) {
      * Slippage is a common parameter in trading applications to protect against price changes during transactions
      * Default slippage is set to 0.5% if not provided
      */
-    const text = await _req.text(); // lấy raw body
-    const params = new URLSearchParams(text);
-
-    const token0 = params.get('token0') as string;
-    const token1 = params.get('token1') as string;
-    const amountIn = params.get('amountIn') as string; // Ensure this is a string for consistency
-    const fee = Number(params.get('fee')) as number; // Default to 500 if not provided
-    const sqrtPriceLimitX96 = Number(params.get('sqrtPriceLimitX96')) || 0 // Default to 0 if not provided
-    const slippage = Number(params.get('slippage')) || 0.5; // Default to 0.5% if not provided
-    const wallet = params.get('wallet') as string;
+    const body = await _req.json() as QuoteRequest; // Parse the request body as JSON
+    const { token0, token1, amountIn, fee, sqrtPriceLimitX96 = 0, slippage = 0.5, wallet } = body;
 
     // const { token0, token1, amountIn, fee, sqrtPriceLimitX96 = 0, slippage = 0.5, wallet } = body as QuoteRequest;
     try {
 
         validateInputs({ token0, token1, amountIn, fee, wallet });
+        const factoryContract = new web3.eth.Contract(FACTORY_ABI, FACTORY_ADDRESS);
+        if (!factoryContract.methods || !factoryContract.methods.getPool) {
+            throw new Error('getPool method is not defined on the contract');
+        }
 
+        const poolAddress = await factoryContract.methods.getPool(token0, token1, fee).call() as string;
+        if (!poolAddress || poolAddress === ZERO_ADDRESS) {
+            return NextResponse.json(
+                ResponseStructure.error('Pool not found for the given token pair and fee'),
+                { status: 404 }
+            );
+        }
         const quoterContract = new web3.eth.Contract(QUOTER_ABI, QUOTER_ADDRESS);
         const swapRouterContract = new web3.eth.Contract(SWAP_ROUTER_ABI, SWAP_ROUTER_ADDRESS);
         if (!quoterContract.methods || !quoterContract.methods.quoteExactInputSingle) {
@@ -95,10 +100,9 @@ export async function POST(_req: NextRequest) {
             approveAddress: SWAP_ROUTER_ADDRESS,
         }
 
-        swapRouterContract
         return NextResponse.json(
             ResponseStructure.success(
-                { ...params, amountOut: amountOut.toString(), transaction: tx },
+                { ...params, pool: poolAddress, amountOut: amountOut.toString(), slippage, transaction: tx },
                 'Quote fetched successfully'
             ),
             { status: 200 }
@@ -115,6 +119,7 @@ export async function POST(_req: NextRequest) {
 // Helper function to validate inputs
 const validateInputs = (P: QuoteRequest) => {
     const { token0, token1, amountIn, fee, wallet } = P;
+    console.log('validateInputs', P);
     if (!token0 || !token1 || !amountIn || !fee || !wallet) {
         throw new Error('Missing required parameters: token0, token1, amountIn, fee, or wallet');
     }
@@ -127,7 +132,7 @@ const validateInputs = (P: QuoteRequest) => {
     if (typeof amountIn !== 'string' || isNaN(Number(amountIn))) {
         throw new Error('Invalid amountIn provided');
     }
-    if (typeof fee !== 'number' || fee <= 0 || !fees.includes(fee)) {
+    if (Number(fee) <= 0 || !fees.includes(Number(fee))) {
         throw new Error('Invalid fee provided');
     }
 }

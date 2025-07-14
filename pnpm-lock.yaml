@@ -89,6 +89,9 @@ importers:
       crypto-js:
         specifier: 4.2.0
         version: 4.2.0
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       ethers:
         specifier: ^5.0.0
         version: 5.5.1
@@ -10303,6 +10306,10 @@ packages:
 
   /dataloader@2.2.3:
     resolution: {integrity: sha512-y2krtASINtPFS1rSDjacrFgn1dcUuoREVabwlOGOe4SdxenREqwjwjElAdwvbGM7kgZz9a3KVicWR7vcz8rnzA==}
+    dev: false
+
+  /dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
     dev: false
 
   /debug@2.6.9:

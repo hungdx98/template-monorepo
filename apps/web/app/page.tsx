@@ -1,7 +1,10 @@
+import { SwapProvider } from "@/context";
+import SwapScreen from "@/views/SwapScreen";
+
 const Main = () => {
-  return (<div>
-    Main Page
-  </div>);
+  return <SwapProvider>
+    <SwapScreen />;
+  </SwapProvider>
 }
- 
+
 export default Main;
