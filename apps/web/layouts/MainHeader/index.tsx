@@ -7,11 +7,19 @@ import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { useMemo, useState } from 'react';
 import { truncate } from '@repo/utils/helpers';
 import LeftHeader from './components/LeftHeader';
+import { useRouter } from 'next/navigation';
 
 const MainHeader = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { openWalletModal } = useWalletModal();
   const { connected, disconnect, address = '' } = useWallet();
+
+  const router = useRouter();
+
+
+  const navigateHome = () => {
+    router.push('/');
+  }
 
  
 
@@ -54,7 +62,7 @@ const MainHeader = () => {
       <div className="flex items-center justify-between p-4 border border-border-1-subtle sticky top-0 z-50 bg-background h-20">
         <div className='flex items-center gap-x-4'>
 
-          <div className='flex items-center gap-x-4'>
+          <div className='flex items-center gap-x-4 cursor-pointer' onClick={navigateHome}>
             <Image
               width={40}
               height={40}

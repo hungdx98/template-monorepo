@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
+import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { EFeeTier, EPositionStep, IStatePositionContext, IStatePositionPairTokens } from "./type";
 import { PeripheryService } from '@/services';
 import { Token } from '@repo/utils/types';
@@ -190,6 +190,13 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         console.log("revoke pair token", hash2);
     }
 
+    const calTicks = (price: number, tickSpacing: number) => {
+        const rawTick = Math.log(Number(price)) / Math.log(1.0001)
+        const tick = Math.floor(rawTick / Number(tickSpacing)) * Number(tickSpacing)
+        console.log("calTicks", {price, tickSpacing, rawTick, tick});
+        return tick;
+    }
+
     const onAddPoolLiquidity = async () => {
         if(!isCreatedPool){
             const hasCreatePool = await onCreatePool()
@@ -217,8 +224,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         console.log("tickSpacing", tickSpacing);
         // const price = Number(pairTokens.token0?.market?.current_price || 1) / Number(pairTokens.token1?.market?.current_price || 1);
 
-        const lowerTick = calculateTicks(Number(priceRange.min), Number(tickSpacing), 10);
-        const upperTick = calculateTicks(Number(priceRange.max), Number(tickSpacing), 10);
+        // const lowerTick = calculateTicks(Number(priceRange.min), Number(tickSpacing), 10);
+        // const upperTick = calculateTicks(Number(priceRange.max), Number(tickSpacing), 10);
+        const lowerTick = calTicks(Number(priceRange.min), Number(tickSpacing));
+        const upperTick = calTicks(Number(priceRange.max), Number(tickSpacing));
 
         console.log("calTick", {lowerTick,upperTick, tickSpacing});
 
@@ -230,8 +239,8 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             token1: pairTokens.token1?.address as string,
             amount0Desired: BigInt(rawBaseAmount || '0'),
             amount1Desired: BigInt(rawPairAmount || '0'),
-            tickLower: Number(lowerTick.tickLower) || 0, // Convert to number
-            tickUpper: Number(upperTick.tickUpper) || 0, // Convert to number
+            tickLower: Number(lowerTick) || 0, // Convert to number
+            tickUpper: Number(upperTick) || 0, // Convert to number
             fee: Number(feeTier) * 10000, // Convert fee to basis points,
             deadline: Math.floor(Date.now() / 1000) + 60 * 300 // 300 minutes from now
         })
@@ -254,13 +263,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
         const theoryAmountOut = Number(amountIn) * currentRate;
 
-        console.log("theoryAmountOut", {theoryAmountOut});
         const L1 = (Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn)) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
-        const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+        const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
         const L = Math.min(L1, L2);
-        const amountOut = L * (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
-
-        console.log("L1", L1, "L2", L2, "L", L, "amountOut", amountOut);
+        const amountOut = L * (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
 
         return amountOut.toFixed(6)
     }

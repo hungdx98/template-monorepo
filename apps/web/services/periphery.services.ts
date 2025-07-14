@@ -157,6 +157,11 @@ export class PeripheryService {
         return tx;
     }
 
+    static getTransactionReceipt = async (txHash: string): Promise<any> => {
+        const receipt = await this.client.eth.getTransactionReceipt(txHash)
+        return receipt;
+    }
+
     static getTotalSupplyNFT = async (): Promise<number> => {
         const contract = this.getContractNFTPositionManager();
         if (!contract.methods.totalSupply) {
