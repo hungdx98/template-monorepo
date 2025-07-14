@@ -35,9 +35,9 @@ export class PeripheryService {
     }
 
     static getPoolInfo = async (poolAddress: string): Promise<any> => {
-        if(!poolAddress) return null;
+        if (!poolAddress) return null;
         const contractPool = new this.client.eth.Contract(POOL_ABI, poolAddress);
-          if (!contractPool.methods.slot0) {
+        if (!contractPool.methods.slot0) {
             throw new Error("slot0 method is not available on the contract");
         }
         const poolDetail = await contractPool.methods.slot0().call();
@@ -89,9 +89,9 @@ export class PeripheryService {
 
     }
 
-    static getSqrtPriceX96 = (rate: number): bigint => {
-         const contract = this.getContractFactory();
-    }
+    // static getSqrtPriceX96 = (rate: number): bigint => {
+    //      const contract = this.getContractFactory();
+    // }
 
     static createPool = async (params: ICreatePool): Promise<Transaction> => {
         const { wallet, rate, token0, token1, fee } = params;
@@ -185,7 +185,7 @@ export class PeripheryService {
         if (!contractNFTManager.methods.increaseLiquidity) {
             throw new Error("increaseLiquidity method is not available on the contract");
         }
-        
+
         const dataTx = contractNFTManager.methods.increaseLiquidity({
             tokenId,
             amount0Desired,
@@ -208,7 +208,7 @@ export class PeripheryService {
         const multicallData: any[] = [];
         const MAX_UINT128 = (2n ** 128n - 1n).toString();
         const contractNFTManager = this.getContractNFTPositionManager();
-        const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10 minutes from now
+        const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 10 minutes from now
         try {
             if (!contractNFTManager.methods.positions) {
                 throw new Error("positions method is not available on the contract");
@@ -280,64 +280,41 @@ export class PeripheryService {
             console.log("check token id", tokenId);
 
             const call2 = this.client.eth.abi.encodeFunctionCall({
-                "inputs": [
+                inputs: [
                     {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
+                        components: [
+                            { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+                            { internalType: 'address', name: 'recipient', type: 'address' },
+                            { internalType: 'uint128', name: 'amount0Max', type: 'uint128' },
+                            { internalType: 'uint128', name: 'amount1Max', type: 'uint128' },
+                        ],
+                        internalType: 'struct INonfungiblePositionManager.CollectParams',
+                        name: 'params',
+                        type: 'tuple',
                     },
-                    {
-                        "internalType": "address",
-                        "name": "recipient",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint128",
-                        "name": "amount0Max",
-                        "type": "uint128"
-                    },
-                    {
-                        "internalType": "uint128",
-                        "name": "amount1Max",
-                        "type": "uint128"
-                    }
                 ],
-                "name": "collect",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount0",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount1",
-                        "type": "uint256"
-                    }
+                name: 'collect',
+                outputs: [
+                    { internalType: 'uint256', name: 'amount0', type: 'uint256' },
+                    { internalType: 'uint256', name: 'amount1', type: 'uint256' },
                 ],
-                "stateMutability": "payable",
-                "type": "function"
+                stateMutability: 'payable',
+                type: 'function',
             }, [{
                 tokenId,
                 recipient: wallet,
-                amount0Max: MAX_UINT128,
-                amount1Max: MAX_UINT128
+                amount0Max: MAX_UINT128, // Use MAX_UINT128 as a string
+                amount1Max: MAX_UINT128, // Use MAX_UINT128 as a string
             }]);
             multicallData.push(call2);
 
 
             const call3 = this.client.eth.abi.encodeFunctionCall({
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "tokenId",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "burn",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
+                inputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
+                name: 'burn',
+                outputs: [],
+                stateMutability: 'payable',
+                type: 'function',
             }, [tokenId]);
             multicallData.push(call3);
 
@@ -346,6 +323,7 @@ export class PeripheryService {
                 throw new Error("multicall method is not available on the contract");
             }
             const tx = await contractNFTManager.methods.multicall(multicallData).encodeABI();
+
             return {
                 from: wallet,
                 to: this.nftPositionManagerAddress,

@@ -16,7 +16,7 @@ import { useShallow } from 'zustand/shallow';
 
 export default function PositionCard({ position }: any) {
     const { token0, token1, fee } = position;
-    console.log("position", position);
+
     const coinLocal = useTokensStore(useShallow((state) => state.coinLocal));
     const coinLocalCurrent = coinLocal['tomo'];
 
