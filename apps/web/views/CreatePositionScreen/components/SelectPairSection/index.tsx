@@ -11,9 +11,9 @@ import cx from "@/utils/styled";
 
 const SelectPairSection = () => {
 
-  const { state: {  pairTokens, isContinue, feeTier, isCreatedPool }, jobs: { 
+  const { state: {  pairTokens, isContinue, feeTier }, jobs: { 
     onChangeStep, onSelectPairToken, onSelectFeeTier , setIsCreatedPool,
-    isPoolCreated, onCreatePool
+    findPoolAddress, setPoolAddress
   } 
 } = useCreatePositionContext();
   const { tokens } = useTokenStore();
@@ -24,8 +24,11 @@ const SelectPairSection = () => {
 
 
    const checkIsCreatedPool = async() => {
-      const isCreated = await isPoolCreated(feeTier.toString());
-      setIsCreatedPool(isCreated);
+      const poolAddress = await findPoolAddress(feeTier.toString());
+      setIsCreatedPool(!!poolAddress);
+      if(poolAddress) {
+        setPoolAddress(poolAddress);
+      }
     }
   
     useEffect(() => {

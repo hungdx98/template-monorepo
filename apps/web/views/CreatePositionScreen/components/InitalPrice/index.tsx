@@ -20,16 +20,6 @@ export const SetInitialPrice = (props: ISetInitialPriceProps) => {
   const token0 = get(pairTokens, 'token0', {});
   const token1 = get(pairTokens, 'token1', {});
 
-  useEffect(() => {
-    const token0Price = get(token0, 'market.current_price', 0);
-    const token1Price = get(token1, 'market.current_price', 0);
-    const initRate = rateBy === 'base'
-      ? Number(token0Price) / Number(token1Price)
-      : Number(token1Price) / Number(token0Price);
-
-    setInitialRate(initRate.toFixed(6));
-
-  }, [rateBy])
     // Reset initial rate when pair tokens change}
 
   const onselect = (type: 'base' | 'pair') => () => {

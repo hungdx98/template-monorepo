@@ -30,3 +30,9 @@ export const calculateTicks = (
         currentTick: alignedTick,
     };
 };
+
+export const convertSqrtPriceX96 = (sqrtPriceX96: number) => {
+    const bigNumberSqrtPriceX96 = Number(sqrtPriceX96);
+    console.log('bigNumberSqrtPriceX96', bigNumberSqrtPriceX96);
+    return (bigNumberSqrtPriceX96 / (2 ** 96)) ** 2;
+}   

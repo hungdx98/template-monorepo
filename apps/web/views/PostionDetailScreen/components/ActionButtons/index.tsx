@@ -1,17 +1,36 @@
 import Button from "@/components/Button";
-import { useTranslations } from "next-intl";
 import AddLiquidityModal from "../AddLiquidityModal";
 import { usePoolDetailContext } from "@/context/positionDetail";
+import RemoveLiquidityModal from "../RemoveLiquidityModal";
 
 const ActionsButtons = () => {
 
-  const {state: { poolData }} = usePoolDetailContext();
+  const {state: { poolData }, jobs:{calculateAmountOut,increaseLiquidity, dereaseLiquidity}} = usePoolDetailContext();
 
   const onOpenModalAddLiquidity = () => {
     window.openModal({
       // title: t('select_token'),
       size: 'sm',
-      content: <AddLiquidityModal poolData={poolData}/>,
+      content: <AddLiquidityModal 
+        poolData={poolData} 
+        calculateAmountOut={calculateAmountOut} 
+        increaseLiquidity={increaseLiquidity}
+      />,
+      onClose: () => {
+        console.log("Modal closed");
+      }
+    })
+  }
+
+  const onOpenModalRemoveLiquidity = () => {
+    window.openModal({
+      // title: t('select_token'),
+      size: 'sm',
+      content: <RemoveLiquidityModal 
+        poolData={poolData} 
+        calculateAmountOut={calculateAmountOut} 
+        dereaseLiquidity={dereaseLiquidity}
+      />,
       onClose: () => {
         console.log("Modal closed");
       }
@@ -30,6 +49,7 @@ const ActionsButtons = () => {
         </div>
         <div>
            <Button 
+            onClick={onOpenModalRemoveLiquidity}
             className="text-font-size-175"
             variant="secondary"
           >

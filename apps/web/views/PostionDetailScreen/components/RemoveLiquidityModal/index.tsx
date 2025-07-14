@@ -1,19 +1,21 @@
 import Button from "@/components/Button";
+import ToastSuccess from "@/components/ToastSuccess";
 import TokenInput from "@/components/TokenInput";
 import { convertWeiToBalance, formatNumberBro } from "@wallet/utils";
 import get from "lodash/get";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
+import { Bounce, toast } from "react-toastify";
 
-interface AddLiquidityModalProps {
+interface RemoveLiquidityModalProps {
   poolData: any
   calculateAmountOut?: (amount0: string, type: 'base' | 'pair') => string
-  increaseLiquidity?: (amount0: string, amount1: string) => Promise<string | any>
+  dereaseLiquidity?: () => Promise<string | any>
 }
-const AddLiquidityModal = (props: AddLiquidityModalProps) => {
-  const { poolData, calculateAmountOut, increaseLiquidity } = props;
-  console.log("🚀 ~ AddLiquidityModal ~ poolData:", poolData)
+const RemoveLiquidityModal = (props: RemoveLiquidityModalProps) => {
+  const { poolData, calculateAmountOut, dereaseLiquidity } = props;
+  console.log("🚀 ~ RemoveLiquidityModal ~ poolData:", poolData)
 
   const t = useTranslations()
 
@@ -43,16 +45,25 @@ const AddLiquidityModal = (props: AddLiquidityModalProps) => {
     }));
   }
 
-  const handleAddLiquidity = async () => {
+  const handleRemoveLiquidity = async () => {
     setIsLoading(true);
-    const hash = await increaseLiquidity?.(amount.base, amount.pair);
+    const hash = await dereaseLiquidity?.();
+    console.log('hash remove liquidity', hash);
+    if(hash && typeof hash === 'string') {
+      toast.success(<ToastSuccess message={'remove_liquidity_success'} hash={hash}/>, {
+        type: 'success',
+        delay: 50,
+        autoClose: 15000,
+        transition: Bounce
+      })
+    }
     setIsLoading(false);
   }
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-lg font-semibold">{t('add_liquidity')}</h1>
+        <h1 className="text-lg font-semibold">{t('remove_liquidity')}</h1>
         <div className="text-gray-400 cursor-pointer">⚙️</div>
       </div>
 
@@ -79,23 +90,11 @@ const AddLiquidityModal = (props: AddLiquidityModalProps) => {
         In range
       </div>
 
-
       <div className="flex flex-col gap-y-space-100">
 
-        <TokenInput
-          token={token0}
-          value={amount.base}
-          onChange={onChangeAmount('base')}
-        />
-        <TokenInput
-          token={token1}
-          value={amount.pair}
-          onChange={onChangeAmount('pair')}
-        />
 
       </div>
 
-      
 
 
       <div className="text-font-size-175 mb-4 flex flex-col gap-y-space-100 mt-3">
@@ -107,15 +106,10 @@ const AddLiquidityModal = (props: AddLiquidityModalProps) => {
           <span className="text-text-subtle">{t('symbol_position', {symbol: token1?.symbol})}</span>
           <span className="uppercase">{token1Position} {token1?.symbol}</span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-text-subtle">Network cost</span>
-          <span>&lt;$0.01</span>
-        </div>
       </div>
 
       <Button
-        disabled={!amount.base || !amount.pair}
-        onClick={handleAddLiquidity}
+        onClick={handleRemoveLiquidity}
         isLoading={isLoading}
       >
         {t('review')}
@@ -124,4 +118,4 @@ const AddLiquidityModal = (props: AddLiquidityModalProps) => {
   );
 }
  
-export default AddLiquidityModal;
+export default RemoveLiquidityModal;

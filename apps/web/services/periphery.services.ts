@@ -34,6 +34,16 @@ export class PeripheryService {
         }
     }
 
+    static getPoolInfo = async (poolAddress: string): Promise<any> => {
+        if(!poolAddress) return null;
+        const contractPool = new this.client.eth.Contract(POOL_ABI, poolAddress);
+          if (!contractPool.methods.slot0) {
+            throw new Error("slot0 method is not available on the contract");
+        }
+        const poolDetail = await contractPool.methods.slot0().call();
+        return poolDetail
+    }
+
     static getPositionInfo = async (tokenId: number): Promise<PositionInfo> => {
         const contract = this.getContractNFTPositionManager();
         if (!contract.methods.positions) {
@@ -77,6 +87,10 @@ export class PeripheryService {
 
         return tx;
 
+    }
+
+    static getSqrtPriceX96 = (rate: number): bigint => {
+         const contract = this.getContractFactory();
     }
 
     static createPool = async (params: ICreatePool): Promise<Transaction> => {
@@ -262,6 +276,8 @@ export class PeripheryService {
                 }, [decreaseParams]);
                 multicallData.push(call1)
             }
+
+            console.log("check token id", tokenId);
 
             const call2 = this.client.eth.abi.encodeFunctionCall({
                 "inputs": [

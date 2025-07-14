@@ -26,7 +26,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [step, setStep] = useState<EPositionStep>(EPositionStep.token_pair);
     const [isCreatedPool, setIsCreatedPool] = useState(false);
     const [initialRate, setInitialRate] = useState<string>('0');
-
+    const [poolAddress, setPoolAddress] = useState<string>('');
     
 
     const [pairTokens, setPairTokens] = useState<IStatePositionPairTokens>({
@@ -117,12 +117,12 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
        })
     }
 
-    const isPoolCreated = async (fee: string): Promise<boolean> => {
-        if (!isContinue) return false
+    const findPoolAddress = async (fee: string): Promise<string | undefined> => {
+        if (!isContinue) return ''
         const feeTier = Number(fee) * 10000; // Convert fee to basis points
         // This function can be used to check if the pool is created
         if (!pairTokens.token0 || !pairTokens.token1) {
-            return false
+            return ''
         }
         const poolAddress = await PeripheryService.getPoolAddress(
             pairTokens.token0.address as string,
@@ -131,8 +131,15 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         )
 
         console.log("poolAddress", {poolAddress, pairTokens});
-        return !!poolAddress
+        return poolAddress
     };
+
+    const getPoolInfo = async (poolAddress: string) => {
+        const poolInfo = await PeripheryService.getPoolInfo(poolAddress);
+        return poolInfo
+    }
+
+
 
     const onCreatePool = async () => {
         console.log("onCreatePool", {pairTokens, feeTier, initialRate});
@@ -151,7 +158,6 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             gasLimit: '0x0'
         })
 
-        console.log("result create pool", result);
         return get(result, 'data', '')
 
     }
@@ -241,11 +247,20 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     }
 
-    const calculateDepositAmount = (amountIn:string) => {
-        const L1 = Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
-        const L2 = (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate))) / Number(amountIn);
+    const calculateDepositAmount = (amountIn:string, type: 'base' | 'pair') => {
+        const currentRate = type === 'base'
+            ? Number(get(pairTokens, 'token1.market.current_price', 0)) / Number(get(pairTokens, 'token0.market.current_price', 1))
+            : Number(get(pairTokens, 'token0.market.current_price', 0)) / Number(get(pairTokens, 'token1.market.current_price', 1));
+
+        const theoryAmountOut = Number(amountIn) * currentRate;
+
+        console.log("theoryAmountOut", {theoryAmountOut});
+        const L1 = (Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn)) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+        const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
         const L = Math.min(L1, L2);
         const amountOut = L * (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
+
+        console.log("L1", L1, "L2", L2, "L", L, "amountOut", amountOut);
 
         return amountOut.toFixed(6)
     }
@@ -264,6 +279,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 priceRange,
                 depositAmount,
                 isCreatedPool,
+                poolAddress,
                 initialRate,
                 isContinue
             },
@@ -277,7 +293,8 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 setPriceRange,
                 onChangePriceRange,
                 onSelectPairToken,
-                isPoolCreated,
+                findPoolAddress,
+                setPoolAddress,
                 onSelectFeeTier,
                 onCheckAllowance,
                 setAllowanceAmount,
@@ -285,6 +302,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 setInitialRate,
                 clearState,
                 calculateDepositAmount,
+                getPoolInfo,
                 onRevokeToken
             }
         }}>
