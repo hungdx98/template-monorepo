@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
+import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { EFeeTier, EPositionStep, IStatePositionContext, IStatePositionPairTokens } from "./type";
 import { PeripheryService } from '@/services';
 import { Token } from '@repo/utils/types';
@@ -263,13 +263,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
         const theoryAmountOut = Number(amountIn) * currentRate;
 
-        console.log("theoryAmountOut", {theoryAmountOut, initialRate});
         const L1 = (Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn)) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
         const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
         const L = Math.min(L1, L2);
         const amountOut = L * (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
-
-        console.log("L1", L1, "L2", L2, "L", L, "amountOut", amountOut);
 
         return amountOut.toFixed(6)
     }
