@@ -3,12 +3,16 @@
 import Button from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { Input } from "@/components/Input";
+import Notice from "@/components/Notice";
 import TokenSelector from "@/components/TokenSelector";
 import { useSwapService } from "@/context";
 import PageContainer from "@/layouts/PageContainer";
 import { useTokensStore } from "@/stores";
+import { generateErrorMessage } from "@/utils";
+import cx from "@/utils/styled";
 import { useWallet } from "@coin98-com/wallet-adapter-react";
-import { convertWeiToBalance, formatNumberBro } from "@wallet/utils";
+import { convertWeiToBalance, formatNumberBro, truncate } from "@wallet/utils";
+import dayjs from "dayjs";
 import get from "lodash/get";
 import { useTranslations } from "next-intl";
 import { useShallow } from "zustand/shallow";
@@ -16,7 +20,7 @@ import { useShallow } from "zustand/shallow";
 const SwapScreen = () => {
     const t = useTranslations();
     const tokens = useTokensStore(useShallow(state => state.coinCurrent));
-    const { state: { pairTokens, amountIn, fiatIn, fiatOut, quote }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange } } = useSwapService();
+    const { state: { pairTokens, fiatIn, fiatOut, priceImpact, isHigherPriceImpact, quote, isFetching, error, isLoadingTx }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange } } = useSwapService();
     const { address } = useWallet();
 
     const amountOutExpect = convertWeiToBalance(get(quote, 'amountOut', '0'), get(pairTokens, 'token0.decimals', 18));
@@ -39,8 +43,7 @@ const SwapScreen = () => {
                 </div>
                 <div className="flex items-center justify-between">
                     <Input
-                        value={amountIn}
-                        onChange={(e) => onChangeAmountIn(e.target.value)}
+                        onChange={onChangeAmountIn}
                         variant="unstyled"
                         placeholder="0"
                         containerClassName="px-0"
@@ -106,15 +109,48 @@ const SwapScreen = () => {
                     </div>
                 </div>
                 <div className="flex justify-between items-center text-sm mt-2 text-gray-400">
-                    <span>${formatNumberBro(fiatOut, 4)}</span>
+                    <span>
+                        ${formatNumberBro(fiatOut, 4) + " "}
+                        <span className={cx(isHigherPriceImpact && "text-red-500")}>{!!priceImpact && ("(" + formatNumberBro(priceImpact, 2) + "%)")}</span>
+                    </span>
                 </div>
             </div>
+            {
+                !!quote && <div className="my-4">
+                    <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+                        <span>Fee</span>
+                        <span className="">{Number(get(quote, 'fee', '0')) / 10000}%</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+                        <span>Slippage</span>
+                        <span className="uppercase">{get(quote, 'slippage', 0)}%</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+                        <span>Minimum Received</span>
+                        <span className="uppercase">{formatNumberBro(convertWeiToBalance(get(quote, 'amountOutMinimum', '0'), get(pairTokens, 'token1.decimals', 18)), 8) + ` ${get(pairTokens, 'token1.symbol', '')}`}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+                        <span>Pool</span>
+                        <span className="">{truncate(get(quote, 'pool', ''))}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+                        <span>Deadline</span>
+                        <span className="">{dayjs(get(quote, 'deadline', 0) * 1000).format('DD/MM/YYYY hh:mm:ss')}</span>
+                    </div>
+                </div>
+            }
+            {
+                // Error handling
+                !!error && <Notice icon="warning" content={generateErrorMessage(error)} className="mb-4" />
+            }
+
             {/* Submit button */}
             <Button
                 variant="secondary"
                 className="text-font-size-175 rounded-xl"
                 onClick={handleExchange(quote)}
                 disabled={!quote || !quote.transaction || !address}
+                isLoading={isFetching || isLoadingTx}
             >
                 Swap
             </Button>

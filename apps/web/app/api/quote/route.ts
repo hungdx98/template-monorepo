@@ -1,5 +1,7 @@
+import { FACTORY_ABI } from '@/services/abi';
 import { QUOTER_ABI, QUOTER_ADDRESS } from '@/services/abi/quoter';
 import { SWAP_ROUTER_ABI, SWAP_ROUTER_ADDRESS } from '@/services/abi/swapRouter';
+import { FACTORY_ADDRESS, ZERO_ADDRESS } from '@/services/constants';
 import { ResponseStructure } from '@/structure'; // Assuming ResponseStructure is imported here
 import { applySlippage } from '@/utils/quote';
 import Cors from 'cors';
@@ -42,7 +44,18 @@ export async function POST(_req: NextRequest) {
     try {
 
         validateInputs({ token0, token1, amountIn, fee, wallet });
+        const factoryContract = new web3.eth.Contract(FACTORY_ABI, FACTORY_ADDRESS);
+        if (!factoryContract.methods || !factoryContract.methods.getPool) {
+            throw new Error('getPool method is not defined on the contract');
+        }
 
+        const poolAddress = await factoryContract.methods.getPool(token0, token1, fee).call() as string;
+        if (!poolAddress || poolAddress === ZERO_ADDRESS) {
+            return NextResponse.json(
+                ResponseStructure.error('Pool not found for the given token pair and fee'),
+                { status: 404 }
+            );
+        }
         const quoterContract = new web3.eth.Contract(QUOTER_ABI, QUOTER_ADDRESS);
         const swapRouterContract = new web3.eth.Contract(SWAP_ROUTER_ABI, SWAP_ROUTER_ADDRESS);
         if (!quoterContract.methods || !quoterContract.methods.quoteExactInputSingle) {
@@ -87,10 +100,9 @@ export async function POST(_req: NextRequest) {
             approveAddress: SWAP_ROUTER_ADDRESS,
         }
 
-        swapRouterContract
         return NextResponse.json(
             ResponseStructure.success(
-                { ...params, amountOut: amountOut.toString(), transaction: tx },
+                { ...params, pool: poolAddress, amountOut: amountOut.toString(), slippage, transaction: tx },
                 'Quote fetched successfully'
             ),
             { status: 200 }

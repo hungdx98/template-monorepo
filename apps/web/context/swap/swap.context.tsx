@@ -1,13 +1,13 @@
 "use client"
 import { Token } from '@repo/utils/types';
-import React, { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
+import React, { ChangeEvent, createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
 import { IStatePositionPairTokens } from '../createPosition';
 import { IStateSwapContext, QuoteResponse } from './swap.context.types';
 import get from 'lodash/get';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { convertBalanceToWei, convertWeiToBalance } from '@wallet/utils';
 import Web3 from 'web3';
 import { Bounce, toast } from 'react-toastify';
@@ -21,13 +21,20 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
         token0: undefined,
         token1: undefined
     })
+    const [isLoadingTx, setIsLoadingTx] = useState<boolean>(false);
 
     const [amountIn, setAmountIn] = useState<string>('0');
     const [amountOut, setAmountOut] = useState<string>('0');
 
-    const onChangeAmountIn = debounce((value: string) => {
+    const onChangeAmountIn = debounce((e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const value = e.target.value;
+        if (isNaN(Number(value)) || value === '' || !value) {
+            setAmountOut('0');
+            return;
+        }
         setAmountIn(value);
-    }, 100);
+    }, 500);
 
     const onSelectPairToken = (type: 'token0' | 'token1', token: Token) => {
         setPairTokens((prev) => ({
@@ -36,16 +43,23 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
         }));
     };
 
-    const [fiatIn, fiatOut] = useMemo(() => {
+    const [fiatIn, fiatOut, priceImpact, isHigherPriceImpact] = useMemo(() => {
         const priceIn = get(pairTokens, 'token0.market.current_price', '0');
         const priceOut = get(pairTokens, 'token1.market.current_price', '0');
         const fiatIn = String((Number(amountIn) * Number(priceIn)));
         const fiatOut = String((Number(amountOut) * Number(priceOut)));
-        return [fiatIn, fiatOut];
+        let priceImpact = (((Number(fiatOut) - Number(fiatIn)) / Number(fiatIn)) * 100);
+        if (!amountOut || isNaN(priceImpact) || amountOut === '0') {
+            priceImpact = 0;
+        }
+        const isHigherPriceImpact = Number(priceImpact) < -5;
+        return [fiatIn, fiatOut, priceImpact, isHigherPriceImpact];
     }, [pairTokens, amountIn, amountOut]);
 
     const fetchQuotesSequentially = async () => {
         try {
+            setAmountOut('0');
+
             // Simulate fetching quotes sequentially
             const amountInExpect = convertBalanceToWei(amountIn, get(pairTokens, 'token0.decimals', 18));
             const params = {
@@ -63,11 +77,11 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             }
             return quotes;
         } catch (error: any) {
-            throw new Error(`Failed to fetch quotes: ${error?.message}`);
+            throw get(error, 'response.data', 'Failed to fetch quotes');
         }
     }
 
-    const { data: quote, refetch: refetchQuotesConcurrently } = useQuery({
+    const { data: quote, isFetching, error, refetch: refetchQuotesConcurrently } = useQuery({
         queryKey: [{
             key: 'quotes-concurrently',
             address,
@@ -75,7 +89,7 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             amountIn
         }],
         queryFn: fetchQuotesSequentially,
-        enabled: !!pairTokens.token0 && !!pairTokens.token1 && !!address && amountIn !== '0',
+        enabled: !!pairTokens.token0 && !!pairTokens.token1 && !!address && amountIn !== '0' && !isNaN(Number(amountIn)) && !!amountIn,
         retry: 0,
         refetchOnWindowFocus: false,
         // ...queryNoCacheOptions
@@ -87,7 +101,7 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 console.error('Invalid quote data');
                 return;
             }
-
+            setIsLoadingTx(true);
             const { transaction } = quote;
             const { approveAddress, ...tx } = transaction;
 
@@ -110,6 +124,8 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 transition: Bounce
             });
             // throw new Error(`Failed to send transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsLoadingTx(false);
         }
     }
 
@@ -120,7 +136,12 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             amountOut,
             fiatIn,
             fiatOut,
-            quote
+            priceImpact,
+            isHigherPriceImpact,
+            quote,
+            isFetching,
+            isLoadingTx,
+            error
         },
         jobs: {
             onSelectPairToken,
