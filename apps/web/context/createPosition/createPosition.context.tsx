@@ -18,16 +18,16 @@ const PositionContext = createContext<IStatePositionContext>({} as IStatePositio
 const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const { address = '', sendTransaction } = useWallet();
-      const [baseService] = useBaseStore(useShallow(state => [
-            state.baseService
-        ]));
-    
+    const [baseService] = useBaseStore(useShallow(state => [
+        state.baseService
+    ]));
+
 
     const [step, setStep] = useState<EPositionStep>(EPositionStep.token_pair);
     const [isCreatedPool, setIsCreatedPool] = useState(false);
     const [initialRate, setInitialRate] = useState<string>('0');
     const [poolAddress, setPoolAddress] = useState<string>('');
-    
+
 
     const [pairTokens, setPairTokens] = useState<IStatePositionPairTokens>({
         token0: undefined,
@@ -63,11 +63,11 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             spender: NFT_POSITION_MANANGER_ADDRESS
         })
 
-        const convertAllowance = convertWeiToBalance(String(Number(sAllowance || '0')), token.decimals || 18); 
+        const convertAllowance = convertWeiToBalance(String(Number(sAllowance || '0')), token.decimals || 18);
         return convertAllowance || '0';
     }
 
-    const onChangeStep = (stepProps: EPositionStep)  => {
+    const onChangeStep = (stepProps: EPositionStep) => {
         if (stepProps === EPositionStep.token_pair && step !== stepProps && isContinue) {
             setFeeTier(EFeeTier.STANDARD);
             setStep(stepProps);
@@ -87,8 +87,8 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             [type]: value
         }));
 
-        setDepositAmount({ base: '', pair: ''} )
-        
+        setDepositAmount({ base: '', pair: '' })
+
     }
 
     const onChangeDepositAmount = (type: 'base' | 'pair') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,10 +111,10 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
 
     const clearState = () => {
-       setDepositAmount({
-        base: '',
-        pair: ''
-       })
+        setDepositAmount({
+            base: '',
+            pair: ''
+        })
     }
 
     const findPoolAddress = async (fee: string): Promise<string | undefined> => {
@@ -130,7 +130,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
             feeTier
         )
 
-        console.log("poolAddress", {poolAddress, pairTokens});
+        console.log("poolAddress", { poolAddress, pairTokens });
         return poolAddress
     };
 
@@ -142,7 +142,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
 
     const onCreatePool = async () => {
-        console.log("onCreatePool", {pairTokens, feeTier, initialRate});
+        console.log("onCreatePool", { pairTokens, feeTier, initialRate });
         const rate = Number(get(pairTokens, 'token1.market.current_price', 0)) / Number(get(pairTokens, 'token0.market.current_price', 0));
         const txData = await PeripheryService.createPool({
             wallet: address as string,
@@ -162,7 +162,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     }
 
-    const onApproveToken = async (token: Token, amount:string) => {
+    const onApproveToken = async (token: Token, amount: string) => {
 
         const rawAmount = !amount || Number(amount) === 0
             ? '0'
@@ -186,22 +186,22 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const onRevokeToken = async () => {
         const hash1 = await onApproveToken(pairTokens.token0 as Token, '0');
         console.log("revoke base token", hash1);
-        const hash2 = await onApproveToken(pairTokens.token1 as Token, '0');  
+        const hash2 = await onApproveToken(pairTokens.token1 as Token, '0');
         console.log("revoke pair token", hash2);
     }
 
     const calTicks = (price: number, tickSpacing: number) => {
         const rawTick = Math.log(Number(price)) / Math.log(1.0001)
         const tick = Math.floor(rawTick / Number(tickSpacing)) * Number(tickSpacing)
-        console.log("calTicks", {price, tickSpacing, rawTick, tick});
+        console.log("calTicks", { price, tickSpacing, rawTick, tick });
         return tick;
     }
 
     const onAddPoolLiquidity = async () => {
-        if(!isCreatedPool){
+        if (!isCreatedPool) {
             const hasCreatePool = await onCreatePool()
 
-            if(hasCreatePool) setIsCreatedPool(true);
+            if (hasCreatePool) setIsCreatedPool(true);
             if (!hasCreatePool) {
                 return new Error("Failed to create pool");
             }
@@ -229,7 +229,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         const lowerTick = calTicks(Number(priceRange.min), Number(tickSpacing));
         const upperTick = calTicks(Number(priceRange.max), Number(tickSpacing));
 
-        console.log("calTick", {lowerTick,upperTick, tickSpacing});
+        console.log("calTick", { lowerTick, upperTick, tickSpacing });
 
         const rawBaseAmount = convertBalanceToWei(depositAmount.base || '0', pairTokens.token0?.decimals || 18);
         const rawPairAmount = convertBalanceToWei(depositAmount.pair || '0', pairTokens.token1?.decimals || 18);
@@ -256,7 +256,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     }
 
-    const calculateDepositAmount = (amountIn:string, type: 'base' | 'pair') => {
+    const calculateDepositAmount = (amountIn: string, type: 'base' | 'pair') => {
         const currentRate = type === 'base'
             ? Number(get(pairTokens, 'token1.market.current_price', 0)) / Number(get(pairTokens, 'token0.market.current_price', 1))
             : Number(get(pairTokens, 'token0.market.current_price', 0)) / Number(get(pairTokens, 'token1.market.current_price', 1));
@@ -264,7 +264,7 @@ const PositionProvider: React.FC<PropsWithChildren> = ({ children }) => {
         const theoryAmountOut = Number(amountIn) * currentRate;
 
         const L1 = (Math.sqrt(Number(priceRange.max)) * Math.sqrt(Number(initialRate)) * Number(amountIn)) / (Math.sqrt(Number(priceRange.max)) - Math.sqrt(Number(initialRate)));
-        const L2 =  Number(theoryAmountOut) / (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
+        const L2 = Number(theoryAmountOut) / (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
         const L = Math.min(L1, L2);
         const amountOut = L * (Math.sqrt(Number(initialRate)) - Math.sqrt(Number(priceRange.min)));
 

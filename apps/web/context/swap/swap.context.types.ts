@@ -1,5 +1,6 @@
 import { Token } from "@repo/utils/types";
 import { ChangeEvent } from "react";
+import { EFeeTier } from "../createPosition";
 
 export interface QuoteResponse {
     tokenIn: string; // Address of the input token
@@ -38,11 +39,15 @@ export interface IStateSwapContext {
         error?: any; // Error object or message
         isHigherPriceImpact: boolean;
         coinCurrent: Token[];
+        feeTier: EFeeTier;
+        slippage: string; // Slippage percentage as a string
     };
     jobs: {
         onSelectPairToken: (type: 'token0' | 'token1', token: Token) => void;
         onChangeAmountIn: (e: ChangeEvent<HTMLInputElement>) => void;
-        handleExchange: (quote: QuoteResponse) => () => Promise<void>
+        handleExchange: (quote: QuoteResponse) => () => Promise<void>;
+        onSelectFeeTier: (fee: EFeeTier) => () => void;
+        onChangeSlippage: (e: ChangeEvent<HTMLInputElement>) => void;
     };
     ref: {
 

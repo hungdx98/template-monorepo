@@ -10,10 +10,11 @@ interface FeeSelectionsProps {
   isDisplayed?: boolean;
   onChangeFee: (fee: EFeeTier) => () => void;
   currentFee?: EFeeTier;
+  isHiddenTVL?: boolean;
 }
 const FeeSelections = (props: FeeSelectionsProps) => {
 
-  const { isDisplayed, onChangeFee, currentFee } = props;
+  const { isDisplayed, onChangeFee, currentFee, isHiddenTVL, className } = props;
 
   const t = useTranslations();
 
@@ -36,9 +37,9 @@ const FeeSelections = (props: FeeSelectionsProps) => {
         leaveFrom="h-[160px]"
         leaveTo="h-0"
       >
-        <Disclosure.Panel className="overflow-hidden h-[160px]">
+        <Disclosure.Panel className={cx('overflow-hidden h-[160px]', className)}>
           <div className={isDisplayed ? '' : 'opacity-0'}>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {
                 FEE_TIERS_DATA.map((feeTier) => {
                   const isSelected = feeTier.value === currentFee;
@@ -54,10 +55,12 @@ const FeeSelections = (props: FeeSelectionsProps) => {
                         <p className="text-font-size-175">{get(feeTier, 'value')}%</p>
                         <p className="text-font-size-150">{get(feeTier, 'label')}</p>
                       </div>
-                      <div>
-                        <p className="text-font-size-150 text-text-subtle">$5.4MTVL</p>
-                        <p className="text-font-size-150 text-text-subtle">6.753% select</p>
-                      </div>
+                      {
+                        !isHiddenTVL && <div>
+                          <p className="text-font-size-150 text-text-subtle">$5.4MTVL</p>
+                          <p className="text-font-size-150 text-text-subtle">6.753% select</p>
+                        </div>
+                      }
                       {
                         isSelected && <div className="absolute right-2 top-2">
                           <Icon name="app_status_checked" />

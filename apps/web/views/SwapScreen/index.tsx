@@ -14,10 +14,12 @@ import { convertWeiToBalance, formatNumberBro, truncate } from "@wallet/utils";
 import dayjs from "dayjs";
 import get from "lodash/get";
 import { useTranslations } from "next-intl";
+import { CustomTooltip } from "@/components/Tooltip";
+import FeeSelections from "../CreatePositionScreen/components/FeeSelections";
 
 const SwapScreen = () => {
     const t = useTranslations();
-    const { state: { pairTokens, fiatIn, fiatOut, priceImpact, isHigherPriceImpact, quote, isFetching, error, isLoadingTx, coinCurrent: tokens }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange } } = useSwapService();
+    const { state: { pairTokens, fiatIn, fiatOut, priceImpact, isHigherPriceImpact, quote, isFetching, error, isLoadingTx, coinCurrent: tokens, feeTier, slippage }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange, onSelectFeeTier, onChangeSlippage } } = useSwapService();
     const { address } = useWallet();
     const amountOutExpect = convertWeiToBalance(get(quote, 'amountOut', '0'), get(pairTokens, 'token0.decimals', 18));
 
@@ -26,10 +28,50 @@ const SwapScreen = () => {
         className="min-h-screen bg-black text-white p-6 mt-4">
         <div className="max-w-md mx-auto mt-10 bg-background-1 text-white rounded-xl p-4 shadow-lg">
             {/* Tabs */}
-            <div className="flex items-center space-x-4 text-sm">
-                <button className="px-3 py-1 rounded-full text-white">
+            <div className="flex items-center space-x-4 text-sm justify-between">
+                <div className="px-3 py-1 rounded-full text-white">
                     Swap
-                </button>
+                </div>
+                <Button variant="secondary" className="text-font-size-175 rounded-xl w-fit bg-transparent" id="anchor-settings">
+                    <Icon name="app_menu_settings" className="text-white text-[14px]" />
+                </Button>
+                <CustomTooltip
+                    variant="dark"
+                    anchorSelect="#anchor-settings"
+                    place="right-start"
+                    className='!p-4 !shadow-drop-shadow z-99 !rounded-lg h-fit'
+                    opacity={1}
+                    openOnClick
+                    events={['click']}
+                    clickable
+                    noArrow
+                >
+                    <div className='flex flex-col justify-start items-start w-[360px]'>
+                        <div className="flex items-center justify-between w-full mb-2 space-y-2">
+                            <div className="text-gray-400">
+                                Max slippage
+                            </div>
+                            <Input
+                                value={slippage}
+                                variant="filled"
+                                placeholder="0"
+                                containerClassName="w-2xl h-8 max-w-[40%] px-2 py-1"
+                                type="number"
+                                onChange={onChangeSlippage}
+                            />
+                        </div>
+                        <div className='flex flex-col gap-y-2 w-full space-y-2'>
+                            <div className="text-gray-400">Fee tier</div>
+                            <FeeSelections
+                                isDisplayed={true}
+                                currentFee={feeTier}
+                                onChangeFee={onSelectFeeTier}
+                                className="w-full h-fit"
+                                isHiddenTVL
+                            />
+                        </div>
+                    </div>
+                </CustomTooltip>
             </div>
             {/* Sell box */}
             <div className="relative border border-border-1-subtle p-4 rounded-xl mt-4">

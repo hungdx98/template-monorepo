@@ -1,7 +1,7 @@
 "use client"
 import { Token } from '@repo/utils/types';
 import React, { ChangeEvent, createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
-import { IStatePositionPairTokens } from '../createPosition';
+import { EFeeTier, IStatePositionPairTokens } from '../createPosition';
 import { IStateSwapContext, QuoteResponse } from './swap.context.types';
 import get from 'lodash/get';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
@@ -24,6 +24,8 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const tokens = useTokensStore(useShallow(state => state.coinCurrent));
     const coinCurrentByChain = coinLocal["tomo"] || [];
 
+    const [feeTier, setFeeTier] = useState<EFeeTier>(EFeeTier.STANDARD);
+
     const [pairTokens, setPairTokens] = useState<IStatePositionPairTokens>({
         token0: undefined,
         token1: undefined
@@ -32,6 +34,7 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const [amountIn, setAmountIn] = useState<string>('0');
     const [amountOut, setAmountOut] = useState<string>('0');
+    const [slippage, setSlippage] = useState<string>('0.5');
 
     const onChangeAmountIn = _debounce((e: ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -73,7 +76,8 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 token0: pairTokens.token0?.address,
                 token1: pairTokens.token1?.address,
                 amountIn: amountInExpect,
-                fee: '3000',
+                fee: Number(feeTier) * 10000,
+                slippage: Number(slippage),
                 wallet: address
             }
             const res = await axios.post('/api/quote', params);
@@ -93,7 +97,9 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             key: 'quotes-concurrently',
             address,
             pairTokens,
-            amountIn
+            amountIn,
+            slippage,
+            feeTier
         }],
         queryFn: fetchQuotesSequentially,
         enabled: !!pairTokens.token0 && !!pairTokens.token1 && !!address && amountIn !== '0' && !isNaN(Number(amountIn)) && !!amountIn,
@@ -136,6 +142,20 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
         }
     }
 
+    const onSelectFeeTier = (fee: EFeeTier) => () => {
+        setFeeTier(fee);
+    };
+
+    const onChangeSlippage = (e: ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const value = e.target.value;
+        if (isNaN(Number(value)) || value === '' || !value) {
+            setSlippage('0.5');
+            return;
+        }
+        setSlippage(value);
+    };
+
     const coinCurrent = useMemo(() => {
         const mergeCoinCurrent = [...tokens, ...coinCurrentByChain];
         const uniqCoinCurrent = _uniqBy(mergeCoinCurrent, 'address');
@@ -155,12 +175,16 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             isFetching,
             isLoadingTx,
             error,
-            coinCurrent
+            coinCurrent,
+            feeTier,
+            slippage
         },
         jobs: {
             onSelectPairToken,
             onChangeAmountIn,
-            handleExchange
+            handleExchange,
+            onSelectFeeTier,
+            onChangeSlippage
         },
         ref: {}
     }
