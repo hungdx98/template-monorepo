@@ -116,11 +116,16 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     })
 
     const { data: gas, isFetching: isFetchGas, error: errorGas } = useQuery({
-        queryKey: ['est-gas', { quote, pairTokens, amountIn, address }],
+        queryKey: ['est-gas', {
+            quote,
+            token0: get(pairTokens, 'token0.address'),
+            token1: get(pairTokens, 'token1.address'),
+            amountIn,
+            address
+        }],
         queryFn: async () => {
             try {
                 const token0Address = get(pairTokens, 'token0.address')
-                console.log('token0Address', token0Address);
                 if (!!token0Address && !!address) {
                     const addressTo = get(quote, 'transaction.approveAddress') as string;
                     const tokenContract = new client.eth.Contract(ERC20_ABI, token0Address);
@@ -133,7 +138,6 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                     const isApproval = Number(amountInRaw) > Number(allowance);
                     const nonce = Number(await client.eth.getTransactionCount(ownerAddress as string));
                     const gasPrice = await client.eth.getGasPrice();
-                    console.log('isApproval', isApproval);
                     if (isApproval) {
                         // const amountBN = BigNumber.from(amountInRaw);
                         if (!tokenContract.methods.approve) throw new Error('approve method is undefined on tokenContract');
@@ -154,7 +158,6 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                     }
                     const transactionObject = get(quote, 'transaction');
                     const { approveAddress, ...tx } = transactionObject;
-                    console.log('transaction', tx);
                     const estimatedGas = await client.eth.estimateGas(tx);
                     return { gasLimit: estimatedGas.toString(), gasPrice: gasPrice.toString() };
                 }
@@ -166,6 +169,8 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 throw error;
             }
         },
+        retry: 0,
+        refetchOnWindowFocus: false,
         enabled: !!quote && isEnableFetching,
     })
 
