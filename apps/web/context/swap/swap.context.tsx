@@ -1,20 +1,21 @@
 "use client"
-import { Token } from '@repo/utils/types';
-import React, { ChangeEvent, createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
-import { EFeeTier, IStatePositionPairTokens } from '../createPosition';
-import { IStateSwapContext, QuoteResponse } from './swap.context.types';
-import get from 'lodash/get';
+import ToastSuccess from '@/components/ToastSuccess';
+import { ERC20_ABI } from '@/services/abi';
+import { useTokensStore } from '@/stores';
 import { useWallet } from '@coin98-com/wallet-adapter-react';
+import { Token } from '@repo/utils/types';
 import { useQuery } from '@tanstack/react-query';
+import { convertBalanceToWei, convertWeiToBalance } from '@wallet/utils';
 import axios from 'axios';
 import _debounce from 'lodash/debounce';
+import get from 'lodash/get';
 import _uniqBy from 'lodash/uniqBy';
-import { convertBalanceToWei, convertWeiToBalance } from '@wallet/utils';
-import Web3 from 'web3';
+import React, { ChangeEvent, createContext, PropsWithChildren, useContext, useMemo, useState } from 'react';
 import { Bounce, toast } from 'react-toastify';
-import ToastSuccess from '@/components/ToastSuccess';
-import { useTokensStore } from '@/stores';
+import Web3, { Transaction } from 'web3';
 import { useShallow } from 'zustand/shallow';
+import { EFeeTier, IStatePositionPairTokens } from '../createPosition';
+import { IStateSwapContext } from './swap.context.types';
 
 const SwapContext = createContext<IStateSwapContext>({} as IStateSwapContext);
 
@@ -23,6 +24,7 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const coinLocal = useTokensStore(useShallow(state => state.coinLocal));
     const tokens = useTokensStore(useShallow(state => state.coinCurrent));
     const coinCurrentByChain = coinLocal["tomo"] || [];
+    const client = new Web3(new Web3.providers.HttpProvider("https://rpc.viction.xyz"));
 
     const [feeTier, setFeeTier] = useState<EFeeTier>(EFeeTier.STANDARD);
 
@@ -30,6 +32,8 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
         token0: undefined,
         token1: undefined
     })
+    const [approveTx, setApproveTx] = useState<Transaction | undefined>(undefined);
+
     const [isLoadingTx, setIsLoadingTx] = useState<boolean>(false);
 
     const [amountIn, setAmountIn] = useState<string>('0');
@@ -54,8 +58,8 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
 
     const [fiatIn, fiatOut, priceImpact, isHigherPriceImpact] = useMemo(() => {
-        const priceIn = get(pairTokens, 'token0.market.current_price', '0');
-        const priceOut = get(pairTokens, 'token1.market.current_price', '0');
+        const priceIn = get(pairTokens, 'token0.market.current_price', get(pairTokens, 'token0.marketInfo.current_price', '0'));
+        const priceOut = get(pairTokens, 'token1.market.current_price', get(pairTokens, 'token1.marketInfo.current_price', '0'));
         const fiatIn = String((Number(amountIn) * Number(priceIn)));
         const fiatOut = String((Number(amountOut) * Number(priceOut)));
         let priceImpact = (((Number(fiatOut) - Number(fiatIn)) / Number(fiatIn)) * 100);
@@ -66,31 +70,9 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
         return [fiatIn, fiatOut, priceImpact, isHigherPriceImpact];
     }, [pairTokens, amountIn, amountOut]);
 
-    const fetchQuotesSequentially = async () => {
-        try {
-            setAmountOut('0');
-
-            // Simulate fetching quotes sequentially
-            const amountInExpect = convertBalanceToWei(amountIn, get(pairTokens, 'token0.decimals', 18));
-            const params = {
-                token0: pairTokens.token0?.address,
-                token1: pairTokens.token1?.address,
-                amountIn: amountInExpect,
-                fee: Number(feeTier) * 10000,
-                slippage: Number(slippage),
-                wallet: address
-            }
-            const res = await axios.post('/api/quote', params);
-            const quotes = get(res, 'data.data', {});
-            if (!!quotes) {
-                const amountOut = convertWeiToBalance(get(quotes, 'amountOut', '0'), get(pairTokens, 'token1.decimals', 18));
-                setAmountOut(amountOut);
-            }
-            return quotes;
-        } catch (error: any) {
-            throw get(error, 'response.data', 'Failed to fetch quotes');
-        }
-    }
+    const isEnableFetching = useMemo(() => {
+        return !!pairTokens.token0 && !!pairTokens.token1 && !!address && amountIn !== '0' && !isNaN(Number(amountIn)) && !!amountIn;
+    }, [pairTokens, address, amountIn]);
 
     const { data: quote, isFetching, error, refetch: refetchQuotesConcurrently } = useQuery({
         queryKey: [{
@@ -101,26 +83,97 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             slippage,
             feeTier
         }],
-        queryFn: fetchQuotesSequentially,
-        enabled: !!pairTokens.token0 && !!pairTokens.token1 && !!address && amountIn !== '0' && !isNaN(Number(amountIn)) && !!amountIn,
+        queryFn: async () => {
+            try {
+                setAmountOut('0');
+                setApproveTx(undefined);
+                // Simulate fetching quotes sequentially
+                const amountInExpect = convertBalanceToWei(amountIn, get(pairTokens, 'token0.decimals', 18));
+                const params = {
+                    token0: pairTokens.token0?.address,
+                    token1: pairTokens.token1?.address,
+                    amountIn: amountInExpect,
+                    fee: Number(feeTier) * 10000,
+                    slippage: Number(slippage),
+                    wallet: address
+                }
+                const res = await axios.post('/api/quote', params);
+                const quotes = get(res, 'data.data', {});
+                if (!!quotes) {
+                    const amountOut = convertWeiToBalance(get(quotes, 'amountOut', '0'), get(pairTokens, 'token1.decimals', 18));
+                    setAmountOut(amountOut);
+                }
+                return quotes;
+            } catch (error: any) {
+                throw get(error, 'response.data', 'Failed to fetch quotes');
+            }
+        },
+        enabled: isEnableFetching,
         retry: 0,
         refetchOnWindowFocus: false,
+        refetchInterval: 20 * 1000 // Refetch every 20 seconds
         // ...queryNoCacheOptions
     })
 
-    const handleExchange = (quote: QuoteResponse) => async () => {
+    const { data: gas, isFetching: isFetchGas, error: errorGas } = useQuery({
+        queryKey: ['est-gas', { quote, pairTokens, amountIn, address }],
+        queryFn: async () => {
+            try {
+                const token0Address = get(pairTokens, 'token0.address')
+                console.log('token0Address', token0Address);
+                if (!!token0Address && !!address) {
+                    const addressTo = get(quote, 'transaction.approveAddress') as string;
+                    const tokenContract = new client.eth.Contract(ERC20_ABI, token0Address);
+                    const ownerAddress = address; // Define the owner address as the wallet address
+                    const spenderAddress = get(quote, 'transaction.approveAddress') as string; // Define the spender address from the quote
+                    if (!spenderAddress) throw new Error('Spender address is undefined');
+                    if (!tokenContract.methods.allowance) throw new Error('Token contract methods are undefined');
+                    const allowance = await tokenContract.methods.allowance(ownerAddress, spenderAddress).call();
+                    const amountInRaw = convertBalanceToWei(amountIn, get(pairTokens, 'token0.decimals', 18));
+                    const isApproval = Number(amountInRaw) > Number(allowance);
+                    console.log('isApproval', isApproval);
+                    if (isApproval) {
+                        // const amountBN = BigNumber.from(amountInRaw);
+                        if (!tokenContract.methods.approve) throw new Error('approve method is undefined on tokenContract');
+                        const rawABI = tokenContract.methods.approve(addressTo, amountInRaw).encodeABI();
+                        const nonce = Number(await client.eth.getTransactionCount(ownerAddress as string));
+                        const txObject = {
+                            from: ownerAddress,
+                            to: token0Address, // approve token address
+                            data: rawABI, // approve callData
+                            value: '0', // approve value fix 0
+                            nonce
+                        } as Transaction;
+                        setApproveTx(txObject);
+                        // Estimate gas limit and gas price
+                        const estimatedGas = await client.eth.estimateGas(txObject);
+                        const gasPrice = await client.eth.getGasPrice();
+                        return { gasLimit: estimatedGas.toString(), gasPrice: gasPrice.toString() };
+                    }
+                }
+            } catch (error: any) {
+                const getError = get(error, 'message', error)
+                if (getError.includes('insufficient funds')) {
+                    throw new Error("insufficient funds for gas * price + value");
+                }
+                throw error;
+            }
+        },
+        enabled: !!quote && isEnableFetching,
+    })
+
+
+    const handleExchange = (transaction: Transaction) => async () => {
         try {
-            if (!quote || !quote.transaction) {
+            if (!transaction) {
                 console.error('Invalid quote data');
                 return;
             }
             setIsLoadingTx(true);
-            const { transaction } = quote;
-            const { approveAddress, ...tx } = transaction;
 
             const web3 = new Web3(new Web3.providers.HttpProvider('https://rpc.viction.xyz'));
             const nonce = Number(await web3.eth.getTransactionCount(transaction.from as string));
-            const transactionObject = { ...tx, nonce };
+            const transactionObject = { ...transaction, nonce };
             const txHashRes = await sendTransaction(transactionObject);
             if (txHashRes.isError) throw txHashRes.error;
             toast.success(<ToastSuccess message={'Success'} hash={txHashRes.data as string} />, {
@@ -136,7 +189,7 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                 autoClose: 5000,
                 transition: Bounce
             });
-            // throw new Error(`Failed to send transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(`Failed to send transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setIsLoadingTx(false);
         }
@@ -174,10 +227,13 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
             quote,
             isFetching,
             isLoadingTx,
-            error,
+            error: error || errorGas,
             coinCurrent,
             feeTier,
-            slippage
+            slippage,
+            approveTx,
+            isFetchGas,
+            gas
         },
         jobs: {
             onSelectPairToken,

@@ -12,16 +12,15 @@ const ToastContainer = () => {
     <ToastComp
       position="bottom-right"
       autoClose={2000}
-      hideProgressBar
       newestOnTop={true}
       closeOnClick
       limit={1}
       rtl={false}
-      // theme={theme}
+      theme="light"
       closeButton={false}
       transition={zoomEffect}
     />
   );
 }
- 
+
 export default ToastContainer;

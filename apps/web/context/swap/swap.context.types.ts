@@ -1,7 +1,7 @@
 import { Token } from "@repo/utils/types";
 import { ChangeEvent } from "react";
+import { Transaction } from 'web3';
 import { EFeeTier } from "../createPosition";
-
 export interface QuoteResponse {
     tokenIn: string; // Address of the input token
     tokenOut: string; // Address of the output token
@@ -41,11 +41,17 @@ export interface IStateSwapContext {
         coinCurrent: Token[];
         feeTier: EFeeTier;
         slippage: string; // Slippage percentage as a string
+        approveTx: Transaction | undefined
+        isFetchGas: boolean;
+        gas: {
+            gasLimit: string;
+            gasPrice: string;
+        } | undefined;
     };
     jobs: {
         onSelectPairToken: (type: 'token0' | 'token1', token: Token) => void;
         onChangeAmountIn: (e: ChangeEvent<HTMLInputElement>) => void;
-        handleExchange: (quote: QuoteResponse) => () => Promise<void>;
+        handleExchange: (transaction: Transaction) => () => Promise<void>;
         onSelectFeeTier: (fee: EFeeTier) => () => void;
         onChangeSlippage: (e: ChangeEvent<HTMLInputElement>) => void;
     };

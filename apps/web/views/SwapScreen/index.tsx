@@ -19,9 +19,10 @@ import FeeSelections from "../CreatePositionScreen/components/FeeSelections";
 
 const SwapScreen = () => {
     const t = useTranslations();
-    const { state: { pairTokens, fiatIn, fiatOut, priceImpact, isHigherPriceImpact, quote, isFetching, error, isLoadingTx, coinCurrent: tokens, feeTier, slippage }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange, onSelectFeeTier, onChangeSlippage } } = useSwapService();
+    const { state: { pairTokens, fiatIn, fiatOut, priceImpact, isHigherPriceImpact, quote, isFetching, error, isLoadingTx, coinCurrent: tokens, feeTier, slippage, approveTx, isFetchGas }, jobs: { onSelectPairToken, onChangeAmountIn, handleExchange, onSelectFeeTier, onChangeSlippage } } = useSwapService();
     const { address } = useWallet();
     const amountOutExpect = convertWeiToBalance(get(quote, 'amountOut', '0'), get(pairTokens, 'token0.decimals', 18));
+    const isApprove = !!approveTx;
 
     return <PageContainer
         size='sm'
@@ -186,11 +187,11 @@ const SwapScreen = () => {
             <Button
                 variant="secondary"
                 className="text-font-size-175 rounded-xl"
-                onClick={handleExchange(quote)}
+                onClick={handleExchange(isApprove ? approveTx : get(quote, 'transaction'))}
                 disabled={!quote || !quote.transaction || !address}
-                isLoading={isFetching || isLoadingTx}
+                isLoading={isFetching || isLoadingTx || isFetchGas}
             >
-                Swap
+                {isApprove ? 'Approve' : 'Swap'}
             </Button>
         </div>
     </PageContainer>
