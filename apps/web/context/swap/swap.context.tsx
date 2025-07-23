@@ -131,12 +131,14 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                     const allowance = await tokenContract.methods.allowance(ownerAddress, spenderAddress).call();
                     const amountInRaw = convertBalanceToWei(amountIn, get(pairTokens, 'token0.decimals', 18));
                     const isApproval = Number(amountInRaw) > Number(allowance);
+                    const nonce = Number(await client.eth.getTransactionCount(ownerAddress as string));
+                    const gasPrice = await client.eth.getGasPrice();
                     console.log('isApproval', isApproval);
                     if (isApproval) {
                         // const amountBN = BigNumber.from(amountInRaw);
                         if (!tokenContract.methods.approve) throw new Error('approve method is undefined on tokenContract');
                         const rawABI = tokenContract.methods.approve(addressTo, amountInRaw).encodeABI();
-                        const nonce = Number(await client.eth.getTransactionCount(ownerAddress as string));
+
                         const txObject = {
                             from: ownerAddress,
                             to: token0Address, // approve token address
@@ -147,9 +149,14 @@ const SwapProvider: React.FC<PropsWithChildren> = ({ children }) => {
                         setApproveTx(txObject);
                         // Estimate gas limit and gas price
                         const estimatedGas = await client.eth.estimateGas(txObject);
-                        const gasPrice = await client.eth.getGasPrice();
+
                         return { gasLimit: estimatedGas.toString(), gasPrice: gasPrice.toString() };
                     }
+                    const transactionObject = get(quote, 'transaction');
+                    const { approveAddress, ...tx } = transactionObject;
+                    console.log('transaction', tx);
+                    const estimatedGas = await client.eth.estimateGas(tx);
+                    return { gasLimit: estimatedGas.toString(), gasPrice: gasPrice.toString() };
                 }
             } catch (error: any) {
                 const getError = get(error, 'message', error)
